@@ -1,6 +1,10 @@
 const userModel = require("./user.model");
 const bcrypt = require("../../utils/bcrypt");
-const { generateOTP, signJWT, verifyJWT } = require("../../utils/token");
+const {
+  generateOTP,
+  signJWT,
+  generateRandomToken,
+} = require("../../utils/token");
 const { mailEvents } = require("../../services/mailer");
 
 const login = async (payload) => {
@@ -18,7 +22,17 @@ const login = async (payload) => {
     email: user?.email,
     roles: user?.roles,
   };
-  return { access_token: signJWT(data), data: "User Logged in successfully" };
+  const rt = generateRandomToken();
+  const updatedUser = await userModel.updateOne(
+    { email },
+    { refresh_token: rt }
+  );
+  if (!updatedUser) throw Error("Something went wrong");
+  return {
+    access_token: signJWT(data),
+    refesh_token: rt,
+    data: "User Logged in successfully",
+  };
 };
 
 const register = async (payload) => {

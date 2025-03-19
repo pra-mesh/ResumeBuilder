@@ -10,6 +10,7 @@ const userSchema = new Schema(
     isEmailVerified: { type: Boolean, required: true, default: false },
     otp: { type: String },
     roles: { type: [String], enum: ["admin", "user"], default: "user" },
+    refresh_token: { type: String },
   },
   { timestamps: true }
 );
