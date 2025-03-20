@@ -15,5 +15,5 @@ const signJWT = (data) =>
     { expiresIn: process.env.JWT_DURATION }
   );
 const generateRandomToken = () => uuidv4();
-const verifyJWT = () => {};
+const verifyJWT = (token) => jwt.verify(token, process.env.JWT_SECRET);
 module.exports = { generateOTP, signJWT, verifyJWT, generateRandomToken };

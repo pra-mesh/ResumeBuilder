@@ -23,7 +23,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ data: null, err: errMsg });
 });
 
-console.log("test");
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });

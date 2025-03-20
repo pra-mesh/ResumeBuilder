@@ -6,10 +6,11 @@ const {
   generateRandomToken,
 } = require("../../utils/token");
 const { mailEvents } = require("../../services/mailer");
+const { getRefreshTokenDuration } = require("../../utils/date");
 
 const login = async (payload) => {
   const { email, password } = payload;
-  console.log(payload);
+
   const user = await userModel.findOne({ email });
   if (!user) throw new Error("User is not found");
   if (user?.isBlocked)
@@ -22,12 +23,8 @@ const login = async (payload) => {
     email: user?.email,
     roles: user?.roles,
   };
-  const rt = generateRandomToken();
-  const updatedUser = await userModel.updateOne(
-    { email },
-    { refresh_token: rt }
-  );
-  if (!updatedUser) throw Error("Something went wrong");
+  const rt = await generateRefreshToken(email);
+
   return {
     access_token: signJWT(data),
     refesh_token: rt,
@@ -52,7 +49,6 @@ const register = async (payload) => {
 
 const verifyEmail = async (payload) => {
   const { email, otp } = payload;
-  console.log(otp);
   if (otp.length !== 6) throw new Error("Invalid OTP");
   const user = await userModel.findOne({ email, isEmailVerified: false });
   if (!user) throw new Error("User not found");
@@ -81,5 +77,40 @@ const resendOTP = async (payload) => {
     mailEvents.emit("sendMail", email, subject, message);
   }
 };
+const refreshToken = async (payload) => {
+  const { email, refresh_token } = payload;
+  const user = await userModel.findOne({
+    email,
+    isEmailVerified: true,
+    isBlocked: false,
+  });
 
-module.exports = { login, register, verifyEmail, resendOTP };
+  if (!user) throw Error("User Not found");
+
+  const { refresh_token: rt_in_db } = user;
+
+  if (rt_in_db.code !== refresh_token) throw Error("Token mismatch");
+  const currentTime = new Date();
+  const databaseTime = new Date(rt_in_db.duration);
+  if (databaseTime < currentTime) throw new Error("Token Expired");
+  const data = {
+    name: user?.name,
+    email: user?.email,
+    roles: user?.roles,
+  };
+  return {
+    access_token: signJWT(data),
+    refresh_token: await generateRefreshToken(email),
+  };
+};
+const generateRefreshToken = async (email) => {
+  const rt = generateRandomToken();
+  const rt_duration = getRefreshTokenDuration();
+  const updatedUser = await userModel.updateOne(
+    { email },
+    { refresh_token: { code: rt, duration: rt_duration } }
+  );
+  if (!updatedUser) throw Error("Something went wrong");
+  return rt;
+};
+module.exports = { login, refreshToken, register, resendOTP, verifyEmail };
