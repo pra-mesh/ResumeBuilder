@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
+
 router.post("/login", async (req, res, next) => {
   try {
     const result = await userController.login(req.body);
@@ -45,6 +46,27 @@ router.post("/refresh", async (req, res, next) => {
     next(e);
   }
 });
+
+router.post("/forget-password", async (req, res, next) => {
+  try {
+    await userController.forgetPassword(req.body);
+    res.json({
+      data: "Please check your email address for further instruction.",
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/forget-password/rest-password", async (req, res, next) => {
+  try {
+    await userController.fpResetPassword(req.body);
+    res.json({ data: "Password changed successfully." });
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.get("/", secureAPI(), async (req, res, next) => {
   try {
     res.json({ data: "I am admin route, and I need access Token" });

@@ -27,7 +27,7 @@ const login = async (payload) => {
 
   return {
     access_token: signJWT(data),
-    refesh_token: rt,
+    refresh_token: rt,
     data: "User Logged in successfully",
   };
 };
@@ -113,4 +113,51 @@ const generateRefreshToken = async (email) => {
   if (!updatedUser) throw Error("Something went wrong");
   return rt;
 };
-module.exports = { login, refreshToken, register, resendOTP, verifyEmail };
+
+const forgetPassword = async ({ email }) => {
+  const user = await userModel.findOne({
+    email,
+    isEmailVerified: true,
+    isBlocked: false,
+  });
+  if (!user) throw Error("User not found");
+  const fpToken = generateOTP();
+  const updatedUser = await userModel.updateOne({ email }, { otp: fpToken });
+  if (updatedUser) {
+    const subject = "Forget Password";
+    const message = `Your reset code to change password is ${fpToken}`;
+    mailEvents.emit("sendMail", email, subject, message);
+  }
+};
+
+const fpResetPassword = async (payload) => {
+  const { email, otp, password } = payload;
+  const user = await userModel.findOne({
+    email,
+    isEmailVerified: true,
+    isBlocked: false,
+  });
+  if (!user) throw Error("User not found");
+  console.log(user, otp);
+  if (user?.otp !== otp) throw new Error("Token mismatch");
+  const hashpassword = bcrypt.generatedHash(password);
+  const updatedUser = await userModel.updateOne(
+    { email },
+    { password: hashpassword, otp: "" }
+  );
+  if (updatedUser) {
+    const subject = "Password Changed Successfully.";
+    const message =
+      "Your password has been changed successfully. Please contact admin for unathorized changed.";
+    mailEvents.emit("sendMail", email, subject, message);
+  }
+};
+module.exports = {
+  login,
+  forgetPassword,
+  refreshToken,
+  register,
+  resendOTP,
+  fpResetPassword,
+  verifyEmail,
+};
