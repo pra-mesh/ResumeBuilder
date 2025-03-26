@@ -2,74 +2,87 @@ const router = require("express").Router();
 const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
 
-router.post("/login", async (req, res, next) => {
+router.post(
+  "/change-password",
+  secureAPI(["admin", "user"]),
+  async (req, res, next) => {
+    try {
+      await userController.changePassword(req.currentUser, req.body);
+      res.json({ data: "Password changed successfully" });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
-    const result = await userController.login(req.body);
+    const result = await userController.getProfile(req.currentUser);
     res.json(result);
   } catch (e) {
     next(e);
   }
 });
 
-router.post("/register", async (req, res, next) => {
-  try {
-    await userController.register(req.body);
-    res.json({ data: "User registered successfully" });
-  } catch (e) {
-    next(e);
+router.put(
+  "/profile-update",
+  secureAPI(["admin", "user"]),
+  async (req, res, next) => {
+    try {
+      const result = await userController.updateProflie(
+        req.currentUser,
+        req.body
+      );
+      res.json(result);
+    } catch (e) {
+      next(e);
+    }
   }
-});
-router.post("/email/verify", async (req, res, next) => {
-  try {
-    await userController.verifyEmail(req.body);
-    res.json({ data: "Email verified successfully" });
-  } catch (e) {
-    next(e);
-  }
-});
+);
 
-router.post("/email/resend", async (req, res, next) => {
+//list users
+router.get("/", secureAPI("admin"), async (req, res, next) => {
   try {
-    await userController.resendOTP(req.body);
-    res.json({ data: "OTP resent." });
-  } catch (e) {
-    next(e);
-  }
-});
-
-router.post("/refresh", async (req, res, next) => {
-  try {
-    const result = await userController.refreshToken(req.body);
+    const { page, limit, name, gender, role, email } = req.query;
+    const search = { name, gender, role, email };
+    const result = await userController.list({ page, limit, search });
     res.json(result);
   } catch (e) {
-    console.log(e);
     next(e);
   }
 });
-
-router.post("/forget-password", async (req, res, next) => {
+//add user
+router.post("/", secureAPI("admin"), async (req, res, next) => {
   try {
-    await userController.forgetPassword(req.body);
-    res.json({
-      data: "Please check your email address for further instruction.",
-    });
+    const result = await userController.addUser(req.body);
+    res.json(result);
   } catch (e) {
     next(e);
   }
 });
 
-router.post("/forget-password/rest-password", async (req, res, next) => {
+router.get("/:id", secureAPI("admin"), async (req, res, next) => {
   try {
-    await userController.fpResetPassword(req.body);
-    res.json({ data: "Password changed successfully." });
+    const result = await userController.getbyID(req.params.id);
+    res.json({ data: result });
   } catch (e) {
     next(e);
   }
 });
 
-router.get("/", secureAPI(), async (req, res, next) => {
+router.put("/:id", secureAPI("admin"), async (req, res, next) => {
   try {
-    res.json({ data: "I am admin route, and I need access Token" });
+    const result = await userController.updateUser(req.params.id, req.body);
+    res.json({ data: result });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/reset-password", secureAPI(["admin"]), async (req, res, next) => {
+  try {
+    await userController.restPassword(req.body);
+    res.json({ data: "Password reset successfully" });
   } catch (e) {
     next(e);
   }
@@ -77,9 +90,17 @@ router.get("/", secureAPI(), async (req, res, next) => {
 
 router.patch("/:id/block", secureAPI(["admin"]), async (req, res, next) => {
   try {
-    res.json({ data: "Only admin user" });
+    const result = await userController.blockUser(req.params.id);
+    res.json({ data: result });
   } catch (e) {
     next(e);
   }
 });
+
+//List all users
+//Get one user
+//block user
+//update user
+//Add user
+
 module.exports = router;

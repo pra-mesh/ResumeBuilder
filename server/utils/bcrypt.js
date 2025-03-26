@@ -6,4 +6,4 @@ const generatedHash = (password) =>
 const compareHash = (password, hashPw) =>
   bcryptjs.compareSync(password, hashPw);
 
-module.exports = { generatedHash, comparHash: compareHash };
+module.exports = { generatedHash, compareHash };

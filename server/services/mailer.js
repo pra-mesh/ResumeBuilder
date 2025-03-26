@@ -4,10 +4,16 @@ const events = require("events");
 const mailEvents = new events.EventEmitter();
 
 const transporter = nodemailer.createTransport({
-  service: process.env.SMTP_SERVICE,
+  // service: process.env.SMTP_SERVICE,
+  // auth: {
+  //   user: process.env.SMTP_EMAIL,
+  //   pass: process.env.SMTP_PASS,
+  // },
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
   auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASS,
+    user: "dee0bc99a4e446",
+    pass: "a2fcff8c8e3857",
   },
 });
 transporter.verify((error, success) => {
@@ -28,7 +34,7 @@ const sendEmail = async ({ to, subject, message }) => {
 };
 
 mailEvents.on("sendMail", async (to, subject, message) => {
-  await sendEmail({to, subject, message});
+  await sendEmail({ to, subject, message });
 });
 
 module.exports = { sendEmail, mailEvents };

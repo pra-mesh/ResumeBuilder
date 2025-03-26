@@ -136,7 +136,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-!public/users
-public/users/*
-!public/resume
-public/resume/*
+!server/public/uploads/users
+server/public/uploads/users/*
+!server/public/uploads/resume
+server/public/uploads/resume/*
