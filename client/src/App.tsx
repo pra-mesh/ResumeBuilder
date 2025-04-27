@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router";
-import Login from "./page/login";
-import Register from "./page/register";
-import NotFound from "./page/Error";
-import ForgotPassword from "./page/ForgetPassword";
-import EmailVerification from "./page/EmailVerification";
-import ResetPassword from "./page/RestPassword";
+import Login from "./page/auth/login";
+import Register from "./page/auth/register";
+import NotFound from "./page/auth/Error";
+import ForgotPassword from "./page/auth/ForgetPassword";
+import EmailVerification from "./page/auth/EmailVerification";
+import ResetPassword from "./page/auth/RestPassword";
 
 function App() {
   return (
