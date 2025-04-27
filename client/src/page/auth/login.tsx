@@ -35,7 +35,7 @@ const Login = () => {
 
             {/* Right Column - Login Form */}
             <CardContent className="p-8 flex items-center">
-              <form onSubmit={handleSubmit} className="w-full space-y-6">
+              <form /* onSubmit={handleSubmit} */ className="w-full space-y-6">
                 <div className="space-y-2 text-center">
                   <h2 className="text-2xl font-bold">Account Login</h2>
                   <p className="text-muted-foreground">
@@ -53,8 +53,8 @@ const Login = () => {
                         type="email"
                         placeholder="name@example.com"
                         className="pl-10"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        // value={email}
+                        // onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
