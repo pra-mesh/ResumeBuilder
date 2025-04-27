@@ -74,7 +74,7 @@ const getbyID = async (id) =>
     .findById({ _id: id })
     .select("-_id -password -refresh_token -otp -__v");
 
-const list = ({ page = 1, limit = 10, search }) => {
+const list = async ({ page = 1, limit = 10, search }) => {
   const query = [];
   if (search?.email) {
     query.push({
@@ -130,7 +130,8 @@ const list = ({ page = 1, limit = 10, search }) => {
       },
     }
   );
-  return userModel.aggregate(query);
+  const result = await userModel.aggregate(query);
+  return result[0] || { data: [], total: 0 };
 };
 
 const restPassword = async ({ email }) => {

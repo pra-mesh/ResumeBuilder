@@ -2,8 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const helmet = require("helmet");
+
 const indexRouter = require("./routes");
+
 const port = process.env.port || "8000";
+
 const app = express();
 
 mongoose
@@ -12,7 +16,7 @@ mongoose
   .catch((e) => {
     console.log("Database error", e.toString());
   });
-
+  app.use(helmet());
 app.use(morgan("common"));
 app.use(express.json());
 app.use("/assets", express.static("public"));

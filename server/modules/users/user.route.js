@@ -17,6 +17,7 @@ router.post(
 
 router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
+    console.log(req.currentUser);
     const result = await userController.getProfile(req.currentUser);
     res.json(result);
   } catch (e) {

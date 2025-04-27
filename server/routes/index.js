@@ -2,6 +2,7 @@ const router = require("express").Router();
 const samples = require("../modules/samples/sample.route");
 const userRouter = require("../modules/users/user.route");
 const authRouter = require("../modules/auth/auth.route");
+const resumeRouter = require("../modules/resumes/resume.route");
 router.get("/", (req, res, next) => {
   try {
     res.json({ data: "API is wroking properly" });
@@ -12,4 +13,5 @@ router.get("/", (req, res, next) => {
 router.use("/api/v1/auth", authRouter);
 router.use("/api/v1/users", userRouter);
 router.use("/api/v1/samples", samples);
+router.use("/api/v1/resumes", resumeRouter);
 module.exports = router;
