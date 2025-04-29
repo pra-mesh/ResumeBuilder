@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router";
 import Login from "./page/auth/login";
 import Register from "./page/auth/register";
-import NotFound from "./page/auth/Error";
+import NotFound from "./Error";
 import ForgotPassword from "./page/auth/ForgetPassword";
 import EmailVerification from "./page/auth/EmailVerification";
 import ResetPassword from "./page/auth/RestPassword";

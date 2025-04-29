@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -6,9 +7,43 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { Link } from "react-router";
 
-const Login = () => {
-  const [showPassword, setShowPassword] = useState(true);
+import { URLS } from "@/constants";
 
+import { axiosInstance } from "@/lib/axios";
+import { setItem } from "@/lib/storage";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [payload, setPayload] = useState({ email: "", password: "" });
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+
+  const handleSubmit = async (e: any) => {
+    try {
+      setErr("");
+      e.preventDefault();
+      const { data } = await axiosInstance.post(URLS.Auth + "/login", {
+        ...payload,
+      });
+      const { access_token, refresh_token, data: msg } = data;
+      setMsg(msg);
+      setItem("access_token", access_token);
+      setItem("refresh_token", refresh_token);
+    } catch (err: any) {
+      const errMsg = err?.response?.data?.err || "Something went wrong";
+      setErr(errMsg);
+    } finally {
+      setPayload({
+        email: "",
+        password: "",
+      });
+      setTimeout(() => {
+        setMsg("");
+        setErr("");
+      }, 100000);
+    }
+  };
   return (
     <>
       <div className="flex min-h-screen items-center justify-center overflow-hidden rounded-lg bg-white shadow">
@@ -35,14 +70,29 @@ const Login = () => {
 
             {/* Right Column - Login Form */}
             <CardContent className="p-8 flex items-center">
-              <form /* onSubmit={handleSubmit} */ className="w-full space-y-6">
+              <form onSubmit={handleSubmit} className="w-full space-y-6">
                 <div className="space-y-2 text-center">
                   <h2 className="text-2xl font-bold">Account Login</h2>
                   <p className="text-muted-foreground">
                     Enter your credentials to sign in
                   </p>
                 </div>
-
+                <div>
+                  {err && (
+                    <Alert variant="destructive" className="p-0">
+                      <AlertDescription className="text-red-700 bg-red-200">
+                        {err}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {msg && (
+                    <Alert variant="success" className="p-0"git sw>
+                      <AlertDescription className="text-teal-700 bg-teal-200">
+                        {msg}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
@@ -53,8 +103,15 @@ const Login = () => {
                         type="email"
                         placeholder="name@example.com"
                         className="pl-10"
-                        // value={email}
-                        // onChange={(e) => setEmail(e.target.value)}
+                        value={payload?.email}
+                        onChange={(e) =>
+                          setPayload((prev) => {
+                            return {
+                              ...prev,
+                              email: e.target.value,
+                            };
+                          })
+                        }
                         required
                       />
                     </div>
@@ -62,9 +119,7 @@ const Login = () => {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-orange-600">
-                        Password
-                      </Label>
+                      <Label htmlFor="password">Password</Label>
                       <Link
                         to="/auth/forget-password"
                         className="text-sm text-orange-600 hover:underline"
@@ -78,8 +133,15 @@ const Login = () => {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         className="pl-10 pr-10"
-                        // value={password}
-                        // onChange={(e) => setPassword(e.target.value)}
+                        value={payload?.password}
+                        onChange={(e) =>
+                          setPayload((prev) => {
+                            return {
+                              ...prev,
+                              password: e.target.value,
+                            };
+                          })
+                        }
                         required
                       />
                       <Button
@@ -101,14 +163,12 @@ const Login = () => {
                     </div>
                   </div>
                 </div>
-
                 <Button
                   type="submit"
                   className="w-full bg-orange-600 hover:bg-orange-700"
                 >
                   Sign In
                 </Button>
-
                 <div className="text-center text-sm">
                   Don't have an account?
                   <Link
