@@ -86,7 +86,7 @@ const Login = () => {
                     </Alert>
                   )}
                   {msg && (
-                    <Alert variant="success" className="p-0"git sw>
+                    <Alert variant="success" className="p-0">
                       <AlertDescription className="text-teal-700 bg-teal-200">
                         {msg}
                       </AlertDescription>
