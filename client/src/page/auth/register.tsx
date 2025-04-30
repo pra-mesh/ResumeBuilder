@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router";
 import { Eye, EyeOff, Loader2, Upload } from "lucide-react";
 
 const Register = () => {
+  const formPayloadRef = useRef<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,7 +20,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<any>(null);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,7 +31,7 @@ const Register = () => {
       [name]: value,
     }));
   };
-
+  // Image
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -94,27 +96,21 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
       // Create form data for file upload
-      const submitData = new FormData();
-      submitData.append("name", formData.name);
-      submitData.append("email", formData.email);
-      submitData.append("password", formData.password);
-      submitData.append("gender", formData.gender);
 
-      if (profilePicture) {
-        submitData.append("profilePicture", profilePicture);
-      }
+      const rawformData = formPayloadRef.current;
+      const fileInput = fileInputRef.current?.value;
+
+      const formData = new FormData(rawformData);
+      formData.append("picture", fileInput);
 
       // This is where you would typically call your registration API
-      console.log("Registration data:", {
-        ...formData,
-        profilePicture: profilePicture
-          ? profilePicture.name
-          : "No profile picture",
-      });
+      // console.log("Registration data:", {
+      //   ...formData,
+      //   profilePicture: profilePicture
+      //     ? profilePicture.name
+      //     : "No profile picture",
+      // });
 
       // Redirect to login or dashboard after successful registration
       // navigate("/login")
