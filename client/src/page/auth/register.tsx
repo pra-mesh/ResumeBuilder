@@ -59,7 +59,7 @@ const Register = () => {
         navigate("/auth/Email-Verify", {
           state: { email: formData.get("email") },
         });
-      }, 5000);
+      }, 1000);
     } catch (error: any) {
       const errorMsg = error?.err || "Registration failed";
       console.error("Registration failed:", errorMsg);
@@ -69,7 +69,7 @@ const Register = () => {
         setMsg("");
         setErr("");
         (e.target as HTMLFormElement).reset();
-      }, 5000);
+      }, 1000);
     }
   };
 

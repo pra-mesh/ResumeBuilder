@@ -1,116 +1,67 @@
-import type React from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { URLS } from "@/constants";
+import { axiosInstance } from "@/lib/axios";
+import { AlertCircle, Mail } from "lucide-react";
 
-import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
-import {  useLocation, useNavigate } from "react-router";
-import { Loader2 } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+import { Link, useLocation } from "react-router";
 
 const EmailVerification = () => {
-  const {state} = useLocation()
-  
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { state } = useLocation();
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+
   const [isVerified, setIsVerified] = useState(false);
+
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
-  const email = state?.email
-  const navigate = useNavigate();
-
-  // Handle OTP input change
-  const handleOtpChange = (index: number, value: string) => {
-    // Only allow numbers
-    if (value && !/^\d+$/.test(value)) return;
-
-    const newOtp = [...otp];
-
-    // Handle paste event (if user pastes a 6-digit code)
-    if (value.length > 1) {
-      const pastedValue = value.slice(0, 6).split("");
-      for (let i = 0; i < 6; i++) {
-        if (i < pastedValue.length) {
-          newOtp[i] = pastedValue[i];
-        }
-      }
-      setOtp(newOtp);
-      return;
-    }
-
-    // Handle single digit input
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto-focus next input if current input is filled
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      if (nextInput) {
-        nextInput.focus();
-      }
-    }
-  };
-
-  // Handle key down event for backspace
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      if (prevInput) {
-        prevInput.focus();
-      }
-    }
-  };
+  const email = state?.email;
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Validate OTP
-    const otpValue = otp.join("");
-    if (otpValue.length !== 6) {
-      setError("Please enter all 6 digits of the verification code");
-      return;
-    }
-
-    setIsLoading(true);
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // This is where you would typically call your verification API
-      console.log("Verifying email with OTP:", otpValue);
-
-      // Show success message
+      const payload = {
+        email,
+        otp,
+      };
+      await axiosInstance.post(`${URLS.Auth}/email/verify`, payload);
       setIsVerified(true);
-
-      // In a real app, you would redirect to the next step after verification
-      // setTimeout(() => navigate("/dashboard"), 2000)
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       setError("Invalid verification code. Please try again.");
-      console.error("Email verification failed:", err);
+      console.error("Email verification failed:", err?.response?.data?.err);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setOtp("");
+        setError("");
+      }, 5000);
     }
   };
 
   // Handle resend OTP
   const handleResendOtp = async () => {
     if (resendDisabled) return;
-
     setResendDisabled(true);
     setResendTimer(30); // 30 seconds cooldown
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // This is where you would typically call your resend OTP API
-      console.log("Resending OTP to:", email);
+      await axiosInstance.post(`${URLS.Auth}/email/resend`, { email });
+      setError("Verification code has been sent");
     } catch (err) {
       console.error("Failed to resend OTP:", err);
+      setError("Failed to resend OTP:");
+    } finally {
+      setTimeout(() => {
+        setError("");
+      }, 15000);
     }
   };
 
@@ -168,52 +119,51 @@ const EmailVerification = () => {
                   Enter the 6-digit code sent to your email
                 </p>
 
-                <div className="flex justify-between space-x-2">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      id={`otp-${index}`}
-                      type="text"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleOtpChange(index, e.target.value)
-                      }
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      onPaste={(e) => {
-                        e.preventDefault();
-                        const pastedData =
-                          e.clipboardData.getData("text/plain");
-                        handleOtpChange(0, pastedData);
-                      }}
-                      className={`h-12 w-12 rounded-md border text-center text-lg font-semibold shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 ${
-                        error ? "border-red-500" : "border-gray-300"
-                      }`}
-                      disabled={isLoading}
-                    />
-                  ))}
+                <div className="flex justify-center items-center space-x-2 ">
+                  <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                    <InputOTPGroup className=" rounded-none">
+                      <InputOTPSlot index={0} className="rounded-none" />
+                      <InputOTPSlot index={1} className="rounded-none" />
+                      <InputOTPSlot index={2} className="rounded-none" />
+                      <InputOTPSlot index={3} className="rounded-none" />
+                      <InputOTPSlot index={4} className="rounded-none" />
+                      <InputOTPSlot index={5} className="rounded-none" />
+                    </InputOTPGroup>
+                  </InputOTP>
                 </div>
-                {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
               </div>
 
               <button
                 type="submit"
                 className="w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
-                disabled={isLoading}
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying...
-                  </span>
-                ) : (
-                  "Verify Email"
-                )}
+                "Verify Email"
               </button>
-
+              {error && (
+                <Alert
+                  variant={
+                    error.includes("has been sent") ? "default" : "destructive"
+                  }
+                  className={
+                    error.includes("has been sent")
+                      ? "border-blue-200 bg-blue-50"
+                      : ""
+                  }
+                >
+                  {error.includes("has been sent") ? (
+                    <Mail className="h-4 w-4 text-blue-600" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" />
+                  )}
+                  <AlertTitle>
+                    {error.includes("has been sent") ? "Code Sent" : "Error"}
+                  </AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  Didn't receive the code?{" "}
+                  Didn't receive the code?
                   <button
                     type="button"
                     onClick={handleResendOtp}
@@ -255,13 +205,13 @@ const EmailVerification = () => {
               <p className="mb-4 text-sm text-gray-600">
                 Your email has been verified. You can now access your account.
               </p>
-              <button
+              <Button
                 type="button"
-                onClick={() => navigate("/")}
+                asChild
                 className="rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               >
-                Continue to Dashboard
-              </button>
+                <Link to="/auth/login"> Login to get started. </Link>
+              </Button>
             </div>
           )}
         </div>
