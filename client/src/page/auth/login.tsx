@@ -5,7 +5,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { URLS } from "@/constants";
 
@@ -14,6 +14,7 @@ import { setItem } from "@/lib/storage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [payload, setPayload] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState("");
@@ -30,6 +31,7 @@ const Login = () => {
       setMsg(msg);
       setItem("access_token", access_token);
       setItem("refresh_token", refresh_token);
+      navigate("/admin/dashboard");
     } catch (err: any) {
       const errMsg = err?.response?.data?.err || "Something went wrong";
       setErr(errMsg);

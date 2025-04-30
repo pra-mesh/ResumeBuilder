@@ -5,6 +5,7 @@ import NotFound from "./Error";
 import ForgotPassword from "./page/auth/ForgetPassword";
 import EmailVerification from "./page/auth/EmailVerification";
 import ResetPassword from "./page/auth/RestPassword";
+import Dashboard from "./page/admin/Dashboard";
 
 function App() {
   return (
@@ -19,7 +20,10 @@ function App() {
           <Route path="reset-password" element={<ResetPassword />} />
         </Route>
         {/* Admin */}
-        <Route></Route>
+        <Route path="/admin">
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
