@@ -1,12 +1,12 @@
 import type React from "react";
 
 import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
-import {  useNavigate } from "react-router";
+import {  useLocation, useNavigate } from "react-router";
 import { Loader2 } from "lucide-react";
 
 const EmailVerification = () => {
-  // In a real app, you would get this email from your auth context or URL params
-  const [email] = useState("user@example.com");
+  const {state} = useLocation()
+  
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -14,6 +14,7 @@ const EmailVerification = () => {
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
+  const email = state?.email
   const navigate = useNavigate();
 
   // Handle OTP input change

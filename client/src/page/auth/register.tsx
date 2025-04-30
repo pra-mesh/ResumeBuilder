@@ -1,42 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff, Loader2, Upload } from "lucide-react";
+import { axiosInstance } from "@/lib/axios";
+import { URLS } from "@/constants";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Register = () => {
   const formPayloadRef = useRef<any>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    gender: "male", // Default value
-  });
 
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
 
   const fileInputRef = useRef<any>(null);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const navigate = useNavigate();
   // Image
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setProfilePicture(file);
-
+      //setProfilePicture(file);
       // Create preview
       const reader = new FileReader();
       reader.onload = () => {
@@ -50,74 +36,40 @@ const Register = () => {
     fileInputRef.current?.click();
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    // Email validation
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    // Confirm password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    // Gender validation
-    if (!formData.gender) {
-      newErrors.gender = "Please select a gender";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-
     try {
-      // Create form data for file upload
-
-      const rawformData = formPayloadRef.current;
-      const fileInput = fileInputRef.current?.value;
-
-      const formData = new FormData(rawformData);
+      const rawFormData = formPayloadRef.current;
+      const fileInput = fileInputRef.current?.files[0];
+      const formData = new FormData(rawFormData);
       formData.append("picture", fileInput);
+      formData.delete("confirmPassword");
 
-      // This is where you would typically call your registration API
-      // console.log("Registration data:", {
-      //   ...formData,
-      //   profilePicture: profilePicture
-      //     ? profilePicture.name
-      //     : "No profile picture",
-      // });
-
-      // Redirect to login or dashboard after successful registration
-      // navigate("/login")
-    } catch (error) {
-      console.error("Registration failed:", error);
+      const { data } = await axiosInstance.post(
+        `${URLS.Auth}/register`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setMsg(data?.data);
+      setTimeout(() => {
+        navigate("/auth/Email-Verify", {
+          state: { email: formData.get("email") },
+        });
+      }, 5000);
+    } catch (error: any) {
+      const errorMsg = error?.err || "Registration failed";
+      console.error("Registration failed:", errorMsg);
+      setErr(errorMsg);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setMsg("");
+        setErr("");
+        (e.target as HTMLFormElement).reset();
+      }, 5000);
     }
   };
 
@@ -132,7 +84,11 @@ const Register = () => {
         </p>
 
         <div className="overflow-hidden rounded-lg bg-white p-8 shadow">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form
+            onSubmit={handleSubmit}
+            ref={formPayloadRef}
+            className="space-y-5"
+          >
             {/* Profile Picture Upload */}
             <div className="flex flex-col items-center">
               <div
@@ -180,13 +136,10 @@ const Register = () => {
                   id="name"
                   name="name"
                   type="text"
-                  value={formData.name}
-                  onChange={handleChange}
                   placeholder="John Doe"
                   className={`w-full rounded-md border ${
                     errors.name ? "border-red-500" : "border-gray-300"
                   } px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                  disabled={isLoading}
                 />
                 {errors.name && (
                   <p className="mt-1 text-sm text-red-500">{errors.name}</p>
@@ -207,13 +160,10 @@ const Register = () => {
                   id="email"
                   name="email"
                   type="email"
-                  value={formData.email}
-                  onChange={handleChange}
                   placeholder="you@example.com"
                   className={`w-full rounded-md border ${
                     errors.email ? "border-red-500" : "border-gray-300"
                   } px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                  disabled={isLoading}
                 />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -234,19 +184,15 @@ const Register = () => {
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={handleChange}
                   placeholder="••••••••"
                   className={`w-full rounded-md border ${
                     errors.password ? "border-red-500" : "border-gray-300"
                   } px-3 py-2 pr-10 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -273,21 +219,17 @@ const Register = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
                   placeholder="••••••••"
                   className={`w-full rounded-md border ${
                     errors.confirmPassword
                       ? "border-red-500"
                       : "border-gray-300"
                   } px-3 py-2 pr-10 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isLoading}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -315,10 +257,7 @@ const Register = () => {
                     name="gender"
                     type="radio"
                     value="male"
-                    checked={formData.gender === "male"}
-                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
-                    disabled={isLoading}
                   />
                   <label
                     htmlFor="male"
@@ -333,10 +272,7 @@ const Register = () => {
                     name="gender"
                     type="radio"
                     value="female"
-                    checked={formData.gender === "female"}
-                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
-                    disabled={isLoading}
                   />
                   <label
                     htmlFor="female"
@@ -351,10 +287,7 @@ const Register = () => {
                     name="gender"
                     type="radio"
                     value="other"
-                    checked={formData.gender === "other"}
-                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
-                    disabled={isLoading}
                   />
                   <label
                     htmlFor="other"
@@ -373,20 +306,44 @@ const Register = () => {
             <button
               type="submit"
               className="w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
-              disabled={isLoading}
             >
-              {isLoading ? (
+              {/* {isLoading ? (
                 <span className="flex items-center justify-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating account...
                 </span>
-              ) : (
-                "Create Account"
-              )}
+              ) : ( */}
+              "Create Account"
+              {/* )} */}
             </button>
           </form>
+          <div className="space-y-4">
+            {err && (
+              <>
+                <Alert
+                  variant="destructive"
+                  className="border-red-200 bg-red-50 p-0"
+                >
+                  <AlertDescription className="text-red-700">
+                    {err}
+                  </AlertDescription>
+                </Alert>
+              </>
+            )}
+            {msg && (
+              <>
+                <Alert
+                  variant="success"
+                  className="border-green-200 bg-green-50 p-0"
+                >
+                  <AlertDescription className="text-green-700">
+                    {msg}
+                  </AlertDescription>
+                </Alert>
+              </>
+            )}
+          </div>
         </div>
-
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?
           <Link
