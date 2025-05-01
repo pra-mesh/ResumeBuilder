@@ -19,7 +19,6 @@ const Login = () => {
   const [payload, setPayload] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
-
   const handleSubmit = async (e: any) => {
     try {
       setErr("");
@@ -123,7 +122,8 @@ const Login = () => {
                     <div className="flex items-center justify-between">
                       <Label htmlFor="password">Password</Label>
                       <Link
-                        to="/auth/forget-password"
+                        to="/auth/reset-password"
+                        state={{ email: payload.email }}
                         className="text-sm text-orange-600 hover:underline"
                       >
                         Forgot password?

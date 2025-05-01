@@ -1,12 +1,15 @@
-import { useState, type FormEvent } from "react";
-import { Link } from "react-router";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { Link, useLocation } from "react-router";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { state } = useLocation();
+  const fEmail = state?.email || "";
+  useEffect(() => {
+    setEmail(fEmail);
+  }, [fEmail]);
 
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
@@ -28,8 +31,6 @@ const ForgotPassword = () => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -43,7 +44,7 @@ const ForgotPassword = () => {
       setError("An error occurred. Please try again.");
       console.error("Password reset request failed:", err);
     } finally {
-      setIsLoading(false);
+      console.log("seyt");
     }
   };
 
@@ -79,7 +80,6 @@ const ForgotPassword = () => {
                     className={`w-full rounded-md border ${
                       error ? "border-red-500" : "border-gray-300"
                     } px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                    disabled={isLoading}
                   />
                   {error && (
                     <p className="mt-1 text-sm text-red-500">{error}</p>
@@ -90,16 +90,8 @@ const ForgotPassword = () => {
               <button
                 type="submit"
                 className="w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
-                disabled={isLoading}
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </span>
-                ) : (
-                  "Send OTP"
-                )}
+                "Send OTP"
               </button>
             </form>
           ) : (

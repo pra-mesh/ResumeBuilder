@@ -1,16 +1,18 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { axiosInstance } from "@/lib/axios";
+import { URLS } from "@/constants";
 
 const ResetPassword = () => {
   // In a real app, you would get this email from your auth context or URL params
-  const [email] = useState("user@example.com");
+  const [email, setEmail] = useState("");
+  const [codeText, setCodeText] = useState("Send Code");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isReset, setIsReset] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
@@ -104,9 +106,6 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (!validateForm()) return;
-
-    setIsLoading(true);
-
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -118,9 +117,19 @@ const ResetPassword = () => {
         "New password:",
         newPassword
       );
+      const token = otp.join("");
 
+      const { data } = await axiosInstance.post(
+        `${URLS.Auth}/forget-password/rest-password`,
+        {
+          email,
+          otp: token,
+          password: newPassword,
+        }
+      );
+      console.log(data);
       // Show success message
-      setIsReset(true);
+      if (data) setIsReset(true);
 
       // In a real app, you would redirect to login after password reset
       // setTimeout(() => navigate("/login"), 3000)
@@ -128,24 +137,35 @@ const ResetPassword = () => {
       setErrors({ form: "Failed to reset password. Please try again." });
       console.error("Password reset failed:", err);
     } finally {
-      setIsLoading(false);
+      console.log("Do something");
     }
   };
 
   // Handle resend OTP
   const handleResendOtp = async () => {
+    const newErrors: Record<string, string> = {};
     if (resendDisabled) return;
 
-    setResendDisabled(true);
-    setResendTimer(30); // 30 seconds cooldown
-
     try {
+      const isEmailValid = /\S+@\S+\.\S+/.test(email);
+      if (!isEmailValid) {
+        newErrors.email = "Invalid Email";
+        setErrors(newErrors);
+        console.log(newErrors.email);
+        return;
+      }
+      setResendDisabled(true);
+      setResendTimer(30);
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await axiosInstance.post(`${URLS.Auth}/forget-password`, { email });
+      setCodeText("Code Sent");
+      setTimeout(() => {
+        setCodeText("Resend Code");
+      }, 15000);
 
-      // This is where you would typically call your resend OTP API
-      console.log("Resending OTP to:", email);
+      setErrors(newErrors);
     } catch (err) {
+      setErrors({ form: "Failed to resend code. Please try again." });
       console.error("Failed to resend OTP:", err);
     }
   };
@@ -187,11 +207,17 @@ const ResetPassword = () => {
                   <input
                     id="email"
                     type="email"
+                    placeholder="user@example.com"
                     value={email}
-                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500 shadow-sm"
-                    disabled
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full rounded-md border ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   />
                 </div>
+                {errors.email && (
+                  <p className="mt-2 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div>
@@ -226,7 +252,6 @@ const ResetPassword = () => {
                       className={`h-12 w-12 rounded-md border text-center text-lg font-semibold shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                         errors.otp ? "border-red-500" : "border-gray-300"
                       }`}
-                      disabled={isLoading}
                     />
                   ))}
                 </div>
@@ -245,9 +270,7 @@ const ResetPassword = () => {
                         : "text-blue-600 hover:text-blue-500"
                     }`}
                   >
-                    {resendDisabled
-                      ? `Resend in ${resendTimer}s`
-                      : "Resend code"}
+                    {resendDisabled ? `Resend in ${resendTimer}s` : codeText}
                   </button>
                 </div>
               </div>
@@ -269,13 +292,11 @@ const ResetPassword = () => {
                     className={`w-full rounded-md border ${
                       errors.newPassword ? "border-red-500" : "border-gray-300"
                     } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    disabled={isLoading}
                   >
                     {showNewPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -343,13 +364,11 @@ const ResetPassword = () => {
                         ? "border-red-500"
                         : "border-gray-300"
                     } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    disabled={isLoading}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -374,16 +393,8 @@ const ResetPassword = () => {
               <button
                 type="submit"
                 className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-                disabled={isLoading}
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Resetting Password...
-                  </span>
-                ) : (
-                  "Reset Password"
-                )}
+                Reset Password
               </button>
             </form>
           ) : (
@@ -413,7 +424,7 @@ const ResetPassword = () => {
               </p>
               <button
                 type="button"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("auth/login")}
                 className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Go to Login
@@ -421,16 +432,6 @@ const ResetPassword = () => {
             </div>
           )}
         </div>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Need help?{" "}
-          <Link
-            to="/contact"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            Contact Support
-          </Link>
-        </p>
       </div>
     </div>
   );
