@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
-import { Eye, EyeOff, Loader2, Upload } from "lucide-react";
+import { Eye, EyeOff, Upload } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -12,7 +12,7 @@ const Register = () => {
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 

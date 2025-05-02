@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
-import { Link, useNavigate } from "react-router";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router";
+import { Eye, EyeOff } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
 
