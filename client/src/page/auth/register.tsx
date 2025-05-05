@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff, Upload } from "lucide-react";

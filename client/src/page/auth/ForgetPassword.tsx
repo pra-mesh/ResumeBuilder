@@ -44,7 +44,7 @@ const ForgotPassword = () => {
       setError("An error occurred. Please try again.");
       console.error("Password reset request failed:", err);
     } finally {
-      console.log("seyt");
+      console.log("set");
     }
   };
 

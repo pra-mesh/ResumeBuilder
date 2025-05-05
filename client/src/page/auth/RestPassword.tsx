@@ -107,7 +107,7 @@ const ResetPassword = () => {
 
     if (!validateForm()) return;
     try {
-      // Simulate API call
+   
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // This is where you would typically call your password reset API
@@ -130,9 +130,6 @@ const ResetPassword = () => {
       console.log(data);
       // Show success message
       if (data) setIsReset(true);
-
-      // In a real app, you would redirect to login after password reset
-      // setTimeout(() => navigate("/login"), 3000)
     } catch (err) {
       setErrors({ form: "Failed to reset password. Please try again." });
       console.error("Password reset failed:", err);

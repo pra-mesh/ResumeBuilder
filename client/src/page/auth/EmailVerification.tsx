@@ -35,7 +35,6 @@ const EmailVerification = () => {
       };
       await axiosInstance.post(`${URLS.Auth}/email/verify`, payload);
       setIsVerified(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError("Invalid verification code. Please try again.");
       console.error("Email verification failed:", err?.response?.data?.err);
