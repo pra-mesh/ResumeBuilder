@@ -25,12 +25,16 @@ transporter.verify((error, success) => {
 });
 
 const sendEmail = async ({ to, subject, message }) => {
-  await transporter.sendMail({
-    from: `"Resume Builder" <no-reply.proresume.ai>`,
-    to: to,
-    subject,
-    html: message,
-  });
+  try {
+    // await transporter.sendMail({
+    //   from: `"Resume Builder" <no-reply.proresume.ai>`,
+    //   to: to,
+    //   subject,
+    //   html: message,
+    // });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 mailEvents.on("sendMail", async (to, subject, message) => {

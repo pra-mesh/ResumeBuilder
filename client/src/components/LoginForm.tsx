@@ -89,7 +89,7 @@ const LoginForm = () => {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
               <Link
-                to="/auth/reset-password"
+                to="/auth/forget-password"
                 state={{ email: payload.email }}
                 className="text-sm text-orange-600 hover:underline"
               >
