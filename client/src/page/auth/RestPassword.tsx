@@ -21,6 +21,7 @@ const ResetPassword = () => {
   const { state } = useLocation();
   payload.email = state?.email;
   // Validate form
+  //[ ] validate move it to its own file
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     // Validate OTP
