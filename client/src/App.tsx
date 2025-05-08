@@ -5,8 +5,10 @@ import NotFound from "./Error";
 import ForgotPassword from "./page/auth/ForgetPassword";
 import EmailVerification from "./page/auth/EmailVerification";
 import ResetPassword from "./page/auth/RestPassword";
-import Dashboard from "./page/admin/Dashboard";
-
+import { lazy } from "react";
+import Home from "./page/Home";
+import AdminLayout from "./layout/AdminLayout";
+const Dashboard = lazy(() => import("./page/admin/Dashboard"));
 function App() {
   return (
     <>
@@ -20,9 +22,12 @@ function App() {
           <Route path="reset-password" element={<ResetPassword />} />
         </Route>
         {/* Admin */}
-        <Route path="/admin">
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
+        </Route>
+        <Route path="/">
+          <Route index element={<Home />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

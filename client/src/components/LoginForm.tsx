@@ -47,7 +47,7 @@ const LoginForm = () => {
         </div>
         <div>
           {err && (
-            <Alert variant="destructive">
+            <Alert variant="success" className="bg-red-200">
               <AlertDescription className="text-red-700 bg-red-200">
                 {err}
               </AlertDescription>
