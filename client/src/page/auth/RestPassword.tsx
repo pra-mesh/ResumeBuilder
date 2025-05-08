@@ -1,11 +1,10 @@
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { axiosInstance } from "@/lib/axios";
-import { URLS } from "@/constants";
 import CustomOTP from "@/components/ui/custom-otp";
 import PasswordField from "@/components/PasswordField";
 import { Check } from "lucide-react";
 import ResendOTP from "@/components/ui/resend-otp";
+import { restPassword } from "@/services/auth";
 
 const ResetPassword = () => {
   // In a real app, you would get this email from your auth context or URL params
@@ -17,16 +16,14 @@ const ResetPassword = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isReset, setIsReset] = useState(false);
-
+  const [isPending, startTransition] = useTransition();
   const navigate = useNavigate();
   const { state } = useLocation();
   payload.email = state?.email;
   // Validate form
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-
     // Validate OTP
-
     if (payload.otp.length !== 6) {
       newErrors.otp = "Please enter all 6 digits of the verification code";
     }
@@ -56,32 +53,38 @@ const ResetPassword = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleResendotp = (error: string) => {
+  const handleResendOTP = (error: string) => {
     //const newErrors: Record<string, string> = {};
     if (error !== "") setErrors({ form: `${error}` });
+    setPayload((prev) => ({ ...prev, otp: "" }));
   };
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      if (!validateForm()) return;
-      const { data } = await axiosInstance.post(
-        `${URLS.Auth}/forget-password/rest-password`,
-        {
-          email: payload?.email,
-          otp: payload?.otp,
-          password: payload?.newPassword,
-        }
-      );
-      if (data) setIsReset(true);
-    } catch (err) {
-      setErrors({ form: "Failed to reset password. Please try again." });
-      console.error("Password reset failed:", err);
-    } finally {
-      setTimeout(() => {
-        setErrors({});
-      }, 4000);
-    }
+    startTransition(async () => {
+      try {
+        if (!validateForm()) return;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { confirmPassword, newPassword, ...rest } = payload;
+        const newPayload = { ...rest, password: newPassword };
+        const { data } = await restPassword(newPayload);
+        if (data) setIsReset(true);
+      } catch (err) {
+        setErrors({ form: "Failed to reset password. Please try again." });
+        console.error("Password reset failed:", err);
+      } finally {
+        setTimeout(() => {
+          setErrors({});
+          //todo: otp is not reset
+          setPayload((prev) => ({
+            ...prev,
+            newPassword: "",
+            confirmPassword: "",
+            otp: "",
+          }));
+        }, 4000);
+      }
+    });
   };
 
   return (
@@ -140,6 +143,7 @@ const ResetPassword = () => {
                 </p>
 
                 <CustomOTP
+                  extOtp={payload?.otp}
                   error={errors?.otp}
                   onChange={(newOtp) =>
                     setPayload((prev) => ({ ...prev, otp: newOtp }))
@@ -151,14 +155,14 @@ const ResetPassword = () => {
                 )}
 
                 <div className="mt-2 text-center">
-                  <ResendOTP email={payload.email} onError={handleResendotp} />
+                  <ResendOTP email={payload.email} onError={handleResendOTP} />
                 </div>
               </div>
               <div>
                 <PasswordField
                   label="New Password"
-                  id="mewPassword"
-                  name="mewPassword"
+                  id="newPassword"
+                  name="newPassword"
                   value={payload?.newPassword}
                   icon={false}
                   onChange={(e: any) =>
@@ -241,10 +245,11 @@ const ResetPassword = () => {
               )}
 
               <button
+                disabled={isPending}
                 type="submit"
                 className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                Reset Password
+                {isPending ? "Resetting..." : "Reset Password"}
               </button>
             </form>
           ) : (

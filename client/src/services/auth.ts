@@ -11,3 +11,18 @@ export const forgetPassword = async ({ email = "" }) => {
     throw new Error(e);
   }
 };
+
+export const restPassword = async (payload: {
+  email: string;
+  password: string;
+  otp: string;
+}) => {
+  try {
+    return await axiosInstance.post(
+      `${URLS.Auth}/forget-password/rest-password`,
+      payload
+    );
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};

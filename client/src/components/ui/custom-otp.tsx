@@ -1,14 +1,21 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 const CustomOTP = ({
+  extOtp = "",
   error,
   onChange,
 }: {
+  extOtp?: string;
   error?: string;
   onChange?: (otp: string) => void;
 }) => {
   // const [otp, setOtp] = useState(Array(otpLength).fill("")); // for dynamic
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  useEffect(() => {
+    const newOtp = extOtp?.split("").slice(0, 6) || [];
+
+    setOtp(Array.from({ length: 6 }, (_, i) => newOtp[i] || ""));
+  }, [extOtp]);
   const handleOtpChange = (index: number, value: string) => {
     // Only allow numbers
     if (value && !/^\d+$/.test(value)) return;
