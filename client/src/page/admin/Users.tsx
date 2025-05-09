@@ -4,19 +4,27 @@ import { URLS } from "@/constants";
 import TableSkeleton from "@/components/TableSkeleton";
 
 const fetchUsers = async () => {
-  const { data } = await axiosInstance.get(URLS.USERS, {
-    headers: {
-      access_token: localStorage.getItem("access_token"),
-    },
-  });
-  return data?.data;
+  try {
+    const { data } = await axiosInstance.get(URLS.USERS, {
+      headers: {
+        access_token: localStorage.getItem("access_token"),
+      },
+    });
+    return data?.data;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error?.response?.data?.err || "An error occurred");
+  }
 };
 
 const Users = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return (
     <div>
