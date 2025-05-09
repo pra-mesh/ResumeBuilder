@@ -26,6 +26,7 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const withErrorBoundary = (Component: React.ComponentType) => {
   return function WrappedWithErrorBoundary(props: any) {
     return (
