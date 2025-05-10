@@ -16,12 +16,13 @@ const persistConfig = {
   key: "resume-persist",
   storage,
   version: 1,
-  //stateReconciler
+  //TODO: stateReconciler
 };
 const persistResume = persistReducer(persistConfig, resumeReducer);
-
+//Important: use error handling on thunk
 export const store = configureStore({
   reducer: { resume: persistResume },
+  //[x]: Could you please explain about middleware sir
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
