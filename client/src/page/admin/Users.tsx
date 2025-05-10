@@ -1,28 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axios";
-import { URLS } from "@/constants";
 import TableSkeleton from "@/components/TableSkeleton";
-
-const fetchUsers = async () => {
-  try {
-    const { data } = await axiosInstance.get(URLS.USERS, {
-      headers: {
-        access_token: localStorage.getItem("access_token"),
-      },
-    });
-    return data?.data;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error(error?.response?.data?.err || "An error occurred");
-  }
-};
+import { useAdminQuery } from "@/hooks/useAdminQuery";
 
 const Users = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
-  });
-  if (error) {
+  const { data, isLoading, isError, error } = useAdminQuery();
+  if (isError) {
     throw new Error(error.message);
   }
 
