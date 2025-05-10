@@ -1,13 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosAdminInstance from "@/lib/axiosAdmin";
+import { createAxiosAdmin } from "@/lib/axiosAdmin";
 import { URLS } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
+import { useMemo } from "react";
 
-const fetchUsers = async () => {
-  const { data } = await axiosAdminInstance.get(URLS.USERS);
-  return data.data;
-};
-
+//FIXME  do i have create axios admin for each new hooks.
 export const useAdminQuery = () => {
+  const auth = useAuth();
+  const axiosAdmin = useMemo(
+    () =>
+      createAxiosAdmin(
+        () => ({
+          accessToken: auth.accessToken,
+          refreshToken: auth.refreshToken,
+        }),
+        auth.logout
+      ),
+    [auth?.accessToken, auth?.refreshToken, auth?.logout]
+  );
+  const fetchUsers = async () => {
+    const { data } = await axiosAdmin.get(URLS.USERS);
+    return data.data;
+  };
   return useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,

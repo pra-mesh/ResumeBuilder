@@ -7,6 +7,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
+import { useNavigate } from "react-router";
 interface AuthContextProps {
   isAuthenticated: boolean;
   logout: () => void;
@@ -23,21 +24,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(() =>
     localStorage.getItem("refresh_token")
   );
-  const login = (access: string, refresh: string) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => !!localStorage.getItem("access_token")
+  );
+  const navigate = useNavigate();
+  const login = (access: string | null, refresh: string | null) => {
     setAccessToken(access);
     setRefreshToken(refresh);
-    setItem("access_token", access);
-    setItem("refresh_token", access);
+    if (access && refresh) {
+      setItem("access_token", access);
+      setItem("refresh_token", refresh);
+      setIsAuthenticated(true);
+    }
   };
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
     removeItem("access_token");
     removeItem("refresh_token");
+    setIsAuthenticated(false);
   };
   useEffect(() => {
+    if (!isAuthenticated) navigate("/auth/login");
     //TODO: Token Validation
-  }, []);
+  }, [navigate, isAuthenticated]);
 
   return (
     <AuthContext.Provider

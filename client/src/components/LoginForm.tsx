@@ -8,9 +8,11 @@ import PasswordField from "./PasswordField";
 import { Input } from "./ui/input";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
-import { setItem } from "@/lib/storage";
+
+import { useAuth } from "@/context/AuthContext";
 
 const LoginForm = () => {
+  const { login } = useAuth();
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
   const [payload, setPayload] = useState({ email: "", password: "" });
@@ -22,8 +24,7 @@ const LoginForm = () => {
       const { data } = await axiosInstance.post(URLS.Auth + "/login", payload);
       const { access_token, refresh_token, data: msg } = data;
       setMsg(msg);
-      setItem("access_token", access_token);
-      setItem("refresh_token", refresh_token);
+      login(access_token, refresh_token);
       navigate("/admin/dashboard");
     } catch (err: any) {
       const errMsg = err?.response?.data?.err || "Something went wrong";
