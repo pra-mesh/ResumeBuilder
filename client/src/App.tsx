@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import Login from "./page/auth/login";
 import Register from "./page/auth/register";
 import NotFound from "./Error";
@@ -7,9 +7,11 @@ import EmailVerification from "./page/auth/EmailVerification";
 import ResetPassword from "./page/auth/RestPassword";
 import { lazy } from "react";
 import Home from "./page/Home";
-import AdminLayout from "./layout/AdminLayout";
-const Dashboard = lazy(() => import("./page/admin/Dashboard"));
-function App() {
+import AdminLayout from "@/layout/AdminLayout";
+import { useAuth } from "@/context/AuthContext";
+const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
+const App = () => {
+  const { isAuthenticated } = useAuth();
   return (
     <>
       <Routes>
@@ -27,12 +29,15 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
         <Route path="/">
-          <Route index element={<Home />} />
+          <Route
+            index
+            element={isAuthenticated ? <Navigate to="/admin" /> : <Home />}
+          />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
-}
+};
 
 export default App;

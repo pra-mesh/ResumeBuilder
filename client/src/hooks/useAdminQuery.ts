@@ -14,7 +14,8 @@ export const useAdminQuery = () => {
           accessToken: auth.accessToken,
           refreshToken: auth.refreshToken,
         }),
-        auth.logout
+        auth.logout,
+        (newAccess, newRefresh) => auth.login(newAccess, newRefresh)
       ),
     [auth?.accessToken, auth?.refreshToken, auth?.logout]
   );

@@ -1,6 +1,7 @@
 import TableSkeleton from "@/components/TableSkeleton";
 import { useAdminQuery } from "@/hooks/useAdminQuery";
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Users = () => {
   const { logout } = useAuth();
@@ -23,9 +24,9 @@ const Users = () => {
             ))}
           </ul>
           <div>
-            <button type="button" onClick={logout}>
+            <Button type="button" onClick={logout} className="m-auto">
               Logout
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -1,8 +1,10 @@
 import { Suspense } from "react";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
+import { useAuth } from "@/context/AuthContext";
 
 const AdminLayout = () => {
-  return (
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? (
     <div>
       Header
       <Suspense fallback={<p>Loading Page.....</p>}>
@@ -10,6 +12,8 @@ const AdminLayout = () => {
       </Suspense>
       footer
     </div>
+  ) : (
+    <Navigate to="/auth/login" />
   );
 };
 

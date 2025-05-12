@@ -1,4 +1,7 @@
 //[ ] token validation and auth validation
+//BUG Refresh token is not updating the states
+//TODO HOC for component based authentication like layer
+
 import { removeItem, setItem } from "@/lib/storage";
 import {
   createContext,
@@ -8,6 +11,7 @@ import {
   useEffect,
 } from "react";
 import { useNavigate } from "react-router";
+
 interface AuthContextProps {
   isAuthenticated: boolean;
   logout: () => void;
@@ -24,10 +28,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(() =>
     localStorage.getItem("refresh_token")
   );
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => !!localStorage.getItem("access_token")
   );
-  const navigate = useNavigate();
   const login = (access: string | null, refresh: string | null) => {
     setAccessToken(access);
     setRefreshToken(refresh);
