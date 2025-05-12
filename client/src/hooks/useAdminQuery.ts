@@ -15,9 +15,9 @@ export const useAdminQuery = () => {
           refreshToken: auth.refreshToken,
         }),
         auth.logout,
-        (newAccess, newRefresh) => auth.login(newAccess, newRefresh)
+        (newAccess, newRefresh, user) => auth.login(newAccess, newRefresh, user)
       ),
-    [auth?.accessToken, auth?.refreshToken, auth?.logout]
+    [auth]
   );
   const fetchUsers = async () => {
     const { data } = await axiosAdmin.get(URLS.USERS);

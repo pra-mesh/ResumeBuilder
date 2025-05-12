@@ -1,13 +1,18 @@
 import axios from "axios";
 import { API_URL, URLS } from "@/constants";
 import { decodeJWT } from "@/lib/jwt";
+import { UserInfo } from "@/interface/UserInfoProps";
 
 //could you please explains this once again
 
 export const createAxiosAdmin = (
   getAuth: () => { accessToken: string | null; refreshToken: string | null },
   logout: () => void,
-  onTokenRefresh?: (access: string, refresh: string) => void
+  onTokenRefresh?: (
+    access: string,
+    refresh: string,
+    user: UserInfo | null
+  ) => void
 ) => {
   const axiosAdminInstance = axios.create({
     baseURL: API_URL,
@@ -48,8 +53,13 @@ export const createAxiosAdmin = (
           });
           const newAccess = res?.data?.access_token;
           const newRefresh = res?.data?.refresh_token;
-
-          onTokenRefresh?.(newAccess, newRefresh);
+          const user: UserInfo = {
+            name: data?.name,
+            email: data?.email,
+            avatar: "",
+            role: data?.roles,
+          };
+          onTokenRefresh?.(newAccess, newRefresh, user);
           originalRequest.headers.access_token = newAccess;
           return axiosAdminInstance(originalRequest);
         } catch (e) {
