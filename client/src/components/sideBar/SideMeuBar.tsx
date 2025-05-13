@@ -12,7 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import AdminMenu from "@/components/sideBar/AdminMenu";
 export const SideBarAdmin = () => {
   const { logout, user } = useAuth();
-  console.log(user);
+
   return (
     <>
       <SidebarHeader>

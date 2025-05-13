@@ -16,8 +16,8 @@ import Experience from "./steps/experience";
 
 const ResumeForm = () => {
   //[ ] Move this to another file to organize code
-  const [currentStep, setCurrentStep] = useState(3);
-  const totalSteps = 8;
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 7;
   //Sets default form value
   const form = useForm({
     // TODO: Add Validation to form
@@ -56,7 +56,7 @@ const ResumeForm = () => {
         {
           title: "",
           description: "",
-          techologies: [""],
+          technologies: [""],
           link: "",
         },
       ],
@@ -76,12 +76,15 @@ const ResumeForm = () => {
     }
   };
   const handleNext = () => {
+    console.log(`Moving from Step ${currentStep} to ${currentStep + 1}`);
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(10, 10);
     }
   };
+  //BUG on 6th step it is submitting
   const onsubmit = (data: any) => {
+    console.log({ currentStep, totalSteps });
     console.log("Form submitted with data:", data);
   };
 
@@ -116,7 +119,7 @@ const ResumeForm = () => {
         {currentStep === 4 && <Skills form={form} />}
         {currentStep === 5 && <Projects form={form} />}
         {currentStep === 6 && <Certifications form={form} />}
-        {currentStep === 7 && <Preview form={form} />}
+        {currentStep >= 7 && <Preview form={form} />}
         <div className="flex justify-between mt-3">
           <Button
             type="button"
@@ -126,12 +129,12 @@ const ResumeForm = () => {
           >
             Previous
           </Button>
-          {currentStep < totalSteps ? (
+          {currentStep === totalSteps ? (
+            <Button type="submit">Submit Resume</Button>
+          ) : (
             <Button type="button" onClick={handleNext}>
               Next
             </Button>
-          ) : (
-            <Button type="submit">Submit Resume</Button>
           )}
         </div>
       </form>
