@@ -42,7 +42,7 @@ const schema = new Schema(
       {
         title: { type: String },
         description: { type: String },
-        techologies: [{ type: String }],
+        technologies: [{ type: String }],
         link: { type: String },
       },
     ],

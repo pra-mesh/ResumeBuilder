@@ -45,6 +45,7 @@ const FieldRenderer = ({ form, index, fieldConfig, baseName }: any) => {
               </div>
             ) : field.type === "tagInput" ? (
               <TagInput
+                {...rhfField}
                 value={rhfField.value}
                 onChange={rhfField.onChange}
                 placeholder={field.placeholder}

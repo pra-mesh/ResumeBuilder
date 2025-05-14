@@ -1,20 +1,37 @@
-//FIXME Do not use skills with EditableSection wrapper
-import EditableSection from "./forms/EditableSection";
-import skillsFields from "./forms/skillsFields";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import TagInput from "@/components/ui/tagInput";
 const Skills = ({ form }: { form: any }) => {
-  const defaultItem = {
-    name: "",
-  };
   return (
-    <EditableSection
-      form={form}
-      title="Skills"
-      name="skills"
-      fieldConfig={skillsFields}
-      defaultItem={defaultItem}
-      header="name"
-    />
+    <Card className="mt-4">
+      <CardHeader>
+        <CardTitle>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Skills</h2>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <FormField
+          control={form.control}
+          name="skills"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <TagInput
+                  value={(field.value || []).map((item: any) => item.name)} 
+                  onChange={
+                    (tags: string[]) =>
+                      field.onChange(tags.map((t) => ({ name: t }))) 
+                  }
+                  placeholder="Enter skills"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </CardContent>
+    </Card>
   );
 };
 
