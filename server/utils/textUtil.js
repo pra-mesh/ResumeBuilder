@@ -15,4 +15,11 @@ const generatePassword = (length = 12) => {
   return password;
 };
 
-module.exports = { generatePassword };
+const cleanText = (text) => {
+  return text
+    .replace(/\*\*|\n/g, "") // Remove markdown formatting and new lines
+    .replace(/\(Note:.*?\)/g, "") // Remove unnecessary notes
+    .trim(); 
+};
+
+module.exports = { generatePassword, cleanText };

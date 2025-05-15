@@ -17,3 +17,10 @@ const signJWT = (data) =>
 const generateRandomToken = () => uuidv4();
 const verifyJWT = (token) => jwt.verify(token, process.env.JWT_SECRET);
 module.exports = { generateOTP, signJWT, verifyJWT, generateRandomToken };
+
+function cleanText(text) {
+  return text
+    .replace(/\*\*|\n/g, "") 
+    .replace(/\(Note:.*?\)/g, "") 
+    .trim(); 
+}
