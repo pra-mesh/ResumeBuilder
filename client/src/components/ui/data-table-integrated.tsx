@@ -75,6 +75,7 @@ export function DataTableIntegrated<TData, TValue>({
       if (typeof updater !== "function") return;
       const newPageInfo = updater(table.getState().pagination);
       setPagination(newPageInfo?.pageSize);
+      setCurrentPage(newPageInfo?.pageIndex + 1);
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,

@@ -60,7 +60,6 @@ const userSlice = createSlice({
       .addCase(fetchUsers.pending, (state) => {
         state.isLoading = true;
         state.error = "";
-        state.total = 0;
       });
   },
 });
