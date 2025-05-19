@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SideBarAdmin } from "@/components/sideBar/SideMeuBar";
@@ -11,19 +11,15 @@ const AdminLayout = () => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? (
     <SidebarProvider defaultOpen={true}>
-      <Sidebar>
+      <div className="flex min-h-screen w-full">
         <SideBarAdmin />
-      </Sidebar>
-      <div className="flex flex-col min-h-screen w-full">
-        <Header />
-        <main className="flex-1 p-6">
+        <main className="flex-1 overflow-y-auto  mx-5">
+          <Header />
           <Suspense fallback={<p>Loading Page.....</p>}>
-            <div className="flex justify-center items-start">
-              <Outlet />
-            </div>
+            <Outlet />
           </Suspense>
+          <Footer />
         </main>
-        <Footer />
       </div>
     </SidebarProvider>
   ) : (

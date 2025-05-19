@@ -44,7 +44,7 @@ const adminMenuList = [
       },
       {
         title: "Resumes",
-        url: "#",
+        url: "/admin/resumes",
         icon: GalleryHorizontal,
       },
     ],
@@ -60,19 +60,19 @@ const adminMenuList = [
       },
       {
         title: "List User",
-        url: "#",
+        url: "/admin/users",
         icon: Users,
       },
     ],
   },
 ];
-const AdminMenu = () => {
+const Menus = () => {
   return (
     <SidebarContent>
       {adminMenuList.map((group, idx) =>
         group.menu.length > 1 ? (
           <Collapsible
-            defaultOpen={false}
+            defaultOpen={true}
             className="group/collapsible"
             key={idx}
           >
@@ -117,4 +117,4 @@ const AdminMenu = () => {
   );
 };
 
-export default AdminMenu;
+export default Menus;

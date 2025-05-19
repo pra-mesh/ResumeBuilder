@@ -107,9 +107,10 @@ const LoginForm = () => {
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute  left-3 top-3 h-4 w-4 text-muted-foreground" />
               <PasswordField
                 name="password"
+                icon={true}
                 value={payload?.password}
                 onChange={(e) =>
                   setPayload((prev) => {

@@ -10,19 +10,25 @@ import {
 } from "redux-persist";
 
 import resumeReducer from "@/slices/resumeSlice";
+import { userReducer } from "@/slices/userSlice";
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2"; //NOTES Mange the state tracking level to deep level. It prevents infinite loop
+
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
   key: "resume-persist",
   storage,
   version: 1,
-  //TODO: stateReconciler
+  //[ ] Typing error
+  stateReconciler: autoMergeLevel2,
 };
-const persistResume = persistReducer(persistConfig, resumeReducer);
-//Important: use error handling on thunk
+const persistResume = persistReducer<ReturnType<typeof resumeReducer>>(
+  persistConfig,
+  resumeReducer
+);
+
 export const store = configureStore({
-  reducer: { resume: persistResume },
-  //[x]: Could you please explain about middleware sir
+  reducer: { resume: persistResume, users: userReducer },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
