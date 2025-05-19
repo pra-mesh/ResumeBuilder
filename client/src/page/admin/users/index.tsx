@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Pencil, Trash2, LockIcon } from "lucide-react";
+import {
+  Plus,
+  Eye,
+  Pencil,
+  Trash2,
+  LockIcon,
+  FileSpreadsheet,
+} from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
@@ -19,9 +17,11 @@ import { DataTableRowActions } from "@/components/ui/data-table-row-actions";
 import { DataTableIntegrated } from "@/components/ui/data-table-integrated";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "@/slices/userSlice";
+import { fetchUsers, setLimit, setCurrentPage } from "@/slices/userSlice";
 import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
+import { ButtonGroup } from "@/components/ui/buttongroup";
+import { Link } from "react-router";
 
 type User = {
   id: string;
@@ -37,10 +37,9 @@ type User = {
 
 export default function AdminUsers() {
   const dispatch = useDispatch<AppDispatch>();
-  const { users, limit, currentPage } = useSelector(
+  const { users, limit, currentPage, total } = useSelector(
     (state: any) => state.users
   );
-  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const handleViewUser = (user: User) => {
     toast(`Viewing ${user.name}'s profile`, {
       description: "User details loaded successfully",
@@ -188,14 +187,12 @@ export default function AdminUsers() {
       ),
     },
   ];
-
-  const handleAddUser = () => {
-    setIsAddUserOpen(false);
-    toast.success("User created successfully", {
-      description: "The new user has been added to the system",
-    });
+  const changePage = (value: number) => {
+    dispatch(setCurrentPage(value));
   };
-
+  const changeLimit = (value: number) => {
+    dispatch(setLimit(value));
+  };
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
     dispatch(fetchUsers({ limit, page: currentPage, name: "" }));
@@ -209,53 +206,34 @@ export default function AdminUsers() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <Button onClick={() => setIsAddUserOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add User
-        </Button>
+        <ButtonGroup className="gap-2">
+          <Button asChild>
+            <Link to="admin/users/add">
+              <Plus className="mr-2 h-4 w-4" /> Add User
+            </Link>
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              console.log("here");
+            }}
+          >
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Export to Excel
+          </Button>
+        </ButtonGroup>
       </div>
 
       <DataTableIntegrated
         columns={columns}
         data={users}
+        setPagination={changeLimit}
+        setCurrentPage={changePage}
+        limit={limit}
+        page={currentPage}
+        total={total}
         filterColumn="name"
         searchPlaceholder="Search users..."
       />
-
-      <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add New User</DialogTitle>
-            <DialogDescription>
-              Create a new user account. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input id="name" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
-              <Input id="email" type="email" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password" className="text-right">
-                Password
-              </Label>
-              <Input id="password" type="password" className="col-span-3" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={handleAddUser}>
-              Save User
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

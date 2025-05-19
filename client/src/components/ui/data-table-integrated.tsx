@@ -28,6 +28,11 @@ import { DataTablePagination } from "./data-table-pagination";
 interface DataTableIntegratedProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setPagination: (value: number) => void;
+  setCurrentPage: (value: number) => void;
+  page: number;
+  limit: number;
+  total: number;
   filterColumn?: string;
   searchPlaceholder?: string;
 }
@@ -35,6 +40,11 @@ interface DataTableIntegratedProps<TData, TValue> {
 export function DataTableIntegrated<TData, TValue>({
   columns,
   data,
+  setPagination,
+  setCurrentPage,
+  page,
+  limit,
+  total,
   filterColumn = "name",
   searchPlaceholder = "Search...",
 }: DataTableIntegratedProps<TData, TValue>) {
@@ -49,11 +59,22 @@ export function DataTableIntegrated<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    //rowCount: total,
+    pageCount: Math.ceil(total / limit),
     state: {
       sorting,
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: limit,
+      },
+    },
+    onPaginationChange: (updater) => {
+      if (typeof updater !== "function") return;
+      const newPageInfo = updater(table.getState().pagination);
+      setPagination(newPageInfo?.pageSize);
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -66,6 +87,7 @@ export function DataTableIntegrated<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    manualPagination: true,
   });
 
   return (

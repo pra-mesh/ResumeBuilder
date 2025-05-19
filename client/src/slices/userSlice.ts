@@ -50,14 +50,17 @@ const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.isLoading = false;
         state.users = action.payload.data;
+        state.total = action.payload.total;
       })
       .addCase(fetchUsers.rejected, (state, action: any) => {
         state.isLoading = false;
         state.error = action.payload.data;
+        state.total = 0;
       })
       .addCase(fetchUsers.pending, (state) => {
         state.isLoading = true;
         state.error = "";
+        state.total = 0;
       });
   },
 });
