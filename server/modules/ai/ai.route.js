@@ -5,7 +5,7 @@ const router = require("express").Router();
 
 router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
-    res.json({ data: await generateText(req.body) });
+    res.json(await generateText(req.body));
   } catch (e) {
     next(e);
   }
