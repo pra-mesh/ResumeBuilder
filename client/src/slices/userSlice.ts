@@ -9,6 +9,7 @@ const initialState = {
   total: 0,
   currentPage: 1,
   limit: 10,
+  searchValue: "",
   error: "",
   isLoading: false,
 };
@@ -44,6 +45,10 @@ const userSlice = createSlice({
       state.currentPage = 1;
       state.limit = action.payload;
     },
+    setSearch: (state, action) => {
+      state.currentPage = 1;
+      state.searchValue = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -64,5 +69,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setCurrentPage, setLimit } = userSlice.actions;
+export const { setCurrentPage, setLimit, setSearch } = userSlice.actions;
 export const userReducer = userSlice.reducer; //for extraReducers

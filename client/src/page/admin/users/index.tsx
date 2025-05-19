@@ -17,10 +17,15 @@ import { DataTableRowActions } from "@/components/ui/data-table-row-actions";
 import { DataTableIntegrated } from "@/components/ui/data-table-integrated";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers, setLimit, setCurrentPage } from "@/slices/userSlice";
+import {
+  fetchUsers,
+  setLimit,
+  setCurrentPage,
+  setSearch,
+} from "@/slices/userSlice";
 import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
-import { ButtonGroup } from "@/components/ui/buttongroup";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { Link } from "react-router";
 
 type User = {
@@ -37,7 +42,7 @@ type User = {
 
 export default function AdminUsers() {
   const dispatch = useDispatch<AppDispatch>();
-  const { users, limit, currentPage, total } = useSelector(
+  const { users, limit, currentPage, total, searchValue } = useSelector(
     (state: any) => state.users
   );
   const handleViewUser = (user: User) => {
@@ -195,8 +200,8 @@ export default function AdminUsers() {
   };
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
-    dispatch(fetchUsers({ limit, page: currentPage, name: "" }));
-  }, [dispatch, limit, currentPage]);
+    dispatch(fetchUsers({ limit, page: currentPage, name: searchValue }));
+  }, [dispatch, limit, currentPage, searchValue]);
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
@@ -228,9 +233,13 @@ export default function AdminUsers() {
         data={users}
         setPagination={changeLimit}
         setCurrentPage={changePage}
+        setSearchValue={(value: string) => {
+          dispatch(setSearch(value));
+        }}
         limit={limit}
         page={currentPage}
         total={total}
+        searchValue={searchValue}
         filterColumn="name"
         searchPlaceholder="Search users..."
       />
