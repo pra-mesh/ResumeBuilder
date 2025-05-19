@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +36,7 @@ type User = {
 // Sample user data
 
 export default function AdminUsers() {
+  const [searchName, setSearchName] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const { users, limit, currentPage, total } = useSelector(
     (state: any) => state.users
@@ -195,8 +196,8 @@ export default function AdminUsers() {
   };
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
-    dispatch(fetchUsers({ limit, page: currentPage, name: "" }));
-  }, [dispatch, limit, currentPage]);
+    dispatch(fetchUsers({ limit, page: currentPage, name: searchName }));
+  }, [dispatch, limit, currentPage, searchName]);
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
@@ -233,6 +234,7 @@ export default function AdminUsers() {
         total={total}
         filterColumn="name"
         searchPlaceholder="Search users..."
+        searchValue={setSearchName}
       />
     </div>
   );

@@ -11,6 +11,7 @@ const initialState = {
   limit: 10,
   error: "",
   isLoading: false,
+  searchValue: "",
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -44,6 +45,9 @@ const userSlice = createSlice({
       state.currentPage = 1;
       state.limit = action.payload;
     },
+    setSearch: (state, action) => {
+      state.searchValue = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -60,7 +64,6 @@ const userSlice = createSlice({
       .addCase(fetchUsers.pending, (state) => {
         state.isLoading = true;
         state.error = "";
-        state.total = 0;
       });
   },
 });

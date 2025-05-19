@@ -35,6 +35,7 @@ interface DataTableIntegratedProps<TData, TValue> {
   total: number;
   filterColumn?: string;
   searchPlaceholder?: string;
+  searchValue?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function DataTableIntegrated<TData, TValue>({
@@ -47,6 +48,7 @@ export function DataTableIntegrated<TData, TValue>({
   total,
   filterColumn = "name",
   searchPlaceholder = "Search...",
+  searchValue,
 }: DataTableIntegratedProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -59,8 +61,8 @@ export function DataTableIntegrated<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    //rowCount: total,
-    pageCount: Math.ceil(total / limit),
+    rowCount: total,
+    //pageCount: Math.ceil(total / limit),
     state: {
       sorting,
       columnVisibility,
@@ -75,6 +77,7 @@ export function DataTableIntegrated<TData, TValue>({
       if (typeof updater !== "function") return;
       const newPageInfo = updater(table.getState().pagination);
       setPagination(newPageInfo?.pageSize);
+      setCurrentPage(newPageInfo?.pageIndex + 1);
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -96,6 +99,7 @@ export function DataTableIntegrated<TData, TValue>({
         table={table}
         filterColumn={filterColumn}
         searchPlaceholder={searchPlaceholder}
+        searchValue={searchValue}
       />
       <div className="rounded-md border">
         <Table>
