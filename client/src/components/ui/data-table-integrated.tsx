@@ -47,7 +47,6 @@ export function DataTableIntegrated<TData, TValue>({
   page,
   limit,
   total,
-
   searchPlaceholder = "Search...",
   setSearchValue,
   searchValue,

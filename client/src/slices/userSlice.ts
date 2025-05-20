@@ -17,7 +17,7 @@ const initialState = {
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (
-    { limit, page, name }: { limit: number; page: number; name: string },
+    { limit, page, name }: { limit: number; page: number; name?: string },
     { rejectWithValue }
   ) => {
     try {
