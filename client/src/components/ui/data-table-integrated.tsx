@@ -33,9 +33,9 @@ interface DataTableIntegratedProps<TData, TValue> {
   page: number;
   limit: number;
   total: number;
-  filterColumn?: string;
   searchPlaceholder?: string;
-  searchValue?: React.Dispatch<React.SetStateAction<string>>;
+  searchValue: (value: string) => void;
+  searchName?: string;
 }
 
 export function DataTableIntegrated<TData, TValue>({
@@ -46,9 +46,9 @@ export function DataTableIntegrated<TData, TValue>({
   page,
   limit,
   total,
-  filterColumn = "name",
   searchPlaceholder = "Search...",
   searchValue,
+  searchName = "",
 }: DataTableIntegratedProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -97,9 +97,9 @@ export function DataTableIntegrated<TData, TValue>({
     <div className="space-y-4">
       <DataTableToolbar
         table={table}
-        filterColumn={filterColumn}
         searchPlaceholder={searchPlaceholder}
         searchValue={searchValue}
+        searchName={searchName}
       />
       <div className="rounded-md border">
         <Table>

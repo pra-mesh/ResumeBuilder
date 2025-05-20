@@ -22,6 +22,7 @@ import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
 import { ButtonGroup } from "@/components/ui/buttongroup";
 import { Link } from "react-router";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type User = {
   id: string;
@@ -41,12 +42,15 @@ export default function AdminUsers() {
   const { users, limit, currentPage, total } = useSelector(
     (state: any) => state.users
   );
+
   const handleViewUser = (user: User) => {
     toast(`Viewing ${user.name}'s profile`, {
       description: "User details loaded successfully",
       icon: <Eye className="h-4 w-4" />,
     });
   };
+
+  const debouncedSearch = useDebounce(searchName, 1500);
 
   const handleEditUser = (user: User) => {
     toast(`Editing ${user.name}'s profile`, {
@@ -196,8 +200,9 @@ export default function AdminUsers() {
   };
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
-    dispatch(fetchUsers({ limit, page: currentPage, name: searchName }));
-  }, [dispatch, limit, currentPage, searchName]);
+    dispatch(fetchUsers({ limit, page: currentPage, name: debouncedSearch }));
+  }, [dispatch, limit, currentPage, debouncedSearch]);
+
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
@@ -232,9 +237,9 @@ export default function AdminUsers() {
         limit={limit}
         page={currentPage}
         total={total}
-        filterColumn="name"
         searchPlaceholder="Search users..."
         searchValue={setSearchName}
+        searchName={searchName}
       />
     </div>
   );

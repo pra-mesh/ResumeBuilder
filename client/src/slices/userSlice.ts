@@ -23,7 +23,9 @@ export const fetchUsers = createAsyncThunk(
     try {
       //TODO Convert to tanstack query
       const res = await axiosAdmin.get(
-        `${URLS.USERS}?limit=${limit}&page=${page}&name=${name}`
+        `${URLS.USERS}?limit=${limit}&page=${page}&name=${encodeURIComponent(
+          name
+        )}`
       );
       return res.data;
     } catch (e: any) {
