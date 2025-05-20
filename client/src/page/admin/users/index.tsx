@@ -27,6 +27,7 @@ import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Link } from "react-router";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type User = {
   id: string;
@@ -45,6 +46,7 @@ export default function AdminUsers() {
   const { users, limit, currentPage, total, searchValue } = useSelector(
     (state: any) => state.users
   );
+  const searchDebounce = useDebounce(searchValue, 1500);
   const handleViewUser = (user: User) => {
     toast(`Viewing ${user.name}'s profile`, {
       description: "User details loaded successfully",
@@ -200,8 +202,8 @@ export default function AdminUsers() {
   };
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
-    dispatch(fetchUsers({ limit, page: currentPage, name: searchValue }));
-  }, [dispatch, limit, currentPage, searchValue]);
+    dispatch(fetchUsers({ limit, page: currentPage, name: searchDebounce }));
+  }, [dispatch, limit, currentPage, searchDebounce]);
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
