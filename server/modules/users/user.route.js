@@ -30,7 +30,7 @@ router.put(
   secureAPI(["admin", "user"]),
   async (req, res, next) => {
     try {
-      const result = await userController.updateProflie(
+      const result = await userController.updateProfile(
         req.currentUser,
         req.body
       );
@@ -52,6 +52,16 @@ router.get("/", secureAPI("admin"), async (req, res, next) => {
     next(e);
   }
 });
+
+router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
+  try {
+    const { to, from } = req.query;
+    const result = await userController.userReport({ to, from });
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
+});
 //add user
 router.post("/", secureAPI("admin"), async (req, res, next) => {
   try {
@@ -64,7 +74,7 @@ router.post("/", secureAPI("admin"), async (req, res, next) => {
 
 router.get("/:id", secureAPI("admin"), async (req, res, next) => {
   try {
-    const result = await userController.getbyID(req.params.id);
+    const result = await userController.getByID(req.params.id);
     res.json({ data: result });
   } catch (e) {
     next(e);
@@ -97,11 +107,5 @@ router.patch("/:id/block", secureAPI(["admin"]), async (req, res, next) => {
     next(e);
   }
 });
-
-//List all users
-//Get one user
-//block user
-//update user
-//Add user
 
 module.exports = router;

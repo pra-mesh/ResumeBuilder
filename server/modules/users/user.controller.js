@@ -69,7 +69,7 @@ const getProfile = async (currentUser) =>
     .findById({ _id: currentUser })
     .select("-_id -password -refresh_token -otp -__v");
 
-const getbyID = async (id) =>
+const getByID = async (id) =>
   await userModel
     .findById({ _id: id })
     .select("-_id -password -refresh_token -otp -__v");
@@ -156,8 +156,19 @@ const restPassword = async ({ email }) => {
     );
   }
 };
+//TODO send total users count use Aggregations
+const userReport = async ({ from, to = Date.now() }) => {
+  const query = { createdAt: { $lte: to } };
+  if (from) {
+    query.createdAt.$gte = from;
+  }
+  const user = await userModel
+    .find(query)
+    .select("-_id -password -refresh_token -otp -__v");
+  return user;
+};
 
-const updateProflie = async (currentUser, payload) => {
+const updateProfile = async (currentUser, payload) => {
   const user = await userModel.findOne({
     _id: currentUser,
     isEmailVerified: true,
@@ -196,9 +207,10 @@ module.exports = {
   blockUser,
   changePassword,
   getProfile,
-  getbyID,
+  getByID,
   list,
   restPassword,
-  updateProflie,
+  updateProfile,
   updateUser,
+  userReport,
 };
