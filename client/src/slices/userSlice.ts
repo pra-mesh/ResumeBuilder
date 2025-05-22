@@ -12,6 +12,7 @@ const initialState = {
   searchValue: "",
   error: "",
   isLoading: false,
+  userReport: [],
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -29,8 +30,25 @@ export const fetchUsers = createAsyncThunk(
       );
       return res.data;
     } catch (e: any) {
+      
       return rejectWithValue({
-        data: e?.response?.data?.msg ?? "Something went wrong",
+        data: e?.response?.data?.err ?? "Something went wrong",
+      });
+    }
+  }
+);
+export const getAllUsers = createAsyncThunk(
+  "users/getAllUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      //TODO  set to and from date
+
+      const { data } = await axiosAdmin.get(`${URLS.USERS}/userReport`);
+
+      return data;
+    } catch (e: any) {
+      return rejectWithValue({
+        data: e?.response?.data?.err ?? "Something went wrong",
       });
     }
   }
@@ -65,6 +83,18 @@ const userSlice = createSlice({
         state.total = 0;
       })
       .addCase(fetchUsers.pending, (state) => {
+        state.isLoading = true;
+        state.error = "";
+      })
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userReport = action.payload;
+      })
+      .addCase(getAllUsers.rejected, (state, action: any) => {
+        state.isLoading = false;
+        state.error = action.payload.data;
+      })
+      .addCase(getAllUsers.pending, (state) => {
         state.isLoading = true;
         state.error = "";
       });

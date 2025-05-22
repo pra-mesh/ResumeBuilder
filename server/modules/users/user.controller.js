@@ -181,7 +181,7 @@ const updateProfile = async (currentUser, payload) => {
   };
   const updatedUser = await userModel
     .findOneAndUpdate({ _id: currentUser }, newPayload, { new: true })
-    .select("-_id -password -refresh_token -otp -__v");
+    .select("-_id -password -refresh_token -otp -__v -updatedAt");
   if (!updatedUser) throw new Error("Something went wrong");
   return updatedUser;
 };

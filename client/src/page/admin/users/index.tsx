@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUsers,
+  getAllUsers,
   setLimit,
   setCurrentPage,
   setSearch,
@@ -28,7 +29,8 @@ import { formatDate } from "@/lib/dateFormatter";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Link } from "react-router";
 import { useDebounce } from "@/hooks/useDebounce";
-
+import { autoTable } from "jspdf-autotable";
+import { jsPDF } from "jspdf";
 type User = {
   id: string;
   name: string;
@@ -209,6 +211,65 @@ export default function AdminUsers() {
   }, [initUserFetch]);
   //TODO how to use tanstack and redux toolkit combined
 
+  //TODO use Memo
+  const handleExportToPDF = async () => {
+    const data = await dispatch(getAllUsers());
+    if (data.payload.length > 0) {
+      toast.success(`Report Generate Successfully`, {
+        description: "Report Generated. User list is downloading.",
+        icon: <Eye className="h-4 w-4" />,
+      });
+      const doc = new jsPDF();
+
+      doc.text("User Data Report", 14, 15);
+      autoTable(doc, {
+        startY: 20,
+        head: [["Name", "Email", "Roles", "Blocked", "Created On"]],
+        body: [
+          ...data.payload.map((user: any) => [
+            user?.name,
+            user?.email,
+            user?.roles.toString(),
+            user?.isBlocked ? "Blocked" : "Active",
+            formatDate(user?.createdAt),
+          ]),
+          ["Total Users", "", "", "", total],
+        ],
+        styles: {
+          
+          fontSize: 10,
+          lineWidth: 0.2, // Border thickness
+          lineColor: [50, 50, 50], // Black border
+        },
+        headStyles : {
+          fontSize:12,
+          fontStyle:"bold"
+        },
+        columnStyles: {
+          0: {cellWidth:40}
+        },
+        didParseCell: (hookData) => {
+          // Apply bold styling to the footer row
+          if (hookData.row.index === total) {
+            hookData.cell.styles.fontStyle = "bold";
+          }
+        },
+        // didDrawPage: (footer) => {
+        //   const totalUsers = data.payload.length;
+        //   doc.text(
+        //     `Total Users: ${totalUsers}`,
+        //     footer.settings.margin.left,
+        //     doc.internal.pageSize.height - 10
+        //   );
+        // },
+      });
+      doc.save("example.pdf");
+    } else {
+      toast.error(`Report generation failed`, {
+        description: "Data not found",
+      });
+    }
+  };
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -219,12 +280,7 @@ export default function AdminUsers() {
               <Plus className="mr-2 h-4 w-4" /> Add User
             </Link>
           </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              console.log("here");
-            }}
-          >
+          <Button variant="destructive" onClick={handleExportToPDF}>
             <FileSpreadsheet className="mr-2 h-4 w-4" /> Export to Excel
           </Button>
         </ButtonGroup>

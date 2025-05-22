@@ -65,7 +65,7 @@ export const createAxiosAdmin = (
           return axiosAdminInstance(originalRequest);
         } catch (e) {
           //FIXME: Logout and error handling
-          console.log(e);
+          console.error(e);
           logout();
           //return Promise.reject(e);
         }

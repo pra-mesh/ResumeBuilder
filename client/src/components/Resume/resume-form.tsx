@@ -84,7 +84,7 @@ const ResumeForm = () => {
   };
   //BUG on 6th step it is submitting
   const onsubmit = (data: any) => {
-    console.log({ currentStep, totalSteps });
+    
     console.log("Form submitted with data:", data);
   };
 
