@@ -8,8 +8,8 @@ import { SideBarAdmin } from "@/components/sideBar/SideMeuBar";
 
 //TODO value from outlet for header title
 const AdminLayout = () => (
-  <SidebarProvider defaultOpen={true}>
-    <div className="flex min-h-screen w-full">
+  <SidebarProvider>
+    <div className="flex min-h-screen min-w-full">
       <SideBarAdmin />
       <main className="flex-1 overflow-y-auto  mx-5">
         <Header />
