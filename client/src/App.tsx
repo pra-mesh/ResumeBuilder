@@ -14,19 +14,54 @@ import AdminUsers from "./page/admin/users";
 import { Resumes } from "./page/user/resume";
 import { Toaster } from "sonner";
 import PrivateRoute from "./components/PrivateRoute";
+import AuthRoute from "@/components/AuthRoute";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/auth">
-          <Route index element={<Login />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="forget-password" element={<ForgotPassword />} />
-          <Route path="Email-Verify" element={<EmailVerification />} />
-          <Route path="reset-password" element={<ResetPassword />} />
+        <Route path="auth">
+          <Route
+            path="login"
+            element={
+              <AuthRoute>
+                <Login />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="register"
+            element={
+              <AuthRoute>
+                <Register />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="forget-password"
+            element={
+              <AuthRoute>
+                <ForgotPassword />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="Email-Verify"
+            element={
+              <AuthRoute>
+                <EmailVerification />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="reset-password"
+            element={
+              <AuthRoute>
+                <ResetPassword />
+              </AuthRoute>
+            }
+          />
         </Route>
 
         {/* Admin */}
