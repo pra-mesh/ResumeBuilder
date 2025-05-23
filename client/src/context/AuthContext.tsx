@@ -1,9 +1,7 @@
-//[ ] token validation and auth validation
-//BUG Refresh token is not updating the states
-//TODO HOC for component based authentication like layer
-
 import { UserInfo } from "@/interface/UserInfoProps";
 import { removeAllItems, setItem } from "@/lib/storage";
+import { useAdminQuery } from "@/hooks/useAdminQuery";
+import { URLS } from "@/constants";
 import {
   createContext,
   useContext,
@@ -39,22 +37,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return storedUser ? (JSON.parse(storedUser) as UserInfo) : null;
   });
 
-  const login = (
+  const axiosAdmin = useAdminQuery();
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data } = await axiosAdmin.get(URLS.USERS + "/profile");
+      if (data) {
+        const userInfo: UserInfo = {
+          name: data.name,
+          email: data.email,
+          avatar: data.profilepic || "",
+          role: data.roles,
+        };
+        setUser(userInfo);
+        setItem("user", JSON.stringify(userInfo));
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
+
+  const login = async (
     access: string | null,
     refresh: string | null,
-    user: UserInfo | null
+    initialUser: UserInfo | null
   ) => {
     setAccessToken(access);
     setRefreshToken(refresh);
-    setUser(user);
+    setUser(initialUser);
 
     if (access && refresh) {
       setItem("access_token", access);
       setItem("refresh_token", refresh);
-      setItem("user", JSON.stringify(user));
+      setItem("user", JSON.stringify(initialUser));
       setIsAuthenticated(true);
+      
+      // Fetch complete user profile after setting initial auth state
+      await fetchUserProfile();
     }
   };
+
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
@@ -62,10 +84,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     removeAllItems();
     setIsAuthenticated(false);
   };
+
   useEffect(() => {
-    // if (!isAuthenticated) navigate("/auth/login");
-    //TODO: Token Validation
-  }, [navigate, isAuthenticated]);
+    if (isAuthenticated && !user?.role) {
+      fetchUserProfile();
+    }
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider
@@ -82,6 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be wrapped within AuthProvider");
