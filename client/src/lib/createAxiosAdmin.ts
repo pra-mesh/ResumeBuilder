@@ -13,10 +13,7 @@ export const createAxiosAdmin = (
     baseURL: API_URL,
     timeout: 6000,
   });
-  //TODO: Backend ma set api_limit
-  //TODO: How to get role
 
-  //Request Interceptor
   axiosAdminInstance.interceptors.request.use(
     (config) => {
       const { accessToken } = getAuth();
@@ -28,7 +25,6 @@ export const createAxiosAdmin = (
     (error) => Promise.reject(error)
   );
 
-  //Response Interceptor
   axiosAdminInstance.interceptors.response.use(
     (response) => response,
     async (err) => {
@@ -42,6 +38,7 @@ export const createAxiosAdmin = (
       ) {
         originalRequest._retry = true;
         const { data }: any = decodeJWT(accessToken);
+
         try {
           const res = await axios.post(`${URLS.Auth}/refresh`, {
             refresh_token: refreshToken,
@@ -58,7 +55,7 @@ export const createAxiosAdmin = (
           //FIXME: Logout and error handling
           console.error(e);
           logout();
-          //return Promise.reject(e);
+          return Promise.reject(err);
         }
       }
       return Promise.reject(err);

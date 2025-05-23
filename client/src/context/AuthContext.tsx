@@ -5,7 +5,6 @@
 import { URLS } from "@/constants";
 import { UserInfo } from "@/interface/UserInfoProps";
 import { decodeJWT } from "@/lib/jwt";
-
 import { removeAllItems, setItem } from "@/lib/storage";
 import {
   createContext,
@@ -47,12 +46,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setItem("refresh_token", refresh);
     setIsAuthenticated(true);
   };
+
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
     removeAllItems();
     setIsAuthenticated(false);
+    navigate("/auth/login");
   };
 
   //NOTES Validating tokens
@@ -119,6 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be wrapped within AuthProvider");
