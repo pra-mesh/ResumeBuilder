@@ -25,8 +25,8 @@ app.use(cors());
 app.use("/", indexRouter);
 
 app.use((err, req, res, next) => {
-  const errMsg = err.toString() || "Something went wrong";
-  res.status(500).json({ data: null, err: errMsg });
+  const errMsg = err.err.toString() || "Something went wrong";
+  res.status(err.status || 500).json({ data: null, err: errMsg });
 });
 
 app.listen(port, () => {

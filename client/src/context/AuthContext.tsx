@@ -54,6 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     removeAllItems();
     setIsAuthenticated(false);
   };
+
+  //NOTES Validating tokens
   useEffect(() => {
     const validateToken = async () => {
       if (!accessToken) {
@@ -64,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const { exp } = decodeJWT(accessToken);
         const isExpired = exp && exp < Date.now() / 1000;
-
         if (!isExpired) {
           setIsAuthenticated(true);
         } else if (isExpired && refreshToken) {
@@ -81,11 +82,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     validateToken();
   }, [accessToken, refreshToken]);
-
+  //NOTES Fetching users on accessToken change
   useEffect(() => {
     const fetchUser = async () => {
       if (!isAuthenticated || !accessToken || isInitializing) return;
       try {
+        //NOTES Prevent cyclic call of axios for refresh token
         const { axiosAdmin } = await import("@/lib/axiosAdmin");
         const { data } = await axiosAdmin.get(`${URLS.USERS}/profile`);
         setUser(data);
