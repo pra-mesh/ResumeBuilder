@@ -71,8 +71,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setItem("refresh_token", refresh);
       setItem("user", JSON.stringify(initialUser));
       setIsAuthenticated(true);
-      
-      // Fetch complete user profile after setting initial auth state
       await fetchUserProfile();
     }
   };
@@ -83,8 +81,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     removeAllItems();
     setIsAuthenticated(false);
+    navigate("/auth/login");
   };
 
+  // Only fetch profile once when authenticated and user role is missing
   useEffect(() => {
     if (isAuthenticated && !user?.role) {
       fetchUserProfile();
