@@ -1,4 +1,3 @@
-import { UserInfo } from "@/interface/UserInfoProps";
 import { createAxiosAdmin } from "./createAxiosAdmin";
 import { getItem, setItem } from "./storage";
 
@@ -8,13 +7,8 @@ const getAuth = () => ({
 });
 
 const logout = () => {};
-const onTokenRefresh = (
-  newAccess: string,
-  newRefresh: string,
-  user: UserInfo | null
-) => {
+const onTokenRefresh = (newAccess: string, newRefresh: string) => {
   setItem("access_token", newAccess);
   setItem("refresh_token", newRefresh);
-  setItem("user", JSON.stringify(user));
 };
 export const axiosAdmin = createAxiosAdmin(getAuth, logout, onTokenRefresh);

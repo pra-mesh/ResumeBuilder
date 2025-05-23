@@ -8,10 +8,7 @@ import PasswordField from "./PasswordField";
 import { Input } from "./ui/input";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
-
 import { useAuth } from "@/context/AuthContext";
-import { decodeJWT } from "@/lib/jwt";
-import { UserInfo } from "../interface/UserInfoProps";
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -26,14 +23,8 @@ const LoginForm = () => {
       const { data } = await axiosInstance.post(URLS.Auth + "/login", payload);
       const { access_token, refresh_token, data: msg } = data;
       setMsg(msg);
-      const { data: tokenData }: any = decodeJWT(access_token);
-      const user: UserInfo = {
-        name: tokenData?.name,
-        email: tokenData?.email,
-        avatar: "",
-        role: tokenData?.roles,
-      };
-      login(access_token, refresh_token, user);
+
+       login(access_token, refresh_token);
       navigate("/admin/dashboard");
     } catch (err: any) {
       const errMsg = err?.response?.data?.err || "Something went wrong";

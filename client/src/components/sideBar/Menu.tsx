@@ -1,3 +1,4 @@
+//TODO don't make menu roles manual
 import {
   File,
   FilePlus,
@@ -21,10 +22,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import { useAuth } from "@/context/AuthContext";
 const adminMenuList = [
   {
     GroupName: "Dashboard",
     icon: LayoutDashboard,
+    roles: ["user", "admin"],
     menu: [
       {
         title: "Dashboard",
@@ -36,6 +39,7 @@ const adminMenuList = [
   {
     GroupName: "Resume",
     icon: File,
+    roles: ["user", "admin"],
     menu: [
       {
         title: "Add Resume",
@@ -52,6 +56,7 @@ const adminMenuList = [
   {
     GroupName: "User",
     icon: User,
+    roles: ["admin"],
     menu: [
       {
         title: "Add User",
@@ -67,51 +72,54 @@ const adminMenuList = [
   },
 ];
 const Menus = () => {
+  const { user } = useAuth();
   return (
     <SidebarContent>
-      {adminMenuList.map((group, idx) =>
-        group.menu.length > 1 ? (
-          <Collapsible
-            defaultOpen={true}
-            className="group/collapsible"
-            key={idx}
-          >
-            <SidebarGroup className="mb-0 pb-0 pt-0">
-              <CollapsibleTrigger>
-                <SidebarGroupLabel>
-                  <span>{group.GroupName}</span>
-                </SidebarGroupLabel>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenu>
-                  {group.menu.map((item, idx) => (
-                    <SidebarMenuItem key={idx}>
-                      <SidebarMenuButton asChild>
-                        <Link to={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
-        ) : (
-          <SidebarMenu key={idx}>
-            {group.menu.map((item, idx) => (
-              <SidebarMenuItem key={idx}>
-                <SidebarMenuButton asChild>
-                  <Link to={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        )
+      {adminMenuList.map(
+        (group, idx) =>
+          group.roles.some((item) => user?.roles.includes(item)) &&
+          (group.menu.length > 1 ? (
+            <Collapsible
+              defaultOpen={true}
+              className="group/collapsible"
+              key={idx}
+            >
+              <SidebarGroup className="mb-0 pb-0 pt-0">
+                <CollapsibleTrigger>
+                  <SidebarGroupLabel>
+                    <span>{group.GroupName}</span>
+                  </SidebarGroupLabel>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenu>
+                    {group.menu.map((item, idx) => (
+                      <SidebarMenuItem key={idx}>
+                        <SidebarMenuButton asChild>
+                          <Link to={item.url}>
+                            <item.icon />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          ) : (
+            <SidebarMenu key={idx}>
+              {group.menu.map((item, idx) => (
+                <SidebarMenuItem key={idx}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          ))
       )}
     </SidebarContent>
   );

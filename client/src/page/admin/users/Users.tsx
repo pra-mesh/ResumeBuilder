@@ -1,10 +1,9 @@
 import TableSkeleton from "@/components/TableSkeleton";
 import { URLS } from "@/constants";
-import { useAdminQuery } from "@/hooks/useAdminQuery";
+import { axiosAdmin } from "@/lib/axiosAdmin";
 import { useQuery } from "@tanstack/react-query";
 
 const Users = () => {
-  const axiosAdmin = useAdminQuery();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
