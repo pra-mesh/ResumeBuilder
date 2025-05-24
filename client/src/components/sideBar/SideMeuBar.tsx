@@ -18,9 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
-import { AvatarFallback } from "../ui/avatar";
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 export const SideBarAdmin = () => {
   const { logout, user } = useAuth();
   const { state } = useSidebar();
@@ -42,7 +42,7 @@ export const SideBarAdmin = () => {
       </SidebarHeader>
       <Menus />
 
-         <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4">
         <div className={cn("flex flex-col gap-4", state === "collapsed" && "items-center")}>
           {/* Separator */}
           <div className="h-px bg-border w-full" />
