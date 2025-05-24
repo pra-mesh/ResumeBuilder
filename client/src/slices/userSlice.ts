@@ -1,10 +1,20 @@
 import { URLS } from "@/constants";
-
+import { UserInfo } from "@/interface/UserInfoProps";
 import { axiosAdmin } from "@/lib/axiosAdmin";
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const initialState = {
+interface UserState {
+  users: UserInfo[];
+  total: number;
+  currentPage: number;
+  limit: number;
+  searchValue: string;
+  error: string;
+  isLoading: boolean;
+  userReport: any[];
+}
+
+const initialState: UserState = {
   users: [],
   total: 0,
   currentPage: 1,
@@ -30,7 +40,6 @@ export const fetchUsers = createAsyncThunk(
       );
       return res.data;
     } catch (e: any) {
-      
       return rejectWithValue({
         data: e?.response?.data?.err ?? "Something went wrong",
       });
@@ -46,6 +55,22 @@ export const getAllUsers = createAsyncThunk(
       const { data } = await axiosAdmin.get(`${URLS.USERS}/userReport`);
 
       return data;
+    } catch (e: any) {
+      return rejectWithValue({
+        data: e?.response?.data?.err ?? "Something went wrong",
+      });
+    }
+  }
+);
+export const blockUser = createAsyncThunk(
+  "users/blocked",
+  async (
+    { id, isBlocked }: { id: string; isBlocked: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      await axiosAdmin.patch(`${URLS.USERS}/${id}/block`);
+      return { id, isBlocked };
     } catch (e: any) {
       return rejectWithValue({
         data: e?.response?.data?.err ?? "Something went wrong",
@@ -95,6 +120,26 @@ const userSlice = createSlice({
         state.error = action.payload.data;
       })
       .addCase(getAllUsers.pending, (state) => {
+        state.isLoading = true;
+        state.error = "";
+      })
+      .addCase(blockUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const existing = state.users.find(
+          (user: UserInfo) => user?._id === action.payload.id
+        );
+
+        if (existing) {
+          existing.isBlocked =
+            action.payload.isBlocked === "blocked" ? true : false;
+        }
+      })
+
+      .addCase(blockUser.rejected, (state, action: any) => {
+        state.isLoading = false;
+        state.error = action.payload.data;
+      })
+      .addCase(blockUser.pending, (state) => {
         state.isLoading = true;
         state.error = "";
       });

@@ -5,4 +5,5 @@ export const URLS = {
   USERS: API_URL + "/users",
   Auth: API_URL + "/auth",
   RESUMES: API_URL + "/resumes",
+  public: Base_URL + "/assets",
 };

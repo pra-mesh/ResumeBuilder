@@ -6,10 +6,12 @@ const { storage, upload } = require("../../utils/multer");
 
 router.post("/login", async (req, res, next) => {
   try {
+     console.log("result");
     const result = await authController.login(req.body);
+    console.log(result);
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.err, status: 500 });
   }
 });
 const newUpload = upload(storage("public/uploads/users"), 1000000);
@@ -28,7 +30,7 @@ router.post(
       res.json({ data: "User registered successfully" });
     } catch (e) {
       fs.unlinkSync("public".concat(req.body.profilepic));
-      next(e);
+      next({ err: e, status: 500 });
     }
   }
 );

@@ -12,9 +12,11 @@ const { getRefreshTokenDuration } = require("../../utils/date");
 const login = async (payload) => {
   const { email, password } = payload;
   const user = await userModel.findOne({ email });
+
   if (!user) throw new Error("User is not found");
   if (user?.isBlocked)
     throw Error("User is blocked. Contact Admin for support");
+  console.log("test");
   if (!user?.isEmailVerified) throw Error("User not verified.");
   const isValidPassword = bcrypt.compareHash(password, user?.password);
   if (!isValidPassword) throw Error("Email or password mismatched.");
@@ -23,6 +25,7 @@ const login = async (payload) => {
     email: user?.email,
     roles: user?.roles,
   };
+
   const rt = await generateRefreshToken(email);
   return {
     access_token: signJWT(data),

@@ -23,6 +23,7 @@ import {
   setLimit,
   setCurrentPage,
   setSearch,
+  blockUser,
 } from "@/slices/userSlice";
 import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
@@ -32,7 +33,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { autoTable } from "jspdf-autotable";
 import { jsPDF } from "jspdf";
 type User = {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   isBlocked: boolean;
@@ -65,6 +66,7 @@ export default function AdminUsers() {
 
   const handleBlockUser = (user: User) => {
     const status = user?.isBlocked ? "unblocked" : "blocked";
+    dispatch(blockUser({ id: user?._id, isBlocked: status }));
     if (status === "blocked") {
       toast.error(`${user.name} has been ${status}`, {
         description: `User has been ${status}`,
@@ -236,17 +238,16 @@ export default function AdminUsers() {
           ["Total Users", "", "", "", total],
         ],
         styles: {
-          
           fontSize: 10,
           lineWidth: 0.2, // Border thickness
           lineColor: [50, 50, 50], // Black border
         },
-        headStyles : {
-          fontSize:12,
-          fontStyle:"bold"
+        headStyles: {
+          fontSize: 12,
+          fontStyle: "bold",
         },
         columnStyles: {
-          0: {cellWidth:40}
+          0: { cellWidth: 40 },
         },
         didParseCell: (hookData) => {
           // Apply bold styling to the footer row

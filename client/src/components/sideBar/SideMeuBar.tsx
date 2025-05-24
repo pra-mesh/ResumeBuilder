@@ -18,9 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
-import { AvatarFallback } from "../ui/avatar";
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 export const SideBarAdmin = () => {
   const { logout, user } = useAuth();
   const { state } = useSidebar();
@@ -42,20 +42,40 @@ export const SideBarAdmin = () => {
       </SidebarHeader>
       <Menus />
 
-         <SidebarFooter className="p-4">
-        <div className={cn("flex flex-col gap-4", state === "collapsed" && "items-center")}>
+      <SidebarFooter className="p-4">
+        <div
+          className={cn(
+            "flex flex-col gap-4",
+            state === "collapsed" && "items-center"
+          )}
+        >
           {/* Separator */}
           <div className="h-px bg-border w-full" />
 
           {/* User profile section */}
-          <div className={cn("flex items-center gap-3", state === "collapsed" && "flex-col")}>
+          <div
+            className={cn(
+              "flex items-center gap-3",
+              state === "collapsed" && "flex-col"
+            )}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="p-0 h-auto" aria-label="User menu">
+                <Button
+                  variant="ghost"
+                  className="p-0 h-auto rounded-full"
+                  aria-label="User menu"
+                >
                   <Avatar
-                    className={cn("h-9 w-9 cursor-pointer", state === "collapsed" ? "mx-auto" : "")}
+                    className={cn(
+                      "h-9 w-9 cursor-pointer rounded-full",
+                      state === "collapsed" ? "mx-auto" : ""
+                    )}
                   >
-                    <AvatarImage src="/diverse-avatars.png" alt="User avatar" />
+                    <AvatarImage
+                      src={`/assets${user?.profilepic}`}
+                      alt="User avatar"
+                    />
                     <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -75,8 +95,12 @@ export const SideBarAdmin = () => {
 
             {state !== "collapsed" && (
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{user?.name || "User"}</span>
-                <span className="text-xs text-muted-foreground">{user?.email}</span>
+                <span className="text-sm font-medium">
+                  {user?.name || "User"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {user?.email}
+                </span>
               </div>
             )}
           </div>

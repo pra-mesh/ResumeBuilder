@@ -11,5 +11,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: { port: 9002 },
+  server: {
+    port: 9002,
+    proxy: {
+      "/assets": "http://localhost:9001",
+    },
+  },
 });
