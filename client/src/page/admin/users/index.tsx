@@ -120,6 +120,22 @@ export default function AdminUsers() {
       cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
+      accessorKey: "gender",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Gender" />
+      ),
+      cell: ({ row }) => {
+        const genderInitial = row.getValue("gender");
+        const gender =
+          genderInitial === "m"
+            ? "Male"
+            : genderInitial === "f"
+            ? "Female"
+            : "Other";
+        return <div>{gender}</div>;
+      },
+    },
+    {
       accessorKey: "roles",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Role" />

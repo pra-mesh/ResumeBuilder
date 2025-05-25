@@ -13,8 +13,11 @@ const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
     return <Navigate to="/auth/login" replace />;
   }
   if (user && adminOnly && !user?.roles.includes("admin")) {
-
-    return <Navigate to="/admin" replace />;
+    console.log({ adminOnly });
+    return <Navigate to="/user" replace />;
+  } else if (user && !adminOnly) {
+    console.log("");
+    return <Navigate to="/user" replace />;
   }
   return <div>{children}</div>;
 };

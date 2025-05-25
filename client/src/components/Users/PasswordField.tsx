@@ -1,7 +1,6 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { RefObject, useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const PasswordField = ({
   id = "password",
@@ -23,6 +22,7 @@ const PasswordField = ({
   inputRef?: RefObject<HTMLInputElement>;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div>
       {label && (
@@ -32,6 +32,9 @@ const PasswordField = ({
       )}
 
       <div className="relative mt-1">
+        {icon && (
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        )}
         <Input
           id={id}
           name={name}
@@ -40,24 +43,25 @@ const PasswordField = ({
           onChange={onChange}
           placeholder="********"
           ref={inputRef}
-          className={`w-full rounded-md border ${icon ? "pl-10 pr-10" : ""}  ${
+          className={`h-10 text-xl w-full rounded-md border px-3 py-2 shadow-sm ${
+            icon ? "pl-10 pr-10" : "pr-10"
+          } ${
             error ? "border-red-500" : "border-gray-300"
-          }`}
+          } focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:border-orange-500`}
         />
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="absolute right-0 top-0 h-10 w-10"
           onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
         >
           {showPassword ? (
             <EyeOff className="h-4 w-4" />
           ) : (
             <Eye className="h-4 w-4" />
           )}
-        </Button>
+        </button>
       </div>
+
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );

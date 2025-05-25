@@ -43,12 +43,12 @@ const adminMenuList = [
     menu: [
       {
         title: "Add Resume",
-        url: "/admin/resume/add",
+        url: "/user/resume/add",
         icon: FilePlus,
       },
       {
         title: "Resumes",
-        url: "/admin/resumes",
+        url: "/user/resumes",
         icon: GalleryHorizontal,
       },
     ],
@@ -60,7 +60,7 @@ const adminMenuList = [
     menu: [
       {
         title: "Add User",
-        url: "#",
+        url: "/admin/users/add",
         icon: UserPlus,
       },
       {

@@ -100,9 +100,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [isAuthenticated, accessToken, isInitializing]);
 
   useEffect(() => {
-    if (!isInitializing && !isAuthenticated) {
-      navigate("/auth/login");
-    }
+    // if (!isInitializing && !isAuthenticated) {
+    // }
   }, [navigate, isAuthenticated, isInitializing]);
 
   return (

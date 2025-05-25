@@ -1,7 +1,7 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useNavigate, useLocation } from "react-router";
 import CustomOTP from "@/components/ui/custom-otp";
-import PasswordField from "@/components/PasswordField";
+import PasswordField from "@/components/Users/PasswordField";
 import { Check } from "lucide-react";
 import ResendOTP from "@/components/ui/resend-otp";
 import { restPassword } from "@/services/auth";

@@ -6,7 +6,7 @@ const UserReport = lazy(() => import("./users/Users"));
 import Report1 from "./Report1";
 import { useSelector } from "react-redux";
 
-import PrivateRoute from "@/components/PrivateRoute";
+import PrivateComponents from "@/components/PrivateComponents";
 
 const SafeReport1 = withErrorBoundary(Report1);
 const SafeReport2 = withErrorBoundary(HeavyReport);
@@ -22,9 +22,9 @@ const Dashboard = () => {
       <Suspense fallback={<div>Report 2 is loading...</div>}>
         <SafeReport2 />
       </Suspense>
-      <PrivateRoute adminOnly>
+      <PrivateComponents adminOnly>
         <SafeUsers />
-      </PrivateRoute>
+      </PrivateComponents>
       <div>{JSON.stringify(users)}</div>
     </div>
   );

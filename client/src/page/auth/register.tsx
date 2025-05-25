@@ -1,17 +1,16 @@
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
-import { Eye, EyeOff, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import PasswordField from "@/components/Users/PasswordField";
 
 const Register = () => {
   const formPayloadRef = useRef<any>(null);
 
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
@@ -40,7 +39,13 @@ const Register = () => {
     try {
       const rawFormData = formPayloadRef.current;
       const fileInput = fileInputRef.current?.files[0];
+      const newErrors: Record<string, string> = {};
       const formData = new FormData(rawFormData);
+      if (formData.get("confirmPassword") !== formData.get("password")) {
+        newErrors.password = "Mismatch password";
+        setErrors(newErrors);
+        return;
+      }
       formData.append("picture", fileInput);
       formData.delete("confirmPassword");
 
@@ -66,9 +71,10 @@ const Register = () => {
     } finally {
       setTimeout(() => {
         setMsg("");
+        setErrors({});
         setErr("");
         (e.target as HTMLFormElement).reset();
-      }, 1000);
+      }, 5000);
     }
   };
 
@@ -171,78 +177,21 @@ const Register = () => {
             </div>
 
             {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="relative mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className={`w-full rounded-md border ${
-                    errors.password ? "border-red-500" : "border-gray-300"
-                  } px-3 py-2 pr-10 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-                )}
-              </div>
-            </div>
+
+            <PasswordField
+              name="password"
+              icon={false}
+              label="Password"
+              error={errors.password}
+            />
 
             {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <div className="relative mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className={`w-full rounded-md border ${
-                    errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } px-3 py-2 pr-10 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-                {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-            </div>
+            <PasswordField
+              name="confirmPassword"
+              icon={false}
+              label="confirmPassword"
+              error={errors.confirmPassword}
+            />
 
             {/* Gender */}
             <div>

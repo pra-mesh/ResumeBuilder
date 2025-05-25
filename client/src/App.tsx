@@ -15,74 +15,49 @@ import { Resumes } from "./page/user/resume";
 import { Toaster } from "sonner";
 import PrivateRoute from "./components/PrivateRoute";
 import AuthRoute from "@/components/AuthRoute";
+import AddNewUser from "./page/admin/users/AddNewUser";
+import AuthLayout from "./layout/AuthLayout";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
   return (
     <>
       <Routes>
-        <Route path="auth">
-          <Route
-            path="login"
-            element={
-              <AuthRoute>
-                <Login />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="register"
-            element={
-              <AuthRoute>
-                <Register />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="forget-password"
-            element={
-              <AuthRoute>
-                <ForgotPassword />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="Email-Verify"
-            element={
-              <AuthRoute>
-                <EmailVerification />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="reset-password"
-            element={
-              <AuthRoute>
-                <ResetPassword />
-              </AuthRoute>
-            }
-          />
+        <Route
+          path="auth"
+          element={
+            <AuthRoute>
+              <AuthLayout />
+            </AuthRoute>
+          }
+        >
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="forget-password" element={<ForgotPassword />} />
+          <Route path="Email-Verify" element={<EmailVerification />} />
+          <Route path="reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* Admin */}
 
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute adminOnly>
+              <AdminLayout />
+            </PrivateRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="home" element={<Home />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="users/add" element={<AddNewUser />} />
+        </Route>
+        <Route path="/user" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
           <Route path="resumes" element={<Resumes />} />
           <Route path="resume/add" element={<AddResume />} />
-
-          <Route
-            path="users"
-            element={
-              <PrivateRoute adminOnly>
-                <AdminUsers />
-              </PrivateRoute>
-            }
-          />
         </Route>
-
         <Route path="/">
           <Route index element={<Home />} />
         </Route>

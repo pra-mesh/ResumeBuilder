@@ -7,7 +7,7 @@ const Header = ({ title = "APP" }) => (
       <div className="font-semibold ">{title}</div>
       <div className="flex items-center gap-2">
         <Button asChild>
-          <Link to="/admin/resume/add">Create Resume</Link>
+          <Link to="/user/resume/add">Create Resume</Link>
         </Button>
       </div>
     </div>

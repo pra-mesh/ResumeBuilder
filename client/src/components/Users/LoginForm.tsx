@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
-import { Alert, AlertDescription } from "./ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@radix-ui/react-label";
-import { Mail, Lock } from "lucide-react";
+import { Mail } from "lucide-react";
 import PasswordField from "./PasswordField";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/lib/axios";
 import { URLS } from "@/constants";
 import { useAuth } from "@/context/AuthContext";
 
 const LoginForm = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
   const [payload, setPayload] = useState({ email: "", password: "" });
@@ -24,8 +24,9 @@ const LoginForm = () => {
       const { access_token, refresh_token, data: msg } = data;
       setMsg(msg);
 
-       login(access_token, refresh_token);
-      navigate("/admin/dashboard");
+      login(access_token, refresh_token);
+      if (user?.roles.includes("admin")) navigate("/admin/dashboard");
+      else navigate("/user");
     } catch (err: any) {
       const errMsg = err?.response?.data?.err || "Something went wrong";
       setErr(errMsg);
@@ -71,7 +72,7 @@ const LoginForm = () => {
                 id="email"
                 type="email"
                 placeholder="name@example.com"
-                className="pl-10"
+                className="px-10  py-2  h-10 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 focus-visible:border-orange-500 "
                 value={payload?.email}
                 onChange={(e) =>
                   setPayload((prev) => {
@@ -98,7 +99,6 @@ const LoginForm = () => {
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute  left-3 top-3 h-4 w-4 text-muted-foreground" />
               <PasswordField
                 name="password"
                 icon={true}

@@ -1,7 +1,5 @@
-import React from "react";
-
 const Review = ({ form }: { form: any }) => {
-  return <div>Preview</div>;
+  return <div>{form}</div>;
 };
 
 export default Review;

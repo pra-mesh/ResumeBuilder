@@ -5,6 +5,7 @@ export interface UserInfo {
   isBlocked: boolean;
   isEmailVerified: boolean;
   roles: [string];
+  gender: string;
   createdAt: string;
   updatedAt: string;
   __v: number;

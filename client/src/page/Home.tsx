@@ -5,9 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const auth = useAuth();
-  const redirectTo = !auth.isAuthenticated
-    ? "/auth/login"
-    : "/admin/resume/add";
+  const redirectTo = !auth.isAuthenticated ? "/auth/login" : "/user/resume/add";
   return (
     <div className="flex flex-col items-center">
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
