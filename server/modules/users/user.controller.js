@@ -6,14 +6,16 @@ const { generatePassword } = require("../../utils/textUtil");
 const { generateOTP } = require("../../utils/token");
 
 const addUser = async (payload) => {
+  console.log({ payload });
   const { email, name, roles = [], gender } = payload;
   const existingUser = await userModel.findOne({ email });
   if (existingUser) throw new Error("Email is already in used");
   const randomPassword = generatePassword();
   const password = generatedHash(randomPassword);
   const otp = generateOTP();
-  const userRoles = roles.L === 0 ? ["user"] : roles;
-  const userPayload = { name, email, password, gender, userRoles, otp };
+  const userRoles = roles.length === 0 ? ["user"] : roles;
+  const userPayload = { name, email, password, gender, roles: userRoles, otp };
+  console.log({ userPayload });
   const newuser = await userModel.create(userPayload);
   if (newuser) {
     const subject = "Welcome to ProResume AI";

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
-
+const { storage, upload } = require("../../utils/multer");
 router.post(
   "/change-password",
   secureAPI(["admin", "user"]),
@@ -14,6 +14,7 @@ router.post(
     }
   }
 );
+const newUpload = upload(storage("public/uploads/users"), 1000000);
 
 router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
@@ -36,7 +37,7 @@ router.put(
       );
       res.json(result);
     } catch (e) {
-      next(e);
+      next({ err: e, status: 500 });
     }
   }
 );
@@ -63,14 +64,25 @@ router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
   }
 });
 //add user
-router.post("/", secureAPI("admin"), async (req, res, next) => {
-  try {
-    const result = await userController.addUser(req.body);
-    res.json(result);
-  } catch (e) {
-    next(e);
+router.post(
+  "/",
+  secureAPI("admin"),
+  newUpload.single("picture"),
+  async (req, res, next) => {
+    try {
+      if (req.file) {
+        req.body.profilepic = req.file.path
+          .replace("public", "")
+          .replaceAll("\\", "/");
+      }
+      const result = await userController.addUser(req.body);
+      res.json(result);
+    } catch (e) {
+      fs.unlinkSync("public".concat(req.body.profilepic));
+      next({ err: e.message, status: 500 });
+    }
   }
-});
+);
 
 router.get("/:id", secureAPI("admin"), async (req, res, next) => {
   try {
