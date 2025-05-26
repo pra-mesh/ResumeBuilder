@@ -25,8 +25,8 @@ const secureAPI =
       }
     } catch (e) {
       e.toString().includes("Access Denied.")
-        ? next({ err: e, status: "403" })
-        : next({ err: e, status: "401" });
+        ? next({ err: e, status: 403 })
+        : next({ err: e, status: 401 });
     }
   };
 module.exports = { secureAPI };

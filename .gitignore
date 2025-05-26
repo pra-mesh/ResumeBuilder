@@ -140,3 +140,4 @@ dist
 server/public/uploads/users/*
 !server/public/uploads/resume
 server/public/uploads/resume/*
+todo.md

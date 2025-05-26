@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
 const { storage, upload } = require("../../utils/multer");
+const fs = require("fs");
 router.post(
   "/change-password",
   secureAPI(["admin", "user"]),
@@ -78,7 +79,7 @@ router.post(
       const result = await userController.addUser(req.body);
       res.json(result);
     } catch (e) {
-      fs.unlinkSync("public".concat(req.body.profilepic));
+      if (req.file) fs.unlinkSync("public".concat(req.body.profilepic));
       next({ err: e.message, status: 500 });
     }
   }
