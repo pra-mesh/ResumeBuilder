@@ -6,9 +6,8 @@ const { storage, upload } = require("../../utils/multer");
 
 router.post("/login", async (req, res, next) => {
   try {
-     console.log("result");
     const result = await authController.login(req.body);
-    console.log(result);
+
     res.json(result);
   } catch (e) {
     next({ err: e.err, status: 500 });

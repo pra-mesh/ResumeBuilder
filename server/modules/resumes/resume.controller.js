@@ -2,7 +2,6 @@ const resumeModel = require("./resume.model");
 
 const list = async ({ page = 1, limit = 10, search, userId }) => {
   const query = [];
-  console.log(userId);
   query.push(
     {
       $lookup: {
@@ -92,7 +91,6 @@ const updateById = async ({ id, payload, currentUser }) => {
   });
   if (!existingResume) throw new Error("Resume not found");
   const { user, _id, ...newPayload } = payload;
-  console.log(newPayload);
   const result = await resumeModel.findOneAndUpdate({ _id: id }, newPayload, {
     new: true,
   });

@@ -20,15 +20,12 @@ const generateText = async ({ userText }) => {
           content: userText,
         },
       ],
-     
     });
     const rawRewrittenText = completion.choices[0]?.message?.content;
     const parsedResult = RewrittenTextSchema.safeParse({
       data: rawRewrittenText.trim(),
     });
-    console.log("Parsed Result:", completion.choices[0]?.message?.content);
     if (parsedResult.success) {
-      console.log("Parsed Result:", parsedResult.data);
       return parsedResult.data;
     } else {
       throw new Error("Invalid response from OpenAI");

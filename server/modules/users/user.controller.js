@@ -6,16 +6,22 @@ const { generatePassword } = require("../../utils/textUtil");
 const { generateOTP } = require("../../utils/token");
 
 const addUser = async (payload) => {
-  console.log({ payload });
-  const { email, name, roles = [], gender } = payload;
+  const { email, name, roles = [], gender, profilepic } = payload;
   const existingUser = await userModel.findOne({ email });
   if (existingUser) throw new Error("Email is already in used");
   const randomPassword = generatePassword();
   const password = generatedHash(randomPassword);
   const otp = generateOTP();
   const userRoles = roles.length === 0 ? ["user"] : roles;
-  const userPayload = { name, email, password, gender, roles: userRoles, otp };
-  console.log({ userPayload });
+  const userPayload = {
+    name,
+    email,
+    password,
+    gender,
+    roles: userRoles,
+    otp,
+    profilepic,
+  };
   const newuser = await userModel.create(userPayload);
   if (newuser) {
     const subject = "Welcome to ProResume AI";
@@ -28,7 +34,6 @@ const addUser = async (payload) => {
 
 const blockUser = async (id) => {
   const user = await userModel.findOne({ _id: id });
-  console.log(!user.isBlocked);
   if (!user) throw new Error("User not found");
   const result = await userModel.updateOne(
     { _id: id },
@@ -192,10 +197,12 @@ const updateUser = async (id, payload) => {
     _id: id,
   });
   if (!user) throw Error("User not found");
+  const userRoles = roles.length === 0 ? ["user"] : roles;
   const newPayload = {
     name: payload?.name,
     gender: payload?.gender.toLowerCase(),
     isBlocked: payload?.isBlocked,
+    roles: userRoles,
   };
   const updatedUser = await userModel
     .findOneAndUpdate({ _id: id }, newPayload, { new: true })

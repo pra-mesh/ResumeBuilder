@@ -19,7 +19,6 @@ const newUpload = upload(storage("public/uploads/users"), 1000000);
 
 router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
-    console.log(req.currentUser);
     const result = await userController.getProfile(req.currentUser);
     res.json(result);
   } catch (e) {
