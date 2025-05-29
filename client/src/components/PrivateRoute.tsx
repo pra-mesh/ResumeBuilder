@@ -1,4 +1,3 @@
-//BUG When refresh an admin user is redirected to dashboard
 import { Navigate } from "react-router";
 import { ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";

@@ -1,5 +1,5 @@
 const Review = ({ form }: { form: any }) => {
-  return <div>{form}</div>;
+  return <div>Preview</div>;
 };
 
 export default Review;

@@ -12,6 +12,7 @@ interface UserState {
   error: string;
   isLoading: boolean;
   userReport: any[];
+  selectedUser: UserInfo | null;
 }
 
 const initialState: UserState = {
@@ -23,6 +24,7 @@ const initialState: UserState = {
   error: "",
   isLoading: false,
   userReport: [],
+  selectedUser: null,
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -78,6 +80,12 @@ export const blockUser = createAsyncThunk(
     }
   }
 );
+export const editUser = createAsyncThunk(
+  "user/edit",
+  async (userInfo: UserInfo) => {
+    console.log(userInfo);
+  }
+);
 
 const userSlice = createSlice({
   name: "users",
@@ -87,12 +95,14 @@ const userSlice = createSlice({
       state.currentPage = action.payload;
     },
     setLimit: (state, action) => {
-      state.currentPage = 1;
       state.limit = action.payload;
     },
     setSearch: (state, action) => {
-      state.currentPage = 1;
+      state.currentPage = 1; //BUG on search text change goes to first page before data change delay
       state.searchValue = action.payload;
+    },
+    setSelectedUser: (state, action) => {
+      state.selectedUser = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -146,5 +156,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setCurrentPage, setLimit, setSearch } = userSlice.actions;
+export const { setCurrentPage, setLimit, setSearch, setSelectedUser } = userSlice.actions;
 export const userReducer = userSlice.reducer; //for extraReducers

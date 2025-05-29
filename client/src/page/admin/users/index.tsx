@@ -24,24 +24,17 @@ import {
   setCurrentPage,
   setSearch,
   blockUser,
+  setSelectedUser,
 } from "@/slices/userSlice";
 import { AppDispatch } from "@/store";
 import { formatDate } from "@/lib/dateFormatter";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Link } from "react-router";
+import { Link, useSearchParams, useNavigate } from "react-router";
 import { useDebounce } from "@/hooks/useDebounce";
 import { autoTable } from "jspdf-autotable";
 import { jsPDF } from "jspdf";
-type User = {
-  _id: string;
-  name: string;
-  email: string;
-  isBlocked: boolean;
-  isEmailVerified: boolean;
-  role: [string];
-  createdAt: string;
-  updatedAt: string;
-};
+import { UserInfo } from "@/interface/UserInfoProps";
+
 // Sample user data
 
 export default function AdminUsers() {
@@ -50,21 +43,22 @@ export default function AdminUsers() {
     (state: any) => state.users
   );
   const searchDebounce = useDebounce(searchValue, 1500);
-  const handleViewUser = (user: User) => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const handleViewUser = (user: UserInfo) => {
     toast(`Viewing ${user.name}'s profile`, {
       description: "User details loaded successfully",
       icon: <Eye className="h-4 w-4" />,
     });
   };
 
-  const handleEditUser = (user: User) => {
-    toast(`Editing ${user.name}'s profile`, {
-      description: "You can now edit this user's information",
-      icon: <Pencil className="h-4 w-4" />,
-    });
+  const handleEditUser = (user: UserInfo) => {
+    dispatch(setSelectedUser(user));
+    navigate(`/admin/users/${user._id}`);
   };
 
-  const handleBlockUser = (user: User) => {
+  const handleBlockUser = (user: UserInfo) => {
     const status = user?.isBlocked ? "unblocked" : "blocked";
     dispatch(blockUser({ id: user?._id, isBlocked: status }));
     if (status === "blocked") {
@@ -80,7 +74,7 @@ export default function AdminUsers() {
     }
   };
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<UserInfo>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -224,9 +218,28 @@ export default function AdminUsers() {
   const initUserFetch = useCallback(() => {
     dispatch(fetchUsers({ limit, page: currentPage, name: searchDebounce }));
   }, [dispatch, limit, currentPage, searchDebounce]);
+
+  //Browser current page and limit udate
+  useEffect(() => {
+    if (searchParams.get("limit") || searchParams.get("page")) {
+      const limitParam = parseInt(searchParams.get("limit") || "10");
+      const pageParam = parseInt(searchParams.get("page") || "1");
+      dispatch(setCurrentPage(pageParam));
+      dispatch(setLimit(limitParam));
+    }
+  }, [dispatch, searchParams]);
+  //URL update
+  useEffect(() => {
+    const query = new URLSearchParams({
+      page: currentPage.toString(),
+      limit: limit.toString(),
+    });
+    navigate(`?${query.toString()}`, { replace: true });
+  }, [currentPage, limit, navigate]);
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
+
   //TODO how to use tanstack and redux toolkit combined
 
   //TODO use Memo
@@ -293,7 +306,7 @@ export default function AdminUsers() {
         <h1 className="text-3xl font-bold tracking-tight">Users</h1>
         <ButtonGroup className="gap-2">
           <Button asChild>
-            <Link to="admin/users/add">
+            <Link to="/admin/users/add">
               <Plus className="mr-2 h-4 w-4" /> Add User
             </Link>
           </Button>

@@ -82,9 +82,11 @@ const ResumeForm = () => {
       window.scrollTo(10, 10);
     }
   };
-  //BUG on 6th step it is submitting
   const onsubmit = (data: any) => {
-    
+    if (currentStep !== totalSteps) {
+      console.log("Form attempted to submit prematurely on step", currentStep);
+      return;
+    }
     console.log("Form submitted with data:", data);
   };
 
@@ -129,9 +131,9 @@ const ResumeForm = () => {
           >
             Previous
           </Button>
-          {currentStep === totalSteps ? (
+          {currentStep === totalSteps && (
             <Button type="submit">Submit Resume</Button>
-          ) : (
+          )}  {currentStep !== totalSteps &&(
             <Button type="button" onClick={handleNext}>
               Next
             </Button>

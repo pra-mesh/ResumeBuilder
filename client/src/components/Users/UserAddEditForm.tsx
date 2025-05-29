@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
 import { profileFormProps } from "@/interface/profileFormProps";
+import { useNavigate } from "react-router";
 
 const ROLES = ["admin", "user"];
 const GENDERS = ["Male", "Female", "Other"];
@@ -18,6 +19,7 @@ const UserAddEditForm = ({
   initialData,
   onSubmit,
   isLoading,
+  isEditing = false,
   serverError,
   serverMessage,
   showPasswordFields = true,
@@ -27,9 +29,12 @@ const UserAddEditForm = ({
     initialData?.profilepic ? `/assets${initialData.profilepic}` : null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [roles, setRoles] = useState<string[]>([]);
+  const [roles, setRoles] = useState<string[]>(
+    initialData?.roles ? initialData.roles : []
+  );
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   const handleRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setRoles((prev) =>
@@ -67,7 +72,8 @@ const UserAddEditForm = ({
           "Password must be at least 6 characters if provided.";
       }
     }
-    if (!formData.get("email")) newErrors.email = "Email is required";
+    if (!formData.get("email") && !isEditing)
+      newErrors.email = "Email is required";
     if (!formData.get("name")) newErrors.name = "Name is required";
     if (showRole && roles.length < 1)
       newErrors.roles = "At least on role is required";
@@ -105,7 +111,10 @@ const UserAddEditForm = ({
       return () => clearTimeout(timeout);
     }
   }, [errors]);
-
+  useEffect(() => {
+    if (isEditing && !initialData) navigate("/admin/users");
+    //BUG How to fix on refresh if data changes navigate to other page or we can persist data.
+  }, [navigate, initialData, isEditing]);
   return (
     <form onSubmit={handleSubmit} ref={formRef} className="space-y-5">
       {/* Profile Picture Upload */}
@@ -179,9 +188,11 @@ const UserAddEditForm = ({
             name="email"
             type="email"
             placeholder="you@example.com"
+            defaultValue={initialData?.email || ""}
             className={`w-full rounded-md border ${
               errors.email ? "border-red-500" : "border-gray-300"
-            } px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
+            } disabled:bg-gray-200 px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
+            disabled={isEditing}
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -250,7 +261,7 @@ const UserAddEditForm = ({
         </label>
         <div className="mt-2 flex space-x-6">
           {GENDERS.map((gender) => (
-            <div className="flex items-center">
+            <div key={gender} className="flex items-center">
               <input
                 id={gender}
                 name="gender"

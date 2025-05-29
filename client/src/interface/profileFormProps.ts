@@ -8,4 +8,5 @@ export interface profileFormProps {
   serverMessage: string | null;
   showPasswordFields?: boolean;
   showRole?: boolean;
+  isEditing?: boolean;
 }

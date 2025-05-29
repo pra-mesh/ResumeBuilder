@@ -1,27 +1,33 @@
+import { Toaster } from "sonner";
 import { Route, Routes } from "react-router";
+
+import { lazy } from "react";
+
+import AdminLayout from "@/layout/AdminLayout";
+import AuthLayout from "./layout/AuthLayout";
+
+import AuthRoute from "@/components/AuthRoute";
+import PrivateRoute from "./components/PrivateRoute";
+import RouteWatcher from "@/components/RouteWatcher";
+
+import Resumes from "./page/user/resume";
+import Home from "@/page/Home";
 import Login from "@/page/auth/login";
+import AddResume from "@/page/user/resume/AddResume";
+import AdminUsers from "./page/admin/users";
+import AddNewUser from "./page/admin/users/AddNewUser";
+import EditUser from "./page/admin/users/EditUser";
 import Register from "@/page/auth/register";
-import NotFound from "./Error";
 import ForgotPassword from "@/page/auth/ForgetPassword";
 import EmailVerification from "@/page/auth/EmailVerification";
 import ResetPassword from "@/page/auth/RestPassword";
-import { lazy } from "react";
-import Home from "@/page/Home";
-import AdminLayout from "@/layout/AdminLayout";
-
-import AddResume from "@/page/user/resume/AddResume";
-import AdminUsers from "./page/admin/users";
-import { Resumes } from "./page/user/resume";
-import { Toaster } from "sonner";
-import PrivateRoute from "./components/PrivateRoute";
-import AuthRoute from "@/components/AuthRoute";
-import AddNewUser from "./page/admin/users/AddNewUser";
-import AuthLayout from "./layout/AuthLayout";
+import NotFound from "./Error";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
   return (
     <>
+      <RouteWatcher />
       <Routes>
         <Route
           path="auth"
@@ -52,7 +58,9 @@ const App = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="users/add" element={<AddNewUser />} />
+          <Route path="users/:id" element={<EditUser />} />
         </Route>
+
         <Route path="/user" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="resumes" element={<Resumes />} />
