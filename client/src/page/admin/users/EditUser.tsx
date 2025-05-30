@@ -19,13 +19,13 @@ const EditUser = () => {
     try {
       console.log(formData);
 
-      //TODO use redux or do as bellow;
-      // await axiosAdmin.post(`${URLS.USERS}`, formData, {
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
-      // setServerMessage("User Added");
+      //TODO use redux and update value of usersData;
+      await axiosAdmin.put(`${URLS.USERS}/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setServerMessage("User Edited");
       setTimeout(() => {
         navigate(-1);
       }, 4000);
@@ -39,7 +39,7 @@ const EditUser = () => {
     }
   };
   useEffect(() => {
-    if (!id) navigate("/adimn/users");
+    if (!id) navigate("/admin/users");
   });
   return (
     <div className="flex flex-col justify-center max-w-md m-auto  pt-2 pb-4">

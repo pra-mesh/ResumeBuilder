@@ -6,7 +6,7 @@ const { generatePassword } = require("../../utils/textUtil");
 const { generateOTP } = require("../../utils/token");
 
 const addUser = async (payload) => {
-  const { email, name, roles = [], gender, profilepic } = payload;
+  const { email, name, roles = [], gender, profilePic } = payload;
   const existingUser = await userModel.findOne({ email });
   if (existingUser) throw new Error("Email is already in used");
   const randomPassword = generatePassword();
@@ -20,16 +20,16 @@ const addUser = async (payload) => {
     gender,
     roles: userRoles,
     otp,
-    profilepic,
+    profilePic,
   };
-  const newuser = await userModel.create(userPayload);
-  if (newuser) {
+  const newUser = await userModel.create(userPayload);
+  if (newUser) {
     const subject = "Welcome to ProResume AI";
-    const message = `Thank you for singing up. Welcome ${name} \n Please use the code to veriify your email
-      \n Code: ${otp}. Your password is ${randomPassword} please change it after eamil verification.`;
+    const message = `Thank you for singing up. Welcome ${name} \n Please use the code to verify your email
+      \n Code: ${otp}. Your password is ${randomPassword} please change it after email verification.`;
     mailEvents.emit("sendMail", email, subject, message);
   }
-  return { data: "User added sucessfully" };
+  return { data: "User added successfully" };
 };
 
 const blockUser = async (id) => {
@@ -41,7 +41,7 @@ const blockUser = async (id) => {
   );
   if (result.acknowledged) {
     return {
-      data: `User ${user?.isBlocked ? "unblocked" : "blocked"} succefully`,
+      data: `User ${user?.isBlocked ? "unblocked" : "blocked"} successfully`,
     };
   }
 };
@@ -66,7 +66,7 @@ const changePassword = async (currentUser, payload) => {
       "sendMail",
       user?.email,
       "Password has been Reset",
-      `Your password has been changed succeffully.`
+      `Your password has been changed successfully.`
     );
   }
 };
@@ -197,12 +197,14 @@ const updateUser = async (id, payload) => {
     _id: id,
   });
   if (!user) throw Error("User not found");
-  const userRoles = roles.length === 0 ? ["user"] : roles;
+
+  const userRoles = payload.roles.length === 0 ? ["user"] : payload.roles;
   const newPayload = {
     name: payload?.name,
     gender: payload?.gender.toLowerCase(),
     isBlocked: payload?.isBlocked,
     roles: userRoles,
+    profilePic: payload?.profilePic,
   };
   const updatedUser = await userModel
     .findOneAndUpdate({ _id: id }, newPayload, { new: true })

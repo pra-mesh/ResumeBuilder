@@ -71,14 +71,14 @@ router.post(
   async (req, res, next) => {
     try {
       if (req.file) {
-        req.body.profilepic = req.file.path
+        req.body.profilePic = req.file.path
           .replace("public", "")
           .replaceAll("\\", "/");
       }
       const result = await userController.addUser(req.body);
       res.json(result);
     } catch (e) {
-      if (req.file) fs.unlinkSync("public".concat(req.body.profilepic));
+      if (req.file) fs.unlinkSync("public".concat(req.body.profilePic));
       next({ err: e.message, status: 500 });
     }
   }
@@ -93,14 +93,25 @@ router.get("/:id", secureAPI("admin"), async (req, res, next) => {
   }
 });
 
-router.put("/:id", secureAPI("admin"), async (req, res, next) => {
-  try {
-    const result = await userController.updateUser(req.params.id, req.body);
-    res.json({ data: result });
-  } catch (e) {
-    next(e);
+router.put(
+  "/:id",
+  secureAPI("admin"),
+  newUpload.single("picture"),
+  async (req, res, next) => {
+    try {
+      if (req.file) {
+        req.body.profilePic = req.file.path
+          .replace("public", "")
+          .replaceAll("\\", "/");
+      }
+      const result = await userController.updateUser(req.params.id, req.body);
+      res.json({ data: result });
+    } catch (e) {
+      if (req.file) fs.unlinkSync("public".concat(req.body.profilePic));
+      next({ err: e.message, status: 500 });
+    }
   }
-});
+);
 
 router.post("/reset-password", secureAPI(["admin"]), async (req, res, next) => {
   try {

@@ -73,7 +73,7 @@ export const SideBarAdmin = () => {
                     )}
                   >
                     <AvatarImage
-                      src={`/assets${user?.profilepic}`}
+                      src={`/assets${user?.profilePic}`}
                       alt="User avatar"
                     />
                     <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>

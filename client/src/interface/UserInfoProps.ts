@@ -9,5 +9,5 @@ export interface UserInfo {
   createdAt: string;
   updatedAt: string;
   __v: number;
-  profilepic: string;
+  profilePic: string;
 }

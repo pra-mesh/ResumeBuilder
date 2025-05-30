@@ -219,7 +219,7 @@ export default function AdminUsers() {
     dispatch(fetchUsers({ limit, page: currentPage, name: searchDebounce }));
   }, [dispatch, limit, currentPage, searchDebounce]);
 
-  //Browser current page and limit udate
+  //Browser current page and limit update
   useEffect(() => {
     if (searchParams.get("limit") || searchParams.get("page")) {
       const limitParam = parseInt(searchParams.get("limit") || "10");

@@ -12,7 +12,7 @@ const userSchema = new Schema(
     otp: { type: String },
     roles: { type: [String], enum: ["admin", "user"], default: "user" },
     refresh_token: { code: { type: String }, duration: { type: Date } },
-    profilepic: { type: String },
+    profilePic: { type: String },
   },
   { timestamps: true }
 );

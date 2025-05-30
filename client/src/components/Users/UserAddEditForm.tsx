@@ -26,7 +26,7 @@ const UserAddEditForm = ({
   showRole = false,
 }: profileFormProps) => {
   const [profilePreview, setProfilePreview] = useState<string | null>(
-    initialData?.profilepic ? `/assets${initialData.profilepic}` : null
+    initialData?.profilePic ? `/assets${initialData.profilePic}` : null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [roles, setRoles] = useState<string[]>(
