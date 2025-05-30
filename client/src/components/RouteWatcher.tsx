@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import { useDispatch } from "react-redux";
-import { setCurrentPage, setLimit } from "@/slices/userSlice";
+import { setCurrentPage, setLimit, setSearch } from "@/slices/userSlice";
 
 const RouteWatcher = () => {
   const location = useLocation();
@@ -16,6 +16,7 @@ const RouteWatcher = () => {
     ) {
       dispatch(setLimit(10));
       dispatch(setCurrentPage(1));
+      dispatch(setSearch(""));
     }
   });
   return null;

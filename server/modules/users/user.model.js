@@ -5,7 +5,7 @@ const userSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // and option select: false can be used if you never want to retrive the data later on
+    password: { type: String, required: true }, // and option select: false can be used if you never want to retrieve the data later on
     isBlocked: { type: Boolean, required: true, default: false },
     gender: { type: String, default: "m" },
     isEmailVerified: { type: Boolean, required: true, default: false },
