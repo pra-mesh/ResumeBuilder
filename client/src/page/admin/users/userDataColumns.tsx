@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { UserInfo } from "@/interface/UserInfoProps";
+import { UserInfo } from "@/types/UserInfoProps";
 import { formatDate } from "@/lib/dateFormatter";
 import { DataTableRowActions } from "@/components/ui/data-table-row-actions";
 import { Eye, LockIcon, Pencil, Trash2 } from "lucide-react";

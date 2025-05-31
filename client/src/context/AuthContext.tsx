@@ -3,7 +3,7 @@
 //TODO HOC for component based authentication like layer
 
 import { URLS } from "@/constants";
-import { UserInfo } from "@/interface/UserInfoProps";
+import { UserInfo } from "@/types/UserInfoProps";
 import { decodeJWT } from "@/lib/jwt";
 import { removeAllItems, setItem } from "@/lib/storage";
 import {

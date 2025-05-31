@@ -1,5 +1,5 @@
 import { URLS } from "@/constants";
-import { UserInfo } from "@/interface/UserInfoProps";
+import { UserInfo } from "@/types/UserInfoProps";
 import { axiosAdmin } from "@/lib/axiosAdmin";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -156,5 +156,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setCurrentPage, setLimit, setSearch, setSelectedUser } = userSlice.actions;
+export const { setCurrentPage, setLimit, setSearch, setSelectedUser } =
+  userSlice.actions;
 export const userReducer = userSlice.reducer; //for extraReducers

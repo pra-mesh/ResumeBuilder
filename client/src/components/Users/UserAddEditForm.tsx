@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
-import { profileFormProps } from "@/interface/profileFormProps";
+import { profileFormProps } from "@/types/profileFormProps";
 import { useNavigate } from "react-router";
 
 const ROLES = ["admin", "user"];
