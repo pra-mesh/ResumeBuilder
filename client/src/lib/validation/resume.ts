@@ -13,7 +13,7 @@ const isDateInFuture = (dateString: string) => {
 };
 
 export const personalInfoSchema = z.object({
-  fullName: z.string().min(2, "Full name must be atleast 2 characters"),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
   summary: z.string().min(10, "Summary must be at least 10 characters"),
@@ -41,10 +41,10 @@ export const certificationSchema = z.array(z.any()).optional(); // Adjust accord
 
 export const resumeSchema = z.object({
   personalInfo: personalInfoSchema,
-  education: z
+  educations: z
     .array(educationSchema)
     .min(1, "One education information is required"),
-  experience: experienceSchema,
+  experiences: experienceSchema,
   projects: projectSchema,
   skills: skillSchema,
   certifications: certificationSchema,
@@ -52,7 +52,7 @@ export const resumeSchema = z.object({
 
 export const draftResumeSchema = z.object({
   personalInfo: personalInfoSchema,
-  education: z.array(educationSchema).optional(),
+  educations: z.array(educationSchema).optional(),
   experiences: experienceSchema,
   projects: projectSchema,
   skills: skillSchema,

@@ -19,16 +19,10 @@ import { useState } from "react";
 import { Sparkle } from "@/components/ui/sparkle";
 import { generateProjectDescription } from "@/lib/ai-helpers";
 import { toast } from "sonner";
+import { ResumeCoreSections } from "@/types/resumeProps";
 
 export function ProjectsForm() {
-  const {
-    register,
-    control,
-    watch,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useFormContext();
+  const { control, setValue, getValues } = useFormContext<ResumeCoreSections>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "projects",
@@ -65,10 +59,9 @@ export function ProjectsForm() {
       toast.success("Description Generated!", {
         description: "AI has generated a project description for you.",
       });
-    } catch (error) {
+    } catch {
       toast.error("Error", {
         description: "Failed to generate description. Please try again.",
-      
       });
     }
   };
@@ -132,7 +125,7 @@ function ProjectItem({
     watch,
     setValue,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<ResumeCoreSections>();
   const [techInput, setTechInput] = useState("");
 
   const technologies = watch(`projects.${index}.technologies`) || [];

@@ -4,8 +4,8 @@ export async function generateProfessionalSummary(personalInfo: {
   email: string;
   phone: string;
   summary: string;
-  github: string;
-  linkedin: string;
+  github?: string;
+  linkedin?: string;
   address: string;
   website?: string;
 }): Promise<string> {
@@ -14,8 +14,12 @@ export async function generateProfessionalSummary(personalInfo: {
 
   // Mock AI-generated summary based on available info
   const name = personalInfo.fullName || "Professional";
-  const hasGithub = personalInfo.github ? "with strong technical portfolio" : "";
-  const hasLinkedIn = personalInfo.linkedin ? "and proven networking capabilities" : "";
+  const hasGithub = personalInfo.github
+    ? "with strong technical portfolio"
+    : "";
+  const hasLinkedIn = personalInfo.linkedin
+    ? "and proven networking capabilities"
+    : "";
 
   return `Experienced ${
     name.split(" ")[0]

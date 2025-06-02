@@ -17,6 +17,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Sparkle } from "@/components/ui/sparkle";
 import { generateExperienceDescription } from "@/lib/ai-helpers";
 import { toast } from "sonner";
+import { ResumeCoreSections } from "@/types/resumeProps";
 
 // Helper function to get current month in YYYY-MM format
 const getCurrentMonth = () => {
@@ -34,7 +35,7 @@ export function ExperienceForm() {
     setValue,
     getValues,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<ResumeCoreSections>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experiences",
@@ -72,7 +73,7 @@ export function ExperienceForm() {
       toast.success("Description Generated!", {
         description: "AI has generated a job description for you.",
       });
-    } catch (error: any) {
+    } catch {
       toast.error("Error", {
         description: "Failed to generate description. Please try again.",
       });
@@ -202,7 +203,8 @@ export function ExperienceForm() {
                     id={`experiences.${index}.current`}
                     checked={isCurrent}
                     onCheckedChange={(checked) => {
-                      setValue(`experiences.${index}.current`, checked);
+                      const isChecked = Boolean(checked);
+                      setValue(`experiences.${index}.current`, isChecked);
                       if (checked) {
                         setValue(`experiences.${index}.endDate`, "");
                       }

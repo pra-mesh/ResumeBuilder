@@ -41,8 +41,8 @@ export interface certification {
 
 export interface ResumeCoreSections {
   personalInfo: PersonalInfo;
-  education: Education[];
-  experience?: Experience[];
+  educations: Education[];
+  experiences?: Experience[];
   projects?: Projects[];
   skills?: Skills[];
   certifications?: certification[];

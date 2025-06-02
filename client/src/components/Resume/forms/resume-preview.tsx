@@ -112,13 +112,13 @@ export function ResumePreview() {
           )}
 
           {/* Education */}
-          {formData.education && formData.education.length > 0 && (
+          {formData.educations && formData.educations.length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
                 Education
               </h2>
               <div className="space-y-4">
-                {formData.education.map((edu, index) => (
+                {formData.educations.map((edu, index) => (
                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                     <div className="flex justify-between items-start mb-1">
                       <h3 className="text-lg font-semibold text-gray-900">

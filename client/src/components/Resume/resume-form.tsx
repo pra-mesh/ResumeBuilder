@@ -48,7 +48,7 @@ const defaultValues: ResumeCoreSections = {
     linkedin: "",
     website: "",
   },
-  education: [
+  educations: [
     {
       institution: "",
       degree: "",
@@ -57,7 +57,7 @@ const defaultValues: ResumeCoreSections = {
       course: "",
     },
   ],
-  experience: [],
+  experiences: [],
   skills: [],
   projects: [],
   certifications: [],
@@ -125,8 +125,8 @@ const ResumeForm = () => {
   //NOTES Learn about records
   const stepFieldsMap: Record<number, (keyof ResumeCoreSections)[]> = {
     0: ["personalInfo"],
-    1: ["education"],
-    2: ["experience"],
+    1: ["educations"],
+    2: ["experiences"],
     3: ["skills"],
     4: ["projects"],
     5: ["certifications"],

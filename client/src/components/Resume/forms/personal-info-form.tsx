@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sparkle } from "@/components/ui/sparkle";
 import { generateProfessionalSummary } from "@/lib/ai-helpers";
 import { toast } from "sonner";
+import { ResumeCoreSections } from "@/types/resumeProps";
 
 export function PersonalInfoForm() {
   const {
@@ -21,7 +22,7 @@ export function PersonalInfoForm() {
     formState: { errors },
     setValue,
     getValues,
-  } = useFormContext();
+  } = useFormContext<ResumeCoreSections>();
 
   const handleGenerateSummary = async () => {
     try {
@@ -31,7 +32,7 @@ export function PersonalInfoForm() {
       toast.success("Summary Generated!", {
         description: "AI has generated a professional summary for you.",
       });
-    } catch (error) {
+    } catch {
       toast.error("Error", {
         description: "Failed to generate summary. Please try again.",
       });
