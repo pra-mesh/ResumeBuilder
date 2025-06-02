@@ -25,7 +25,7 @@ export interface Experience {
   description: string;
 }
 export interface Skills {
-  name: string[];
+  name: string;
 }
 export interface Projects {
   title: string;

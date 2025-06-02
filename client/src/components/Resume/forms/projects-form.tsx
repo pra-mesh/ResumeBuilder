@@ -68,6 +68,7 @@ export function ProjectsForm() {
     } catch (error) {
       toast.error("Error", {
         description: "Failed to generate description. Please try again.",
+      
       });
     }
   };

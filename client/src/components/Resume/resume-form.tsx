@@ -58,7 +58,7 @@ const defaultValues: ResumeCoreSections = {
     },
   ],
   experience: [],
-  skills: [{ name: [""] }],
+  skills: [],
   projects: [],
   certifications: [],
 };

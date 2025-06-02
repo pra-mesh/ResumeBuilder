@@ -101,7 +101,7 @@ export function PersonalInfoForm() {
             />
             {errors.personalInfo?.address && (
               <p className="text-sm text-destructive">
-                {errors.personalInfo.address.message as string}
+                {errors.personalInfo?.address?.message}
               </p>
             )}
           </div>
