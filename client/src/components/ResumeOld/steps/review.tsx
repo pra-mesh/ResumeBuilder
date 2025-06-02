@@ -1,4 +1,4 @@
-const Review = ({ form }: { form: any }) => {
+const Review = () => {
   return <div>Preview</div>;
 };
 

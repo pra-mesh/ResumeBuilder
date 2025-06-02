@@ -51,7 +51,9 @@ export function PersonalInfoForm() {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name *</Label>
+            <Label htmlFor="fullName">
+              Full Name <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="fullName"
               {...register("personalInfo.fullName")}
@@ -64,7 +66,9 @@ export function PersonalInfoForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">
+              Email <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="email"
               type="email"
@@ -81,7 +85,9 @@ export function PersonalInfoForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone *</Label>
+            <Label htmlFor="phone">
+              Phone <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="phone"
               {...register("personalInfo.phone")}
@@ -94,7 +100,9 @@ export function PersonalInfoForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Address *</Label>
+            <Label htmlFor="address">
+              Address <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="address"
               {...register("personalInfo.address")}
@@ -110,7 +118,9 @@ export function PersonalInfoForm() {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="summary">Professional Summary *</Label>
+            <Label htmlFor="summary">
+              Professional Summary <span className="text-red-500">*</span>
+            </Label>
             <Sparkle
               onClick={handleGenerateSummary}
               tooltip="Generate professional summary with AI"

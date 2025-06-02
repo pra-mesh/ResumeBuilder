@@ -24,7 +24,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "resume-persist",
   storage,
-  //version: 1,
+  version: 1,
   whitelist: ["resumes", "users"],
   stateReconciler: autoMergeLevel2,
 };

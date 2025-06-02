@@ -72,7 +72,7 @@ export function EducationForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor={`educations.${index}.institution`}>
-                  Institution *
+                  Institution <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   {...register(`educations.${index}.institution`)}
@@ -85,7 +85,7 @@ export function EducationForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.degree`}>Degree *</Label>
+                <Label htmlFor={`educations.${index}.degree`}>Degree <span className="text-red-500">*</span></Label>
                 <Input
                   {...register(`educations.${index}.degree`)}
                   placeholder="Bachelor of Science"
@@ -100,7 +100,7 @@ export function EducationForm() {
 
             <div className="space-y-2">
               <Label htmlFor={`educations.${index}.course`}>
-                Field of Study *
+                Field of Study <span className="text-red-500">*</span>
               </Label>
               <Input
                 {...register(`educations.${index}.course`)}
@@ -116,7 +116,7 @@ export function EducationForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor={`educations.${index}.startDate`}>
-                  Start Date *
+                  Start Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="month"
@@ -130,7 +130,7 @@ export function EducationForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.endDate`}>End Date *</Label>
+                <Label htmlFor={`educations.${index}.endDate`}>End Date <span className="text-red-500">*</span></Label>
                 <Input
                   type="month"
                   {...register(`educations.${index}.endDate`)}

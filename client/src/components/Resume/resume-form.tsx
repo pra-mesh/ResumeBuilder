@@ -1,8 +1,11 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 
-import type { ResumeCoreSections } from "@/types/resumeProps";
+import { Resume, ResumeCoreSections } from "@/types/resumeProps";
 
+import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resumeSchema } from "@/lib/validation/resume";
 
@@ -16,62 +19,30 @@ import { ResumePreview } from "@/components/Resume/forms/resume-preview";
 import { ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { JSX } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import StepIndicator from "./forms/step-indicator";
 
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { steps } from "./forms/steps";
+import { defaultValues } from "./forms/defaultValue";
+import { AppDispatch } from "@/store";
+import { addNewResume } from "@/slices/resumeSlice";
 
-const steps = [
-  "Personal Info",
-  "Education",
-  "Experience",
-  "Skills",
-  "Projects",
-  "Certifications",
-  "Preview",
-];
-const defaultValues: ResumeCoreSections = {
-  personalInfo: {
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-    summary: "",
-    github: "",
-    linkedin: "",
-    website: "",
-  },
-  educations: [
-    {
-      institution: "",
-      degree: "",
-      startDate: "",
-      endDate: "",
-      course: "",
-    },
-  ],
-  experiences: [],
-  skills: [],
-  projects: [],
-  certifications: [],
-};
 const ResumeForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const methods = useForm<ResumeCoreSections>({
-    resolver: zodResolver(resumeSchema),
+    resolver: zodResolver(resumeSchema as any),
     defaultValues,
     mode: "onChange",
   });
+
   const {
     handleSubmit,
     trigger,
+    watch,
     getValues,
     formState: { isSubmitting },
   } = methods;
@@ -101,8 +72,35 @@ const ResumeForm = () => {
     }
     if (isValid) setCurrentStep(currentStep + 1);
   };
+
   const previousStep = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
+  };
+  const getResumeCoreSections = (): ResumeCoreSections =>
+    methods.getValues() as ResumeCoreSections;
+
+  const isFirstTwoStepsValid = () => {
+    watch(["personalInfo", "educations"]);
+    const personalInfo = getValues().personalInfo;
+    const education = getValues().educations;
+    const isPersonalInfoValid =
+      !!personalInfo.email &&
+      !!personalInfo.fullName &&
+      !!personalInfo.phone &&
+      !!personalInfo.summary &&
+      !!personalInfo.address;
+    const isEducationValid =
+      Array.isArray(education) &&
+      education.length > 0 &&
+      education.every(
+        (e) =>
+          !!e.institution &&
+          !!e.startDate &&
+          !!e.endDate &&
+          !!e.degree &&
+          !!e.course
+      );
+    return isPersonalInfoValid && isEducationValid;
   };
   const onSubmit = async (data: ResumeCoreSections) => {
     try {
@@ -113,10 +111,21 @@ const ResumeForm = () => {
       alert("Saved failed. Please try again");
     }
   };
-  const onSaveAndExit = async (data: ResumeCoreSections) => {
+  const onSaveAndExit = async () => {
     try {
-      console.log(data);
+      const data = getResumeCoreSections();
+      const resume: Resume = {
+        ...data,
+        id: uuidv4(),
+        title: `resume-${uuidv4()}`,
+        status: "draft",
+        updatedAt: new Date().toISOString(),
+        isSavedToServer: false,
+      };
+      dispatch(addNewResume(resume));
       alert("Resume draft saved successfully");
+      //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
+      navigate("/user/resumes");
     } catch (e) {
       console.error("Error saving resume:", e);
       alert("Saved failed. Please try again");
@@ -145,26 +154,23 @@ const ResumeForm = () => {
   };
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto  px-4">
         <div className="max-w-4xl mx-auto">
-          <Card className="mb-8">
+          <Card className="">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-3xl">
                 <div className="space-y-2 w-full">
-                  <Label htmlFor="fullName">Resume Title *</Label>
+                  <Label htmlFor="title">
+                    Resume Title <span className="text-red-500">*</span>
+                  </Label>
                   <Input id="title" type="text" placeholder="CEO" />
                 </div>
               </CardTitle>
-              <CardDescription>
-                Create a professional resume step by step
-              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <StepIndicator steps={steps} currentStep={currentStep} />
-            </CardContent>
           </Card>
+          <StepIndicator steps={steps} currentStep={currentStep} />
           <FormProvider {...methods}>
-            <form>{renderStepContent()}</form>
+            <form className="mt-5">{renderStepContent()}</form>
             <div className="flex justify-between mt-3">
               <Button
                 type="button"
@@ -200,7 +206,7 @@ const ResumeForm = () => {
                       type="button"
                       onClick={handleSubmit(onSaveAndExit)}
                       variant="default"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !isFirstTwoStepsValid()}
                     >
                       {isSubmitting ? (
                         <>

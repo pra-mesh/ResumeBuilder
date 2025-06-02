@@ -15,7 +15,10 @@ const resumeSlice = createSlice({
   //Drafting resume to states
   reducers: {
     addNewResume(state, action: PayloadAction<Resume>) {
-      state.resumes.push(action.payload);
+      const index = state.resumes.findIndex((r) => r.id === action.payload.id);
+      if (index !== -1) {
+        state.resumes[index] = action.payload;
+      } else state.resumes.push(action.payload);
     },
     updateResume(state, action: PayloadAction<Resume>) {
       const index = state.resumes.findIndex((r) => r.id === action.payload.id);

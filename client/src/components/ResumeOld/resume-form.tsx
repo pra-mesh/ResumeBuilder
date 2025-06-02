@@ -121,7 +121,7 @@ const ResumeForm = () => {
         {currentStep === 4 && <Skills form={form} />}
         {currentStep === 5 && <Projects form={form} />}
         {currentStep === 6 && <Certifications form={form} />}
-        {currentStep >= 7 && <Preview form={form} />}
+        {currentStep >= 7 && <Preview />}
         <div className="flex justify-between mt-3">
           <Button
             type="button"
@@ -133,7 +133,8 @@ const ResumeForm = () => {
           </Button>
           {currentStep === totalSteps && (
             <Button type="submit">Submit Resume</Button>
-          )}  {currentStep !== totalSteps &&(
+          )}{" "}
+          {currentStep !== totalSteps && (
             <Button type="button" onClick={handleNext}>
               Next
             </Button>
