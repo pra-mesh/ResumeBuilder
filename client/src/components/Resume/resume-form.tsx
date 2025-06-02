@@ -1,146 +1,229 @@
-import { useForm } from "react-hook-form";
-import { Card, CardContent } from "../ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { Input } from "../ui/input";
-import PersonalInfo from "./steps/personal-Info";
-import StepIndicator from "./steps/step-indicator";
+import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
-import Skills from "./steps/skills";
-import Projects from "./steps/projects";
-import Certifications from "./steps/certifications";
-import Preview from "./steps/review";
-import { Button } from "../ui/button";
-import Education from "./steps/education";
-import Experience from "./steps/experience";
+import type { ResumeCoreSections } from "@/types/resumeProps";
 
-const ResumeForm = () => {
-  //[ ] Move this to another file to organize code
-  const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7;
-  //Sets default form value
-  const form = useForm({
-    // TODO: Add Validation to form
-    defaultValues: {
-      title: "",
-      personalInfo: {
-        github: "",
-        linkedin: "",
-        phone: "",
-        address: "",
-        website: "",
-      },
-      summary: "",
-      education: [
-        {
-          institution: "",
-          degree: "",
-          startDate: "",
-          endDate: "",
-          course: "",
-        },
-      ],
-      experience: [
-        {
-          company: "",
-          position: "",
-          location: "",
-          startDate: "",
-          endDate: "",
-          current: false,
-          description: "",
-        },
-      ],
-      skills: [{ name: "" }],
-      projects: [
-        {
-          title: "",
-          description: "",
-          technologies: [""],
-          link: "",
-        },
-      ],
-      certification: [
-        {
-          name: "",
-          issuer: "",
-          date: "",
-        },
-      ],
+import { zodResolver } from "@hookform/resolvers/zod";
+import { resumeSchema } from "@/lib/validation/resume";
+
+import { CertificationsForm } from "@/components/Resume/forms/certifications-form";
+import { EducationForm } from "@/components/Resume/forms/education-form";
+import { ExperienceForm } from "@/components/Resume/forms/experience-form";
+import { PersonalInfoForm } from "@/components/Resume/forms/personal-info-form";
+import { ProjectsForm } from "@/components/Resume/forms/projects-form";
+import { SkillsForm } from "@/components/Resume/forms/skills-form";
+import { ResumePreview } from "@/components/Resume/forms/resume-preview";
+import { ChevronLeft, ChevronRight, Save } from "lucide-react";
+import { JSX } from "react/jsx-runtime";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import StepIndicator from "./forms/step-indicator";
+
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+
+const steps = [
+  "Personal Info",
+  "Education",
+  "Experience",
+  "Skills",
+  "Projects",
+  "Certifications",
+  "Preview",
+];
+const defaultValues: ResumeCoreSections = {
+  personalInfo: {
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    summary: "",
+    github: "",
+    linkedin: "",
+    website: "",
+  },
+  education: [
+    {
+      institution: "",
+      degree: "",
+      startDate: "",
+      endDate: "",
+      course: "",
     },
+  ],
+  experience: [],
+  skills: [{ name: [""] }],
+  projects: [],
+  certifications: [],
+};
+const ResumeForm = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const methods = useForm<ResumeCoreSections>({
+    resolver: zodResolver(resumeSchema),
+    defaultValues,
+    mode: "onChange",
   });
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo(10, 10);
-    }
-  };
-  const handleNext = () => {
-    console.log(`Moving from Step ${currentStep} to ${currentStep + 1}`);
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(10, 10);
-    }
-  };
-  const onsubmit = (data: any) => {
-    if (currentStep !== totalSteps) {
-      console.log("Form attempted to submit prematurely on step", currentStep);
-      return;
-    }
-    console.log("Form submitted with data:", data);
-  };
+  const {
+    handleSubmit,
+    trigger,
+    getValues,
+    formState: { isSubmitting },
+  } = methods;
 
+  const nextStep = async () => {
+    if (currentStep >= steps.length - 1) return;
+    //TODO: Validate the content
+    let isValid = true;
+
+    const fieldsToValidate = stepFieldsMap[currentStep] || [];
+    if (currentStep === 0 || currentStep === 1) {
+      isValid = await trigger(fieldsToValidate);
+    } else if (currentStep < 6) {
+      // TODO: Validate if there is content
+      const currentData = getValues();
+      const sectionName = fieldsToValidate[0];
+      if (
+        Array.isArray(currentData[sectionName]) &&
+        currentData[sectionName].length > 0
+      )
+        isValid = await trigger(fieldsToValidate);
+      //TODO skip validation if optional sections are empty
+      else isValid = true;
+    } else {
+      //Preview step no -validation required
+      isValid = true;
+    }
+    if (isValid) setCurrentStep(currentStep + 1);
+  };
+  const previousStep = () => {
+    if (currentStep > 0) setCurrentStep(currentStep - 1);
+  };
+  const onSubmit = async (data: ResumeCoreSections) => {
+    try {
+      console.log(data);
+      alert("Resume saved successfully");
+    } catch (e) {
+      console.error("Error saving resume:", e);
+      alert("Saved failed. Please try again");
+    }
+  };
+  const onSaveAndExit = async (data: ResumeCoreSections) => {
+    try {
+      console.log(data);
+      alert("Resume draft saved successfully");
+    } catch (e) {
+      console.error("Error saving resume:", e);
+      alert("Saved failed. Please try again");
+    }
+  };
+  //NOTES Learn about records
+  const stepFieldsMap: Record<number, (keyof ResumeCoreSections)[]> = {
+    0: ["personalInfo"],
+    1: ["education"],
+    2: ["experience"],
+    3: ["skills"],
+    4: ["projects"],
+    5: ["certifications"],
+    6: [],
+  };
+  const renderStepContent = () => stepComponentsMap[currentStep] || null;
+
+  const stepComponentsMap: Record<number, JSX.Element | null> = {
+    0: <PersonalInfoForm />,
+    1: <EducationForm />,
+    2: <ExperienceForm />,
+    3: <SkillsForm />,
+    4: <ProjectsForm />,
+    5: <CertificationsForm />,
+    6: <ResumePreview />,
+  };
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onsubmit)} id="resumeForm">
-        <Card>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Resume Title <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g., Software Developer Resume"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
-        {currentStep === 1 && <PersonalInfo form={form} />}
-        {currentStep === 2 && <Education form={form} />}
-        {currentStep === 3 && <Experience form={form} />}
-        {currentStep === 4 && <Skills form={form} />}
-        {currentStep === 5 && <Projects form={form} />}
-        {currentStep === 6 && <Certifications form={form} />}
-        {currentStep >= 7 && <Preview form={form} />}
-        <div className="flex justify-between mt-3">
-          <Button
-            type="button"
-            onClick={handlePrevious}
-            variant="outline"
-            disabled={currentStep === 1}
-          >
-            Previous
-          </Button>
-          {currentStep === totalSteps && (
-            <Button type="submit">Submit Resume</Button>
-          )}  {currentStep !== totalSteps &&(
-            <Button type="button" onClick={handleNext}>
-              Next
-            </Button>
-          )}
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <Card className="mb-8">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2 text-3xl">
+                <div className="space-y-2 w-full">
+                  <Label htmlFor="fullName">Resume Title *</Label>
+                  <Input id="title" type="text" placeholder="CEO" />
+                </div>
+              </CardTitle>
+              <CardDescription>
+                Create a professional resume step by step
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StepIndicator steps={steps} currentStep={currentStep} />
+            </CardContent>
+          </Card>
+          <FormProvider {...methods}>
+            <form>{renderStepContent()}</form>
+            <div className="flex justify-between mt-3">
+              <Button
+                type="button"
+                onClick={previousStep}
+                variant="outline"
+                disabled={currentStep === 0}
+              >
+                <ChevronLeft className="h-4 2-4 mr-2" />
+                Previous
+              </Button>
+              <div className="flex gap-2">
+                {currentStep === steps.length - 1 ? (
+                  <Button
+                    type="button"
+                    variant="default"
+                    onClick={handleSubmit(onSubmit)}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div>Saving...</div>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Resume
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={handleSubmit(onSaveAndExit)}
+                      variant="default"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div>Saving Draft... </div>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" /> Save as draft
+                        </>
+                      )}
+                    </Button>
+                    <Button type="button" onClick={nextStep} variant="outline">
+                      Next
+                      <ChevronRight className="h-4 w-4 mr-2" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </FormProvider>
         </div>
-      </form>
-    </Form>
+      </div>
+    </div>
   );
 };
 

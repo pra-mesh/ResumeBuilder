@@ -2,8 +2,8 @@ export interface PersonalInfo {
   fullName: string;
   email: string;
   phone: string;
-  address?: string;
-  summary?: string;
+  address: string;
+  summary: string;
   github?: string;
   linkedin?: string;
   website?: string;
@@ -40,11 +40,12 @@ export interface certification {
 }
 
 export interface ResumeCoreSections {
-  personal: PersonalInfo;
+  personalInfo: PersonalInfo;
   education: Education[];
-  experience: Experience[];
-  projects: Projects[];
-  skills: Skills[];
+  experience?: Experience[];
+  projects?: Projects[];
+  skills?: Skills[];
+  certifications?: certification[];
 }
 
 export interface Resume extends ResumeCoreSections {
