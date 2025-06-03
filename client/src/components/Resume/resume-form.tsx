@@ -1,13 +1,13 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+//import { useNavigate } from "react-router";
 
 import { Resume, ResumeCoreSections } from "@/types/resumeProps";
 
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { resumeSchema } from "@/lib/validation/resume";
+import { resumeFormSchema } from "@/lib/validation/resume";
 
 import { CertificationsForm } from "@/components/Resume/forms/certifications-form";
 import { EducationForm } from "@/components/Resume/forms/education-form";
@@ -31,20 +31,21 @@ import { addNewResume } from "@/slices/resumeSlice";
 
 const ResumeForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const methods = useForm<ResumeCoreSections>({
-    resolver: zodResolver(resumeSchema as any),
+  const methods = useForm<Resume>({
+    resolver: zodResolver(resumeFormSchema as any),
     defaultValues,
     mode: "onChange",
   });
 
   const {
+    register,
     handleSubmit,
     trigger,
     watch,
     getValues,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const nextStep = async () => {
@@ -76,8 +77,8 @@ const ResumeForm = () => {
   const previousStep = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
   };
-  const getResumeCoreSections = (): ResumeCoreSections =>
-    methods.getValues() as ResumeCoreSections;
+  // const getResumeCoreSections = (): ResumeCoreSections =>
+  //   methods.getValues() as ResumeCoreSections;
 
   const isFirstTwoStepsValid = () => {
     watch(["personalInfo", "educations"]);
@@ -111,29 +112,29 @@ const ResumeForm = () => {
       alert("Saved failed. Please try again");
     }
   };
-  const onSaveAndExit = async () => {
+  const onSaveDraft = async (data: Resume) => {
     try {
-      const data = getResumeCoreSections();
       const resume: Resume = {
         ...data,
         id: uuidv4(),
-        title: `resume-${uuidv4()}`,
         status: "draft",
         updatedAt: new Date().toISOString(),
         isSavedToServer: false,
       };
+      console.log(resume);
+
       dispatch(addNewResume(resume));
       alert("Resume draft saved successfully");
       //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
-      navigate("/user/resumes");
+      
     } catch (e) {
       console.error("Error saving resume:", e);
       alert("Saved failed. Please try again");
     }
   };
   //NOTES Learn about records
-  const stepFieldsMap: Record<number, (keyof ResumeCoreSections)[]> = {
-    0: ["personalInfo"],
+  const stepFieldsMap: Record<number, (keyof Resume)[]> = {
+    0: ["title", "personalInfo"],
     1: ["educations"],
     2: ["experiences"],
     3: ["skills"],
@@ -163,7 +164,17 @@ const ResumeForm = () => {
                   <Label htmlFor="title">
                     Resume Title <span className="text-red-500">*</span>
                   </Label>
-                  <Input id="title" type="text" placeholder="CEO" />
+                  <Input
+                    id="title"
+                    type="text"
+                    placeholder="CEO"
+                    {...register("title")}
+                  />
+                  {errors.title && (
+                    <p className="text-sm text-destructive text-left">
+                      {errors.title?.message}
+                    </p>
+                  )}
                 </div>
               </CardTitle>
             </CardHeader>
@@ -204,7 +215,7 @@ const ResumeForm = () => {
                   <>
                     <Button
                       type="button"
-                      onClick={handleSubmit(onSaveAndExit)}
+                      onClick={handleSubmit(onSaveDraft)}
                       variant="default"
                       disabled={isSubmitting || !isFirstTwoStepsValid()}
                     >

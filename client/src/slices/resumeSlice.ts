@@ -3,10 +3,12 @@ import { Resume } from "@/types/resumeProps";
 
 interface ResumeState {
   resumes: Resume[];
+  currentResumeId: string | null;
 }
 
 const initialState: ResumeState = {
   resumes: [],
+  currentResumeId: null,
 };
 
 const resumeSlice = createSlice({
@@ -14,6 +16,9 @@ const resumeSlice = createSlice({
   initialState,
   //Drafting resume to states
   reducers: {
+    setCurrentResume(state, action: PayloadAction<string | null>) {
+      state.currentResumeId = action.payload;
+    },
     addNewResume(state, action: PayloadAction<Resume>) {
       const index = state.resumes.findIndex((r) => r.id === action.payload.id);
       if (index !== -1) {

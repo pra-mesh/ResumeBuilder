@@ -1,5 +1,4 @@
 //[ ] token validation and auth validation
-//BUG User not updating when access token is expired and the page is refreshed
 //TODO HOC for component based authentication like layer
 
 import { URLS } from "@/constants";

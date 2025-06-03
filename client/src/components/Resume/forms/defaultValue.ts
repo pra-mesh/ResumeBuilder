@@ -1,6 +1,11 @@
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { Resume } from "@/types/resumeProps";
 
-export const defaultValues: ResumeCoreSections = {
+export const defaultValues: Resume = {
+  id: "",
+  title: "",
+  status: "draft",
+  updatedAt: "",
+  isSavedToServer: false,
   personalInfo: {
     fullName: "",
     email: "",
