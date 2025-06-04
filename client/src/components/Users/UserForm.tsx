@@ -31,7 +31,6 @@ const UserForm = ({ mode, user, onSuccess, onCancel }: UserFormProps) => {
   const [newRole, setNewRole] = useState("");
   useEffect(() => {
     if (mode === "edit" && user) {
-      console.log({ user });
       setFormData(user);
     }
   }, [mode, user]);
@@ -72,11 +71,14 @@ const UserForm = ({ mode, user, onSuccess, onCancel }: UserFormProps) => {
         await createUserMutation.mutateAsync(formData);
         toast.success("User Added", { description: "New User Added" });
         //TODO navigate back to user list
-        handleReset();
       } else {
         await updateUserMutation.mutateAsync(formData);
         toast.success("User Updated", { description: "User Edited" });
       }
+      setTimeout(() => {
+        handleReset();
+        onSuccess?.();
+      }, 4000);
     } catch (e) {
       console.error(e);
       toast.error("Error", {
