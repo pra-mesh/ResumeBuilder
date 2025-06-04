@@ -4,10 +4,19 @@ export interface UserInfo {
   email: string;
   isBlocked: boolean;
   isEmailVerified: boolean;
-  roles: [string];
+  roles: string[];
   gender: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
   profilePic: string;
+}
+
+export interface profileFormProps {
+  mode: "create" | "edit";
+  initialData?: UserInfo;
+  onSuccess: () => void;
+  showPasswordFields?: boolean;
+  showRole?: boolean;
+  isEditing?: boolean;
 }

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { fetchUser } from "@/services/users";
-import { User } from "@/types/UserFormProps";
+import { User } from "@/types/UserProps";
 
 import UserForm from "@/components/Users/UserForm";
 import { Card, CardContent } from "@/components/ui/card";

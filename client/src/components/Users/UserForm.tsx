@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Role, User, UserFormProps } from "@/types/UserFormProps";
+import { Role, User, UserFormProps } from "@/types/UserProps";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";

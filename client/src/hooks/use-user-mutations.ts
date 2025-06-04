@@ -1,4 +1,4 @@
-import { User } from "@/types/UserFormProps";
+import { User } from "@/types/UserProps";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "@/services/users";
 

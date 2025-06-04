@@ -1,6 +1,6 @@
 import { URLS } from "@/constants";
 import { axiosAdmin } from "@/lib/axiosAdmin";
-import { User } from "@/types/UserFormProps";
+import { User } from "@/types/UserProps";
 import { UserInfo } from "@/types/UserInfoProps";
 import { AxiosResponse } from "axios";
 

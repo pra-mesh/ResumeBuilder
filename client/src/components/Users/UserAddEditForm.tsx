@@ -11,7 +11,7 @@ import { useCreateUser, useUpdateUser } from "@/hooks/useUserMutation";
 
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
-import { profileFormProps } from "@/types/profileFormProps";
+import { profileFormProps } from "@/types/UserInfoProps";
 import { toast } from "sonner";
 
 const ROLES = ["admin", "user"];

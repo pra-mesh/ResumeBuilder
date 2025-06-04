@@ -1,5 +1,5 @@
 import { createUserFormData, updateUserFormData } from "@/services/users";
-import { User } from "@/types/UserFormProps";
+import { User } from "@/types/UserProps";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 const updateUserByID = async (payload: {
   id: string;
