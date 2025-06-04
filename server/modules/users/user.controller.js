@@ -79,7 +79,7 @@ const getProfile = async (currentUser) =>
 const getByID = async (id) =>
   await userModel
     .findById({ _id: id })
-    .select("-_id -password -refresh_token -otp -__v");
+    .select("-password -refresh_token -otp -__v");
 
 const list = async ({ page = 1, limit = 10, search }) => {
   const query = [];

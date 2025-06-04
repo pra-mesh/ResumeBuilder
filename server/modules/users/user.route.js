@@ -3,6 +3,7 @@ const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
 const { storage, upload } = require("../../utils/multer");
 const fs = require("fs");
+
 router.post(
   "/change-password",
   secureAPI(["admin", "user"]),
@@ -79,7 +80,7 @@ router.post(
       res.json(result);
     } catch (e) {
       if (req.file) fs.unlinkSync("public".concat(req.body.profilePic));
-      next({ err: e.message, status: 500 });
+      next({ err: e.message, status: 400 });
     }
   }
 );
@@ -89,7 +90,7 @@ router.get("/:id", secureAPI("admin"), async (req, res, next) => {
     const result = await userController.getByID(req.params.id);
     res.json({ data: result });
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 404 });
   }
 });
 
@@ -104,6 +105,7 @@ router.put(
           .replace("public", "")
           .replaceAll("\\", "/");
       }
+      console.log(req.params.id);
       const result = await userController.updateUser(req.params.id, req.body);
       res.json({ data: result });
     } catch (e) {

@@ -16,13 +16,14 @@ import Login from "@/page/auth/login";
 import AddResume from "@/page/user/resume/AddResume";
 import AdminUsers from "./page/admin/users";
 import AddNewUser from "./page/admin/users/AddNewUser";
-//import EditUser from "./page/admin/users/EditUser";
+import EditUser from "./page/admin/users/EditUser";
 import Register from "@/page/auth/register";
 import ForgotPassword from "@/page/auth/ForgetPassword";
 import EmailVerification from "@/page/auth/EmailVerification";
 import ResetPassword from "@/page/auth/RestPassword";
 import NotFound from "./Error";
-import Edit from "@/page/admin/users/Edit";
+//import Edit from "@/page/admin/users/Edit";
+
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
@@ -59,7 +60,7 @@ const App = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="users/add" element={<AddNewUser />} />
-          <Route path="users/:id" element={<Edit />} />
+          <Route path="users/:id" element={<EditUser />} />
         </Route>
 
         <Route path="/user" element={<AdminLayout />}>

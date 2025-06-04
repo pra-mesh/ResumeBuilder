@@ -14,6 +14,7 @@ import { setSelectedUser, blockUser } from "@/slices/userSlice";
 const UsersDataColumns = (): ColumnDef<UserInfo>[] => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  
   const handleViewUser = (user: UserInfo) => {
     toast(`Viewing ${user.name}'s profile`, {
       description: "User details loaded successfully",

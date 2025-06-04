@@ -6,10 +6,13 @@ export type User = {
   email: string;
   isBlocked: boolean;
   isEmailVerified: boolean;
+  gender?: string;
+  password?: string;
   roles: Role[];
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
+  profilePic?: string;
 };
 
 export interface UserFormProps {

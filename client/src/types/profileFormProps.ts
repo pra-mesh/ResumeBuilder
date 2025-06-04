@@ -1,11 +1,10 @@
 import { UserInfo } from "./UserInfoProps";
 
 export interface profileFormProps {
+  mode: "create" | "edit";
   initialData?: UserInfo;
-  onSubmit: (formData: FormData) => void;
-  isLoading: boolean;
-  serverError: string | null;
-  serverMessage: string | null;
+  onSuccess: () => void;
+
   showPasswordFields?: boolean;
   showRole?: boolean;
   isEditing?: boolean;

@@ -7,21 +7,20 @@ import {
 } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useCreateUser, useUpdateUser } from "@/hooks/useUserMutation";
 
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
 import { profileFormProps } from "@/types/profileFormProps";
-import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const ROLES = ["admin", "user"];
 const GENDERS = ["Male", "Female", "Other"];
+
 const UserAddEditForm = ({
+  mode,
   initialData,
-  onSubmit,
-  isLoading,
-  isEditing = false,
-  serverError,
-  serverMessage,
+  onSuccess,
   showPasswordFields = true,
   showRole = false,
 }: profileFormProps) => {
@@ -29,20 +28,11 @@ const UserAddEditForm = ({
     initialData?.profilePic ? `/assets${initialData.profilePic}` : null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [roles, setRoles] = useState<string[]>(
-    initialData?.roles ? initialData.roles : []
-  );
+
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-  const handleRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setRoles((prev) =>
-      event.target.checked
-        ? [...prev, value]
-        : prev.filter((item) => item !== value)
-    );
-  };
+  const createUserMutation = useCreateUser();
+  const updateUserMutation = useUpdateUser();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -72,14 +62,21 @@ const UserAddEditForm = ({
           "Password must be at least 6 characters if provided.";
       }
     }
-    if (!formData.get("email") && !isEditing)
+    if (!formData.get("email") && mode === "create")
       newErrors.email = "Email is required";
+
     if (!formData.get("name")) newErrors.name = "Name is required";
-    if (showRole && roles.length < 1)
-      newErrors.roles = "At least on role is required";
+
+    if (showRole) {
+      const selectedRoles = formData.getAll("roles[]"); // Get all values for 'roles[]'
+      if (selectedRoles.length < 1) {
+        newErrors.roles = "At least one role is required";
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (formRef.current) {
@@ -89,18 +86,31 @@ const UserAddEditForm = ({
       if (fileInput) {
         formData.append("picture", fileInput);
       }
-      if (showRole) roles.forEach((role) => formData.append("roles[]", role));
+
       formData.delete("confirmPassword");
-      onSubmit(formData);
+      if (mode === "create") {
+        await createUserMutation.mutateAsync(formData);
+        toast.success("User Added", { description: "New User Added" });
+      } else {
+        await updateUserMutation.mutateAsync({
+          id: initialData?._id || "",
+          formData,
+        });
+        toast.success("User Updated", { description: "User Edited" });
+      }
+
       setTimeout(() => {
-        formRef.current?.reset();
-        setProfilePreview(null);
-        setRoles([]);
-        setErrors({});
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        handleReset();
+        onSuccess();
       }, 4000);
+    }
+  };
+  const handleReset = () => {
+    if (mode === "create") formRef.current?.reset();
+    setProfilePreview(null);
+    setErrors({});
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
   useEffect(() => {
@@ -111,10 +121,12 @@ const UserAddEditForm = ({
       return () => clearTimeout(timeout);
     }
   }, [errors]);
-  useEffect(() => {
-    if (isEditing && !initialData) navigate("/admin/users");
-    //BUG How to fix on refresh if data changes navigate to other page or we can persist data.
-  }, [navigate, initialData, isEditing]);
+
+  const serverError =
+    mode === "create" ? createUserMutation.error : updateUserMutation.error;
+
+  const isLoading =
+    createUserMutation.isPending || updateUserMutation.isPending;
   return (
     <form onSubmit={handleSubmit} ref={formRef} className="space-y-5">
       {/* Profile Picture Upload */}
@@ -192,7 +204,7 @@ const UserAddEditForm = ({
             className={`w-full rounded-md border ${
               errors.email ? "border-red-500" : "border-gray-300"
             } disabled:bg-gray-200 px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-            disabled={isEditing}
+            disabled={mode === "edit"}
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -235,9 +247,9 @@ const UserAddEditForm = ({
                 <input
                   type="checkbox"
                   id={role}
+                  name="roles[]"
                   value={role}
                   defaultChecked={initialData?.roles.includes(role)}
-                  onChange={handleRoleChange}
                   className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
                 />
                 <label
@@ -289,14 +301,7 @@ const UserAddEditForm = ({
         {serverError && (
           <Alert variant="destructive" className="border-red-200 bg-red-50 p-0">
             <AlertDescription className="text-red-700">
-              {serverError}
-            </AlertDescription>
-          </Alert>
-        )}
-        {serverMessage && (
-          <Alert variant="success" className="border-green-200 bg-green-50 p-0">
-            <AlertDescription className="text-green-700">
-              {serverMessage}
+              {serverError.message || "Something went wrong"}
             </AlertDescription>
           </Alert>
         )}
