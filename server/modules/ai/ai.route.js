@@ -7,7 +7,8 @@ router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
     res.json(await generateText(req.body));
   } catch (e) {
-    next(e);
+    console.log(e);
+    next({ err: e.message, status: 400 });
   }
 });
 

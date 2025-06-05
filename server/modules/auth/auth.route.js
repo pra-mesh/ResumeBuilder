@@ -10,7 +10,7 @@ router.post("/login", async (req, res, next) => {
 
     res.json(result);
   } catch (e) {
-    next({ err: e.err, status: 500 });
+    next({ err: e, status: 400 });
   }
 });
 const newUpload = upload(storage("public/uploads/users"), 1000000);

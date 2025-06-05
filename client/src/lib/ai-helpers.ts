@@ -82,3 +82,19 @@ export async function generateProjectDescription(project: {
 
   return `${title} is a comprehensive application ${hasLink} built using ${techs}. This project demonstrates proficiency in modern development practices including responsive design, user experience optimization, and scalable architecture. Key features include intuitive user interface, robust data management, and seamless integration with external services. The project showcases problem-solving skills and attention to both technical excellence and user needs.`;
 }
+
+export const projectDesc = (project: {
+  title?: string;
+  description?: string;
+  technologies?: string[];
+  link?: string;
+}): string => {
+  const title = project.title ? `Title: ${project.title}` : "";
+  const desc = project.description ? `Description: ${project.description}` : "";
+  const tech = project.technologies?.length
+    ? `Technologies: ${project.technologies.join(", ")}`
+    : "";
+  console.log(title);
+  const finalDesc = [title, desc, tech].filter(Boolean).join(" | ");
+  return finalDesc;
+};

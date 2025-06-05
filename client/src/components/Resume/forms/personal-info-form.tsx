@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sparkle } from "@/components/ui/sparkle";
 import { toast } from "sonner";
 import { Resume } from "@/types/resumeProps";
-import { useGetAIText } from "@/hooks/useResumeMutation";
+import { useGetAIText } from "@/hooks/useResumeAIMutation";
 
 export function PersonalInfoForm() {
   const {
@@ -39,7 +39,6 @@ export function PersonalInfoForm() {
     setValue("personalInfo.summary", generatedSummary, {
       shouldValidate: true,
     });
-    
   };
 
   return (

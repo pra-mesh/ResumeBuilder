@@ -16,7 +16,7 @@ import { Sparkle } from "@/components/ui/sparkle";
 
 import { toast } from "sonner";
 import { Resume } from "@/types/resumeProps";
-import { useGetAIText } from "@/hooks/useResumeMutation";
+import { ExperienceDesc, useGetAIText } from "@/hooks/useResumeAIMutation";
 
 // Helper function to get current month in YYYY-MM format
 const getCurrentMonth = () => {
@@ -54,18 +54,19 @@ export function ExperienceForm() {
   };
 
   const handleGenerateDescription = async (index: number) => {
-    const summary = await getValues("personalInfo.summary");
-    const title = await getValues("title");
-    const info = summary ? summary : title;
+    const experience = await getValues(`experiences.${index}`);
+    const info = ExperienceDesc(experience);
     if (!info) {
       toast.info("Info", {
-        description: "Either provide summary or resume title",
+        description:
+          "Either provide Position or Experience Description or Company Name",
       });
       return;
     }
+
     const generatedDescription = await GetAi.mutateAsync({
       query: info,
-      section: "summary",
+      section: "experience",
     });
     setValue(`experiences.${index}.description`, generatedDescription, {
       shouldValidate: true,

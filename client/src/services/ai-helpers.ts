@@ -3,7 +3,7 @@ import { axiosAdmin } from "@/lib/axiosAdmin";
 
 export const getAIResponse = async (query: string) => {
   try {
-    return "I am a eesa"
+   //throw new Error("error?.response?.data?.err");
     const { data } = await axiosAdmin.post(`${URLS.Assistant}`, {
       query,
     });

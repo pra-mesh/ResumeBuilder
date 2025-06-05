@@ -16,7 +16,7 @@ const login = async (payload) => {
   if (!user) throw new Error("User is not found");
   if (user?.isBlocked)
     throw Error("User is blocked. Contact Admin for support");
-  console.log("test");
+
   if (!user?.isEmailVerified) throw Error("User not verified.");
   const isValidPassword = bcrypt.compareHash(password, user?.password);
   if (!isValidPassword) throw Error("Email or password mismatched.");

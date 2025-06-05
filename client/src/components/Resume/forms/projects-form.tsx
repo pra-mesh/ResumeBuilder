@@ -15,11 +15,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { Sparkle } from "@/components/ui/sparkle";
-import { generateProjectDescription } from "@/lib/ai-helpers";
+import { projectDesc } from "@/lib/ai-helpers";
 import { toast } from "sonner";
 import { ResumeCoreSections } from "@/types/resumeProps";
+import { useGetAIText } from "@/hooks/useResumeAIMutation";
 
 export function ProjectsForm() {
+  const GetAi = useGetAIText();
   const { control, setValue, getValues } = useFormContext<ResumeCoreSections>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -36,32 +38,26 @@ export function ProjectsForm() {
   };
 
   const handleGenerateDescription = async (index: number) => {
-    try {
-      const project = getValues(`projects.${index}`);
-
-      // Check if required fields are filled
-      if (
-        !project.title ||
-        !project.technologies ||
-        project.technologies.length === 0
-      ) {
-        toast.info("Missing Information", {
-          description:
-            "Please fill in project title and add at least one technology before generating description.",
-        });
-        return;
-      }
-
-      const generatedDescription = await generateProjectDescription(project);
-      setValue(`projects.${index}.description`, generatedDescription);
-      toast.success("Description Generated!", {
-        description: "AI has generated a project description for you.",
+    const project = getValues(`projects.${index}`);
+    console.log(project);
+    // Check if required fields are filled
+    if (!project.title && !project.technologies && !project.description) {
+      toast.info("Missing Information", {
+        description:
+          "Please fill in project title or description or add at least one technology before generating description.",
       });
-    } catch {
-      toast.error("Error", {
-        description: "Failed to generate description. Please try again.",
-      });
+      return;
     }
+
+    const desc = projectDesc(project);
+    const generatedDescription = await GetAi.mutateAsync({
+      query: desc,
+      section: "project",
+    });
+    setValue(`projects.${index}.description`, generatedDescription);
+    toast.success("Description Generated!", {
+      description: "AI has generated a project description for you.",
+    });
   };
 
   return (

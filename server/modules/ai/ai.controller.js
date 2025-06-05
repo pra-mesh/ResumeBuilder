@@ -6,7 +6,7 @@ const RewrittenTextSchema = z.object({
   data: z.string(),
 });
 
-const generateText = async ({ userText }) => {
+const generateText = async ({ query }) => {
   try {
     const completion = await openai.chat.completions.create({
       model: process.env.AI_MODEL,
@@ -14,7 +14,7 @@ const generateText = async ({ userText }) => {
         systemPrompt,
         {
           role: "user",
-          content: userText,
+          content: query,
         },
       ],
     });
