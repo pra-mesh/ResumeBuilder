@@ -1,5 +1,3 @@
-"use client";
-
 import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   Card,
@@ -15,9 +13,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2 } from "lucide-react";
 import { Sparkle } from "@/components/ui/sparkle";
-import { generateExperienceDescription } from "@/lib/ai-helpers";
+
 import { toast } from "sonner";
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { Resume } from "@/types/resumeProps";
+import { useGetAIText } from "@/hooks/useResumeMutation";
 
 // Helper function to get current month in YYYY-MM format
 const getCurrentMonth = () => {
@@ -28,6 +27,7 @@ const getCurrentMonth = () => {
 };
 
 export function ExperienceForm() {
+  const GetAi = useGetAIText();
   const {
     register,
     control,
@@ -35,7 +35,7 @@ export function ExperienceForm() {
     setValue,
     getValues,
     formState: { errors },
-  } = useFormContext<ResumeCoreSections>();
+  } = useFormContext<Resume>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experiences",
@@ -54,30 +54,22 @@ export function ExperienceForm() {
   };
 
   const handleGenerateDescription = async (index: number) => {
-    try {
-      const experience = getValues(`experiences.${index}`);
-
-      // Check if required fields are filled
-      if (!experience.company || !experience.position) {
-        toast.info("Missing Information", {
-          description:
-            "Please fill in company and position before generating description.",
-        });
-        return;
-      }
-
-      const generatedDescription = await generateExperienceDescription(
-        experience
-      );
-      setValue(`experiences.${index}.description`, generatedDescription);
-      toast.success("Description Generated!", {
-        description: "AI has generated a job description for you.",
+    const summary = await getValues("personalInfo.summary");
+    const title = await getValues("title");
+    const info = summary ? summary : title;
+    if (!info) {
+      toast.info("Info", {
+        description: "Either provide summary or resume title",
       });
-    } catch {
-      toast.error("Error", {
-        description: "Failed to generate description. Please try again.",
-      });
+      return;
     }
+    const generatedDescription = await GetAi.mutateAsync({
+      query: info,
+      section: "summary",
+    });
+    setValue(`experiences.${index}.description`, generatedDescription, {
+      shouldValidate: true,
+    });
   };
 
   return (

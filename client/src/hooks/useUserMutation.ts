@@ -21,7 +21,7 @@ export const useUpdateUser = () => {
       // NOTES Update the specific user in cache
       queryClient.setQueryData(["users", updatedUser._id], updatedUser);
       // NOTES Invalidate users list to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.refetchQueries({ queryKey: ["users"] });
     },
   });
 };

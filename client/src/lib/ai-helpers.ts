@@ -1,4 +1,5 @@
 // Mock AI service - replace with actual AI API calls
+
 export async function generateProfessionalSummary(personalInfo: {
   fullName: string;
   email: string;

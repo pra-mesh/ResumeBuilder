@@ -1,5 +1,3 @@
-"use client";
-
 import { useFormContext } from "react-hook-form";
 import {
   Card,
@@ -12,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkle } from "@/components/ui/sparkle";
-import { generateProfessionalSummary } from "@/lib/ai-helpers";
 import { toast } from "sonner";
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { Resume } from "@/types/resumeProps";
+import { useGetAIText } from "@/hooks/useResumeMutation";
 
 export function PersonalInfoForm() {
   const {
@@ -22,21 +20,26 @@ export function PersonalInfoForm() {
     formState: { errors },
     setValue,
     getValues,
-  } = useFormContext<ResumeCoreSections>();
-
+  } = useFormContext<Resume>();
+  const GetAi = useGetAIText();
   const handleGenerateSummary = async () => {
-    try {
-      const personalInfo = getValues("personalInfo");
-      const generatedSummary = await generateProfessionalSummary(personalInfo);
-      setValue("personalInfo.summary", generatedSummary);
-      toast.success("Summary Generated!", {
-        description: "AI has generated a professional summary for you.",
+    const summary = await getValues("personalInfo.summary");
+    const title = await getValues("title");
+    const info = summary ? summary : title;
+    if (!info) {
+      toast.info("Info", {
+        description: "Either provide summary or resume title",
       });
-    } catch {
-      toast.error("Error", {
-        description: "Failed to generate summary. Please try again.",
-      });
+      return;
     }
+    const generatedSummary = await GetAi.mutateAsync({
+      query: info,
+      section: "summary",
+    });
+    setValue("personalInfo.summary", generatedSummary, {
+      shouldValidate: true,
+    });
+    
   };
 
   return (

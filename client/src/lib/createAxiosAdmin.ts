@@ -2,8 +2,8 @@ import axios from "axios";
 import { API_URL, URLS } from "@/constants";
 import { decodeJWT } from "@/lib/jwt";
 
-//could you please explains this once again
 
+//NOTES We can implement the AuthBridge for whole authContext or we could introduced call-back initialization approach in authconnect
 export const createAxiosAdmin = (
   getAuth: () => { accessToken: string | null; refreshToken: string | null },
   logout: () => void,
@@ -11,7 +11,7 @@ export const createAxiosAdmin = (
 ) => {
   const axiosAdminInstance = axios.create({
     baseURL: API_URL,
-    timeout: 6000,
+    timeout: 15000,
   });
 
   axiosAdminInstance.interceptors.request.use(
@@ -51,9 +51,9 @@ export const createAxiosAdmin = (
           onTokenRefresh?.(newAccess, newRefresh);
           originalRequest.headers.access_token = newAccess;
           return axiosAdminInstance(originalRequest);
-        } catch (e) {
+        } catch (e: any) {
           //FIXME: Logout and error handling
-          console.error(e);
+          console.error({ test: e.message });
           logout();
           return Promise.reject(err);
         }

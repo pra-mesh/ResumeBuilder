@@ -1,5 +1,3 @@
-"use client";
-
 import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   Card,
@@ -85,7 +83,9 @@ export function EducationForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.degree`}>Degree <span className="text-red-500">*</span></Label>
+                <Label htmlFor={`educations.${index}.degree`}>
+                  Degree <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   {...register(`educations.${index}.degree`)}
                   placeholder="Bachelor of Science"
@@ -130,7 +130,9 @@ export function EducationForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.endDate`}>End Date <span className="text-red-500">*</span></Label>
+                <Label htmlFor={`educations.${index}.endDate`}>
+                  End Date <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   type="month"
                   {...register(`educations.${index}.endDate`)}

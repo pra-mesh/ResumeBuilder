@@ -6,7 +6,9 @@ const getAuth = () => ({
   refreshToken: getItem("refresh_token"),
 });
 
-const logout = () => {};
+const logout = () => {
+  
+};
 const onTokenRefresh = (newAccess: string, newRefresh: string) => {
   setItem("access_token", newAccess);
   setItem("refresh_token", newRefresh);
