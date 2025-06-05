@@ -7,7 +7,7 @@ import {
 } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useCreateUser, useUpdateUser } from "@/hooks/useUserMutation";
+import { useCreateUser, useUpdateUser } from "@/hooks/useUserQuery";
 
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
@@ -94,11 +94,10 @@ const UserAddEditForm = ({
       } else {
         await updateUserMutation.mutateAsync({
           id: initialData?._id || "",
-          formData,
+          payload: formData,
         });
         toast.success("User Updated", { description: "User Edited" });
       }
-
       setTimeout(() => {
         handleReset();
         onSuccess();
@@ -121,12 +120,11 @@ const UserAddEditForm = ({
       return () => clearTimeout(timeout);
     }
   }, [errors]);
-
   const serverError =
     mode === "create" ? createUserMutation.error : updateUserMutation.error;
-
   const isLoading =
     createUserMutation.isPending || updateUserMutation.isPending;
+
   return (
     <form onSubmit={handleSubmit} ref={formRef} className="space-y-5">
       {/* Profile Picture Upload */}

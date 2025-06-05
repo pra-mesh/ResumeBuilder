@@ -1,33 +1,16 @@
 import UserAddEditForm from "@/components/Users/UserAddEditForm";
 
 import { Link, useNavigate, useParams } from "react-router";
-import { fetchUserInfo } from "@/services/users";
+import { useUser } from "@/hooks/useUserQuery";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-import { useQuery } from "@tanstack/react-query";
-import { UserInfo } from "@/types/UserInfoProps";
-
-const fetchUserByID = async (id: string): Promise<UserInfo> => {
-  const data = await fetchUserInfo(id);
-  console.log(data);
-  return data;
-};
-
 const EditUser = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["users", id],
-    queryFn: () => fetchUserByID(id as string),
-    enabled: !!id,
-  });
 
+  const { data: user, isLoading, error } = useUser(id ?? "");
   const handleSubmit = () => {
     navigate("/admin/users");
   };
