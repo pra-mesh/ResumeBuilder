@@ -17,7 +17,7 @@ import { useState } from "react";
 import { Sparkle } from "@/components/ui/sparkle";
 import { projectDesc } from "@/lib/ai-helpers";
 import { toast } from "sonner";
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { ResumeCoreSections } from "@/types/resume";
 import { useGetAIText } from "@/hooks/useResumeAIMutation";
 
 export function ProjectsForm() {

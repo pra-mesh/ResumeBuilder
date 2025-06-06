@@ -94,7 +94,6 @@ export const projectDesc = (project: {
   const tech = project.technologies?.length
     ? `Technologies: ${project.technologies.join(", ")}`
     : "";
-  console.log(title);
   const finalDesc = [title, desc, tech].filter(Boolean).join(" | ");
   return finalDesc;
 };

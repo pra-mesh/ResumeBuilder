@@ -15,7 +15,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Sparkle } from "@/components/ui/sparkle";
 
 import { toast } from "sonner";
-import { Resume } from "@/types/resumeProps";
+import { Resume } from "@/types/resume";
 import { ExperienceDesc, useGetAIText } from "@/hooks/useResumeAIMutation";
 
 // Helper function to get current month in YYYY-MM format

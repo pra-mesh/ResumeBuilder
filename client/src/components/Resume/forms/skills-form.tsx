@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { ResumeCoreSections } from "@/types/resume";
 //TODO: Use the tagInput it will look good than this.
 export function SkillsForm() {
   const {

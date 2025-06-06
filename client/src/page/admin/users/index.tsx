@@ -21,9 +21,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { autoTable } from "jspdf-autotable";
 import { jsPDF } from "jspdf";
 import UsersDataColumns from "./userDataColumns";
-
-// Sample user data
-
+//TODO how to use tanstack and redux toolkit combined
+//TODO Implement Separation of concern (Dry)
 export default function AdminUsers() {
   const dispatch = useDispatch<AppDispatch>();
   const { users, limit, currentPage, total, searchValue } = useSelector(
@@ -40,12 +39,12 @@ export default function AdminUsers() {
   const changeLimit = (value: number) => {
     dispatch(setLimit(value));
   };
+  
   //NOTES Redux fetch without tanstack query
   const initUserFetch = useCallback(() => {
     dispatch(fetchUsers({ limit, page: currentPage, name: debouncedSearch }));
   }, [dispatch, limit, currentPage, debouncedSearch]);
 
-  //Browser current page and limit update
   useEffect(() => {
     if (
       searchParams.get("limit") ||
@@ -61,6 +60,8 @@ export default function AdminUsers() {
     }
   }, [dispatch, searchParams]);
   //URL update
+
+
   useEffect(() => {
     const query = new URLSearchParams({
       page: currentPage.toString(),
@@ -73,10 +74,7 @@ export default function AdminUsers() {
     initUserFetch();
   }, [initUserFetch]);
 
-  //TODO how to use tanstack and redux toolkit combined
-
-  //TODO use Memo
-  //TODO Implement Separation of concern (Dry)
+  //TODO use Memo for pdf export
   const handleExportToPDF = async () => {
     const data = await dispatch(getAllUsers());
     if (data.payload.length > 0) {

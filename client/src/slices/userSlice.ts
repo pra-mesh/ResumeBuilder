@@ -34,7 +34,6 @@ export const fetchUsers = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      //TODO Convert to tanstack query
       const res = await axiosAdmin.get(
         `${URLS.USERS}?limit=${limit}&page=${page}&name=${encodeURIComponent(
           name ?? ""
@@ -52,10 +51,7 @@ export const getAllUsers = createAsyncThunk(
   "users/getAllUsers",
   async (_, { rejectWithValue }) => {
     try {
-      //TODO  set to and from date
-
       const { data } = await axiosAdmin.get(`${URLS.USERS}/userReport`);
-
       return data;
     } catch (e: any) {
       return rejectWithValue({
@@ -78,12 +74,6 @@ export const blockUser = createAsyncThunk(
         data: e?.response?.data?.err ?? "Something went wrong",
       });
     }
-  }
-);
-export const editUser = createAsyncThunk(
-  "user/edit",
-  async (userInfo: UserInfo) => {
-    console.log(userInfo);
   }
 );
 

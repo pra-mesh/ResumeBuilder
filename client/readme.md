@@ -5,9 +5,9 @@
   
 - complete zod schema for resume
 - Resume Add
-- Resume List with Search
 - Resume Edit
 - Delete Resume
+- Resume List with Search
 - Download Resume
 - AI on Experience, Projects(done)
 

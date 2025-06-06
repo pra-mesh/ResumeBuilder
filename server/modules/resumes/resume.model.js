@@ -15,7 +15,7 @@ const schema = new Schema(
       linkedin: { type: String },
       website: { type: String },
     },
-    education: [
+    educations: [
       {
         institution: { type: String },
         degree: { type: String },
@@ -24,7 +24,7 @@ const schema = new Schema(
         course: { type: String },
       },
     ],
-    experience: [
+    experiences: [
       {
         company: { type: String },
         position: { type: String },
@@ -48,13 +48,24 @@ const schema = new Schema(
         link: { type: String },
       },
     ],
-    certification: [
+    certifications: [
       {
         name: { type: String },
         issuer: { type: String },
         date: { type: Date },
       },
     ],
+    template: {
+      type: String,
+      required: true,
+      enum: ["modern", "classic", "minimal"],
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ["draft", "final"],
+      default: "draft",
+    },
   },
   {
     timestamps: true,

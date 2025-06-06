@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Resume } from "@/types/resumeProps";
+import { Resume } from "@/types/resume";
 
 interface ResumeState {
   resumes: Resume[];

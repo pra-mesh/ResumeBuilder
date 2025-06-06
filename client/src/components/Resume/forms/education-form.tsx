@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { ResumeCoreSections } from "@/types/resumeProps";
+import { ResumeCoreSections } from "@/types/resume";
 
 // Helper function to get current month in YYYY-MM format
 const getCurrentMonth = () => {

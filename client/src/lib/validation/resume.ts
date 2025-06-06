@@ -65,6 +65,12 @@ export const resumeFormSchema = z.object({
   // Resume metadata
   id: z.string(),
   title: z.string().min(1, "Resume title is required"),
+  ResumeTemplate: z
+    .enum(["modern", "classic", "minimal"])
+    .default("classic")
+    .refine((val) => ["modern", "classic", "minimal"].includes(val), {
+      message: "Invalid Template",
+    }),
   status: z.enum(["draft", "final"]),
   updatedAt: z.string(),
   isSavedToServer: z.boolean(),

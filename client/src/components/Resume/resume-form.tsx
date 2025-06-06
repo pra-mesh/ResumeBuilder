@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 //import { useNavigate } from "react-router";
 
-import { Resume, ResumeCoreSections } from "@/types/resumeProps";
+import { Resume, ResumeCoreSections } from "@/types/resume";
 
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ import { addNewResume } from "@/slices/resumeSlice";
 
 const ResumeForm = () => {
   const dispatch = useDispatch<AppDispatch>();
- // const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const methods = useForm<Resume>({
     resolver: zodResolver(resumeFormSchema as any),
@@ -126,7 +126,6 @@ const ResumeForm = () => {
       dispatch(addNewResume(resume));
       alert("Resume draft saved successfully");
       //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
-      
     } catch (e) {
       console.error("Error saving resume:", e);
       alert("Saved failed. Please try again");

@@ -52,7 +52,7 @@ const ForgotPassword = () => {
         setRes((prev) => {
           return { ...prev, error: "An error occurred. Please try again." };
         });
-        console.log("Password reset request failed:", e);
+        console.error("Password reset request failed:", e);
       } finally {
         setTimeout(() => {
           setRes({ msg: "", error: "" });

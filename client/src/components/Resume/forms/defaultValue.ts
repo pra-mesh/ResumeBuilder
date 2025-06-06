@@ -1,4 +1,4 @@
-import { Resume } from "@/types/resumeProps";
+import { Resume } from "@/types/resume";
 
 export const defaultValues: Resume = {
   id: "",
@@ -6,6 +6,7 @@ export const defaultValues: Resume = {
   status: "draft",
   updatedAt: "",
   isSavedToServer: false,
+  template: "modern",
   personalInfo: {
     fullName: "",
     email: "",

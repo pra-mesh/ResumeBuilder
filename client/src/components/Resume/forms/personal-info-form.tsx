@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkle } from "@/components/ui/sparkle";
 import { toast } from "sonner";
-import { Resume } from "@/types/resumeProps";
+import { Resume } from "@/types/resume";
 import { useGetAIText } from "@/hooks/useResumeAIMutation";
 
 export function PersonalInfoForm() {

@@ -4,7 +4,9 @@ import { User } from "@/types/UserProps";
 import { UserInfo } from "@/types/UserInfoProps";
 import { AxiosResponse } from "axios";
 
-export const createUser = async (payload: Omit<User,"createdAt" | "updatedAt" | "id">): Promise<User> => {
+export const createUser = async (
+  payload: Omit<User, "createdAt" | "updatedAt" | "id">
+): Promise<User> => {
   const response: AxiosResponse<{ data: User }> = await axiosAdmin.post(
     `${URLS.USERS}`,
     payload
