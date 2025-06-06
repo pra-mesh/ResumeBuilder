@@ -57,14 +57,13 @@ const ResumeForm = () => {
 
   const nextStep = async () => {
     if (currentStep >= steps.length - 1) return;
-    //TODO: Validate the content
     let isValid = true;
-
     const fieldsToValidate = stepFieldsMap[currentStep] || [];
+    //TODO Remove unfilled values of experience, project and education
+    //validation loop
     if (currentStep === 0 || currentStep === 1) {
       isValid = await trigger(fieldsToValidate);
     } else if (currentStep < 6) {
-      // TODO: Validate if there is content
       const currentData = getValues();
       const sectionName = fieldsToValidate[0];
       if (
@@ -72,7 +71,7 @@ const ResumeForm = () => {
         currentData[sectionName].length > 0
       )
         isValid = await trigger(fieldsToValidate);
-      //TODO skip validation if optional sections are empty
+      //skips validation if optional sections are empty
       else isValid = true;
     } else {
       //Preview step no -validation required

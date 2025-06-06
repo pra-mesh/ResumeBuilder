@@ -20,7 +20,7 @@ const generateAIText = async (payload: {
   const generatedSummary = await getAIResponse(`${prompt} ${payload.query}`);
   return generatedSummary;
 };
-//BUG: Error not showing
+
 export const useGetAIText = () => {
   const queryClient = useQueryClient();
   //   new QueryClient({

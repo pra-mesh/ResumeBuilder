@@ -15,7 +15,7 @@ const schema = new Schema(
       linkedin: { type: String },
       website: { type: String },
     },
-    educations: [
+    education: [
       {
         institution: { type: String },
         degree: { type: String },
@@ -24,7 +24,7 @@ const schema = new Schema(
         course: { type: String },
       },
     ],
-    experiences: [
+    experience: [
       {
         company: { type: String },
         position: { type: String },

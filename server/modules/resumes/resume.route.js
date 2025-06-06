@@ -21,7 +21,7 @@ router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
     await resumeController.create(payload);
     res.json({ data: "Resume Added" });
   } catch (e) {
-    next(e);
+    next({ err: e, status: 500 });
   }
 });
 router.get("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {

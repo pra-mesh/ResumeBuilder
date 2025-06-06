@@ -1,10 +1,10 @@
-# Things to complete for Certification:
+# Things to complete for Certification
 
 - User Add (done)
 - User Profile (Change Password, Update User Information)
   
 - complete zod schema for resume
-- Resume Add
+- Resume Add (done)
 - Resume Edit
 - Delete Resume
 - Resume List with Search
