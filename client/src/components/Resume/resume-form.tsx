@@ -1,9 +1,15 @@
 import { useForm, FormProvider } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { Resume } from "@/types/resume";
+import {
+  certification,
+  Education,
+  Experience,
+  Projects,
+  Resume,
+} from "@/types/resume";
 
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,8 +30,8 @@ import StepIndicator from "./forms/step-indicator";
 
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { steps } from "./forms/steps";
-import { defaultValues } from "./forms/defaultValue";
+import { steps } from "./steps";
+import { defaultValues } from "./defaultValue";
 import { AppDispatch, RootState } from "@/store";
 import {
   addNewResume,
@@ -51,33 +57,79 @@ const ResumeForm = () => {
     trigger,
     watch,
     getValues,
+    setValue,
     reset,
     formState: { isSubmitting, errors },
   } = methods;
 
-  const nextStep = async () => {
-    if (currentStep >= steps.length - 1) return;
-    let isValid = true;
+  const validateStep = async () => {
+    if (currentStep >= steps.length - 1) return true;
     const fieldsToValidate = stepFieldsMap[currentStep] || [];
-    //TODO Remove unfilled values of experience, project and education
-    //validation loop
     if (currentStep === 0 || currentStep === 1) {
-      isValid = await trigger(fieldsToValidate);
-    } else if (currentStep < 6) {
-      const currentData = getValues();
-      const sectionName = fieldsToValidate[0];
-      if (
-        Array.isArray(currentData[sectionName]) &&
-        currentData[sectionName].length > 0
-      )
-        isValid = await trigger(fieldsToValidate);
-      //skips validation if optional sections are empty
-      else isValid = true;
-    } else {
-      //Preview step no -validation required
-      isValid = true;
+      return await trigger(fieldsToValidate);
     }
-    if (isValid) setCurrentStep(currentStep + 1);
+    if (currentStep < 6) {
+      const sectionName = fieldsToValidate[0];
+      const currentData = getValues()[sectionName];
+
+      return Array.isArray(currentData) && currentData.length > 0
+        ? await trigger(fieldsToValidate)
+        : true;
+    }
+    return true; // No validation needed for preview step
+  };
+  const cleanEducation = (education: Education[]) => {
+    const cleanedEducation = education.filter(
+      (edu) =>
+        edu.course.trim() !== "" ||
+        edu.degree.trim() !== "" ||
+        edu.institution.trim() !== ""
+    );
+    setValue("education", cleanedEducation, { shouldValidate: true });
+  };
+
+  const cleanExperience = (experience: Experience[]) => {
+    const cleanedExperience = experience.filter(
+      (exp) =>
+        exp.company.trim() !== "" ||
+        exp.description.trim() !== "" ||
+        exp.location.trim() !== "" ||
+        exp.position.trim() !== ""
+    );
+    setValue("experience", cleanedExperience);
+  };
+
+  const cleanProjects = (projects: Projects[]) => {
+    const cleanedProject = projects.filter(
+      (project) =>
+        project.description.trim() !== "" || project.title.trim() !== ""
+    );
+    setValue("projects", cleanedProject);
+  };
+  const cleanCertifications = (certification: certification[]) => {
+    const cleanedCertification = certification.filter(
+      (certification) =>
+        certification.issuer.trim() != "" || certification.name.trim() != ""
+    );
+    setValue("certifications", cleanedCertification);
+  };
+
+  const nextStep = async () => {
+    const currentData = getValues();
+    if (await validateStep()) {
+      if (currentStep === 1) cleanEducation(currentData.education);
+
+      if (currentStep === 2 && currentData.experience)
+        cleanExperience(currentData.experience);
+
+      if (currentStep === 4 && currentData.projects)
+        cleanProjects(currentData.projects);
+
+      if (currentStep === 5 && currentData.certifications)
+        cleanCertifications(currentData.certifications);
+
+      setCurrentStep(currentStep + 1);
+    }
   };
 
   const previousStep = () => {
@@ -130,7 +182,7 @@ const ResumeForm = () => {
       });
     }
   };
-  useEffect(() => {}, [error]);
+
   const onSaveDraft = async (data: Resume) => {
     try {
       const resume: Resume = {
@@ -172,6 +224,7 @@ const ResumeForm = () => {
     5: <CertificationsForm />,
     6: <ResumePreview />,
   };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto  px-4">
