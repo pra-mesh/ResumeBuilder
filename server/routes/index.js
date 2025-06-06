@@ -8,7 +8,7 @@ router.get("/", (req, res, next) => {
   try {
     res.json({ data: "API is working properly" });
   } catch (err) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 router.use("/api/v1/auth", authRouter);

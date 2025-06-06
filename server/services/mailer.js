@@ -33,7 +33,7 @@ const sendEmail = async ({ to, subject, message }) => {
     //   html: message,
     // });
   } catch (e) {
-    console.log(e);
+    console.log({ err: e.message, status: 500 });
   }
 };
 

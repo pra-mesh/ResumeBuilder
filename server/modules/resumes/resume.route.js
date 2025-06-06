@@ -11,7 +11,7 @@ router.get("/", secureAPI(["admin", "user"]), async (req, res, next) => {
     const result = await resumeController.list({ page, limit, search, userId });
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
@@ -21,7 +21,7 @@ router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
     await resumeController.create(payload);
     res.json({ data: "Resume Added" });
   } catch (e) {
-    next({ err: e, status: 500 });
+    next({ err: e.message, status: 500 });
   }
 });
 router.get("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
@@ -31,7 +31,7 @@ router.get("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
     const result = await resumeController.getById({ id, currentUser: user });
     res.json({ data: result });
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 router.put("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
@@ -45,7 +45,7 @@ router.put("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
     });
     res.json({ data: result });
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 router.delete("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
@@ -56,7 +56,7 @@ router.delete("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
     });
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 module.exports = router;

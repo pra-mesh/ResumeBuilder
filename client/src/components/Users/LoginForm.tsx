@@ -28,13 +28,16 @@ const LoginForm = () => {
       if (user?.roles.includes("admin")) navigate("/admin/dashboard");
       else navigate("/user");
     } catch (err: any) {
+      console.log({ err });
       const errMsg = err?.response?.data?.err || "Something went wrong";
       setErr(errMsg);
+      console.log({ err });
     } finally {
       setPayload({ email: "", password: "" });
       setTimeout(() => {
         setMsg("");
         setErr("");
+        console.log({ err });
       }, 10000);
     }
   };

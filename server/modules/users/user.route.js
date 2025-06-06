@@ -12,7 +12,7 @@ router.post(
       await userController.changePassword(req.currentUser, req.body);
       res.json({ data: "Password changed successfully" });
     } catch (e) {
-      next(e);
+      next({ err: e.message, status: 500 });
     }
   }
 );
@@ -23,7 +23,7 @@ router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
     const result = await userController.getProfile(req.currentUser);
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 
@@ -38,7 +38,7 @@ router.put(
       );
       res.json(result);
     } catch (e) {
-      next({ err: e, status: 500 });
+      next({ err: e.message, status: 500 });
     }
   }
 );
@@ -51,7 +51,7 @@ router.get("/", secureAPI("admin"), async (req, res, next) => {
     const result = await userController.list({ page, limit, search });
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 
@@ -61,7 +61,7 @@ router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
     const result = await userController.userReport({ to, from });
     res.json(result);
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 //add user
@@ -120,7 +120,7 @@ router.post("/reset-password", secureAPI(["admin"]), async (req, res, next) => {
     await userController.restPassword(req.body);
     res.json({ data: "Password reset successfully" });
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 
@@ -129,7 +129,7 @@ router.patch("/:id/block", secureAPI(["admin"]), async (req, res, next) => {
     const result = await userController.blockUser(req.params.id);
     res.json({ data: result });
   } catch (e) {
-    next(e);
+    next({ err: e.message, status: 500 });
   }
 });
 

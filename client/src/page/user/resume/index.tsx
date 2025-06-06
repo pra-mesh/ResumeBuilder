@@ -103,7 +103,7 @@ const resumes = [
 ];
 
 export default function Resumes() {
-  const [isAddResumeOpen, setIsAddResumeOpen] = useState(false);
+  const [isAddResumeOpen, setIsAddResumeOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredResumes = resumes.filter(
@@ -185,60 +185,6 @@ export default function Resumes() {
           </Card>
         ))}
       </div>
-
-      <Dialog open={isAddResumeOpen} onOpenChange={setIsAddResumeOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add New Resume</DialogTitle>
-            <DialogDescription>
-              Create a new resume for a user. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input id="title" className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="user" className="text-right">
-                User
-              </Label>
-              <Select>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a user" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="john">John Doe</SelectItem>
-                  <SelectItem value="sarah">Sarah Smith</SelectItem>
-                  <SelectItem value="michael">Michael Johnson</SelectItem>
-                  <SelectItem value="emily">Emily Brown</SelectItem>
-                  <SelectItem value="david">David Wilson</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="template" className="text-right">
-                Template
-              </Label>
-              <Select>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a template" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="modern">Modern</SelectItem>
-                  <SelectItem value="classic">Classic</SelectItem>
-                  <SelectItem value="minimal">Minimal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Create Resume</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
