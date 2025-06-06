@@ -28,7 +28,7 @@ export function EducationForm() {
   } = useFormContext<ResumeCoreSections>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "educations",
+    name: "education",
   });
 
   const addEducation = () => {
@@ -69,78 +69,78 @@ export function EducationForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.institution`}>
+                <Label htmlFor={`education.${index}.institution`}>
                   Institution <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  {...register(`educations.${index}.institution`)}
+                  {...register(`education.${index}.institution`)}
                   placeholder="University of Example"
                 />
-                {errors.educations?.[index]?.institution && (
+                {errors.education?.[index]?.institution && (
                   <p className="text-sm text-destructive">
-                    {errors.educations[index]?.institution?.message as string}
+                    {errors.education[index]?.institution?.message as string}
                   </p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.degree`}>
+                <Label htmlFor={`education.${index}.degree`}>
                   Degree <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  {...register(`educations.${index}.degree`)}
+                  {...register(`education.${index}.degree`)}
                   placeholder="Bachelor of Science"
                 />
-                {errors.educations?.[index]?.degree && (
+                {errors.education?.[index]?.degree && (
                   <p className="text-sm text-destructive">
-                    {errors.educations[index]?.degree?.message as string}
+                    {errors.education[index]?.degree?.message as string}
                   </p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={`educations.${index}.course`}>
+              <Label htmlFor={`education.${index}.course`}>
                 Field of Study <span className="text-red-500">*</span>
               </Label>
               <Input
-                {...register(`educations.${index}.course`)}
+                {...register(`education.${index}.course`)}
                 placeholder="Computer Science"
               />
-              {errors.educations?.[index]?.course && (
+              {errors.education?.[index]?.course && (
                 <p className="text-sm text-destructive">
-                  {errors.educations[index]?.course?.message as string}
+                  {errors.education[index]?.course?.message as string}
                 </p>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.startDate`}>
+                <Label htmlFor={`education.${index}.startDate`}>
                   Start Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="month"
-                  {...register(`educations.${index}.startDate`)}
+                  {...register(`education.${index}.startDate`)}
                   max={getCurrentMonth()}
                 />
-                {errors.educations?.[index]?.startDate && (
+                {errors.education?.[index]?.startDate && (
                   <p className="text-sm text-destructive">
-                    {errors.educations[index]?.startDate?.message as string}
+                    {errors.education[index]?.startDate?.message as string}
                   </p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`educations.${index}.endDate`}>
+                <Label htmlFor={`education.${index}.endDate`}>
                   End Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="month"
-                  {...register(`educations.${index}.endDate`)}
+                  {...register(`education.${index}.endDate`)}
                   max={getCurrentMonth()}
                 />
-                {errors.educations?.[index]?.endDate && (
+                {errors.education?.[index]?.endDate && (
                   <p className="text-sm text-destructive">
-                    {errors.educations[index]?.endDate?.message as string}
+                    {errors.education[index]?.endDate?.message as string}
                   </p>
                 )}
               </div>

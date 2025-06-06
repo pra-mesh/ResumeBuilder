@@ -17,7 +17,7 @@ export const defaultValues: Resume = {
     linkedin: "",
     website: "",
   },
-  educations: [
+  education: [
     {
       institution: "",
       degree: "",
@@ -26,7 +26,7 @@ export const defaultValues: Resume = {
       course: "",
     },
   ],
-  experiences: [],
+  experience: [],
   skills: [],
   projects: [],
   certifications: [],

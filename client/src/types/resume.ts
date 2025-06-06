@@ -38,11 +38,11 @@ export interface certification {
   issuer: string;
   date: string;
 }
-export type ResumeTemplate = "modern" | "classic" | "minimal";
+
 export interface ResumeCoreSections {
   personalInfo: PersonalInfo;
-  educations: Education[];
-  experiences?: Experience[];
+  education: Education[];
+  experience?: Experience[];
   projects?: Projects[];
   skills?: Skills[];
   certifications?: certification[];
@@ -53,6 +53,6 @@ export interface Resume extends ResumeCoreSections {
   title: string;
   status: "draft" | "final";
   updatedAt: string;
-  template: ResumeTemplate;
+  template: string;
   isSavedToServer: boolean;
 }

@@ -50,22 +50,11 @@ export const skillSchema = z.array(z.object({ name: z.string() })).optional();
 export const projectSchema = z.array(z.any()).optional(); // Adjust according to your Projects type
 export const certificationSchema = z.array(z.any()).optional(); // Adjust according to your Certifications type
 
-export const resumeSchema = z.object({
-  personalInfo: personalInfoSchema,
-  educations: z
-    .array(educationSchema)
-    .min(1, "One education information is required"),
-  experiences: experienceSchema,
-  projects: projectSchema,
-  skills: skillSchema,
-  certifications: certificationSchema,
-});
-
 export const resumeFormSchema = z.object({
   // Resume metadata
   id: z.string(),
   title: z.string().min(1, "Resume title is required"),
-  ResumeTemplate: z
+  template: z
     .enum(["modern", "classic", "minimal"])
     .default("classic")
     .refine((val) => ["modern", "classic", "minimal"].includes(val), {
@@ -75,10 +64,10 @@ export const resumeFormSchema = z.object({
   updatedAt: z.string(),
   isSavedToServer: z.boolean(),
   personalInfo: personalInfoSchema,
-  educations: z
+  education: z
     .array(educationSchema)
     .min(1, "One education information is required"),
-  experiences: experienceSchema,
+  experience: experienceSchema,
   projects: projectSchema,
   skills: skillSchema,
   certifications: certificationSchema,
@@ -86,8 +75,8 @@ export const resumeFormSchema = z.object({
 
 export const draftResumeSchema = z.object({
   personalInfo: personalInfoSchema,
-  educations: z.array(educationSchema).optional(),
-  experiences: experienceSchema,
+  education: z.array(educationSchema).optional(),
+  experience: experienceSchema,
   projects: projectSchema,
   skills: skillSchema,
   certifications: certificationSchema,

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { GitHubLogoIcon, LinkedInLogoIcon } from "@radix-ui/react-icons";
 
-
 const ModernTemplates = (formData: Resume) => {
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -89,13 +88,13 @@ const ModernTemplates = (formData: Resume) => {
       )}
 
       {/* Education */}
-      {formData.educations && formData.educations.length > 0 && (
+      {formData.education && formData.education.length > 0 && (
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
             Education
           </h2>
           <div className="space-y-4">
-            {formData.educations.map((edu, index) => (
+            {formData.education.map((edu, index) => (
               <div key={index} className="border-l-4 border-blue-500 pl-4">
                 <div className="flex justify-between items-start mb-1">
                   <h3 className="text-lg font-semibold text-gray-900">
@@ -115,13 +114,13 @@ const ModernTemplates = (formData: Resume) => {
       )}
 
       {/* Experience */}
-      {formData.experiences && formData.experiences.length > 0 && (
+      {formData.experience && formData.experience.length > 0 && (
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b-2 border-gray-200 pb-1">
             Work Experience
           </h2>
           <div className="space-y-6">
-            {formData.experiences.map((exp, index) => (
+            {formData.experience.map((exp, index) => (
               <div key={index} className="border-l-4 border-green-500 pl-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
@@ -231,7 +230,7 @@ const ModernTemplates = (formData: Resume) => {
       )}
 
       {/* Empty State */}
-      {(!formData.experiences || formData.experiences.length === 0) &&
+      {(!formData.experience || formData.experience.length === 0) &&
         (!formData.skills || formData.skills.length === 0) &&
         (!formData.projects || formData.projects.length === 0) &&
         (!formData.certifications || formData.certifications.length === 0) && (

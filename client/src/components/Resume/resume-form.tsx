@@ -1,9 +1,9 @@
 import { useForm, FormProvider } from "react-hook-form";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-//import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
-import { Resume, ResumeCoreSections } from "@/types/resume";
+import { Resume } from "@/types/resume";
 
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +16,7 @@ import { PersonalInfoForm } from "@/components/Resume/forms/personal-info-form";
 import { ProjectsForm } from "@/components/Resume/forms/projects-form";
 import { SkillsForm } from "@/components/Resume/forms/skills-form";
 import { ResumePreview } from "@/components/Resume/forms/resume-preview";
-import { ChevronLeft, ChevronRight, Save } from "lucide-react";
+import { CheckCheck, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { JSX } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,12 +26,18 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { steps } from "./forms/steps";
 import { defaultValues } from "./forms/defaultValue";
-import { AppDispatch } from "@/store";
-import { addNewResume } from "@/slices/resumeSlice";
+import { AppDispatch, RootState } from "@/store";
+import {
+  addNewResume,
+  markAsSaved,
+  saveResumeToServer,
+} from "@/slices/resumeSlice";
+import { toast } from "sonner";
 
 const ResumeForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  // const navigate = useNavigate();
+  const { isLoading, error } = useSelector((state: RootState) => state.resumes);
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const methods = useForm<Resume>({
     resolver: zodResolver(resumeFormSchema as any),
@@ -45,6 +51,7 @@ const ResumeForm = () => {
     trigger,
     watch,
     getValues,
+    reset,
     formState: { isSubmitting, errors },
   } = methods;
 
@@ -77,13 +84,11 @@ const ResumeForm = () => {
   const previousStep = () => {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
   };
-  // const getResumeCoreSections = (): ResumeCoreSections =>
-  //   methods.getValues() as ResumeCoreSections;
 
   const isFirstTwoStepsValid = () => {
-    watch(["personalInfo", "educations"]);
+    watch(["personalInfo", "education"]);
     const personalInfo = getValues().personalInfo;
-    const education = getValues().educations;
+    const education = getValues().education;
     const isPersonalInfoValid =
       !!personalInfo.email &&
       !!personalInfo.fullName &&
@@ -103,15 +108,30 @@ const ResumeForm = () => {
       );
     return isPersonalInfoValid && isEducationValid;
   };
-  const onSubmit = async (data: ResumeCoreSections) => {
-    try {
-      console.log(data);
-      alert("Resume saved successfully");
-    } catch (e) {
-      console.error("Error saving resume:", e);
-      alert("Saved failed. Please try again");
+
+  const onSubmit = async (data: Resume) => {
+    const resume = { ...data };
+    resume.status = "final";
+    dispatch(saveResumeToServer(resume));
+    console.log({ errors });
+    if (!error) {
+      dispatch(markAsSaved(resume));
+      toast.success("Resume saved successfully", {
+        description: "Your Resume has been added to your collection",
+        icon: <CheckCheck className="h-4 w-4" />,
+      });
+      setTimeout(() => {
+        reset(defaultValues);
+        navigate("/user/resumes");
+      }, 4000);
+    } else {
+      toast.error("Resume save failed.", {
+        description: "Failed to save resume to your collection",
+        icon: <CheckCheck className="h-4 w-4" />,
+      });
     }
   };
+  useEffect(() => {}, [error]);
   const onSaveDraft = async (data: Resume) => {
     try {
       const resume: Resume = {
@@ -122,9 +142,10 @@ const ResumeForm = () => {
         isSavedToServer: false,
       };
       console.log(resume);
-
-      dispatch(addNewResume(resume));
-      alert("Resume draft saved successfully");
+      if (!error) {
+        dispatch(addNewResume(resume));
+        toast("Resume draft saved successfully");
+      }
       //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
     } catch (e) {
       console.error("Error saving resume:", e);
@@ -134,8 +155,8 @@ const ResumeForm = () => {
   //NOTES Learn about records
   const stepFieldsMap: Record<number, (keyof Resume)[]> = {
     0: ["title", "personalInfo"],
-    1: ["educations"],
-    2: ["experiences"],
+    1: ["education"],
+    2: ["experience"],
     3: ["skills"],
     4: ["projects"],
     5: ["certifications"],
@@ -216,9 +237,11 @@ const ResumeForm = () => {
                       type="button"
                       onClick={handleSubmit(onSaveDraft)}
                       variant="default"
-                      disabled={isSubmitting || !isFirstTwoStepsValid()}
+                      disabled={
+                        isSubmitting || isLoading || !isFirstTwoStepsValid()
+                      }
                     >
-                      {isSubmitting ? (
+                      {isSubmitting || isLoading ? (
                         <>
                           <div>Saving Draft... </div>
                         </>

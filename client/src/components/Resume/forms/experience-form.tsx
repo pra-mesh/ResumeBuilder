@@ -38,7 +38,7 @@ export function ExperienceForm() {
   } = useFormContext<Resume>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "experiences",
+    name: "experience",
   });
 
   const addExperience = () => {
@@ -54,7 +54,7 @@ export function ExperienceForm() {
   };
 
   const handleGenerateDescription = async (index: number) => {
-    const experience = await getValues(`experiences.${index}`);
+    const experience = await getValues(`experience.${index}`);
     const info = ExperienceDesc(experience);
     if (!info) {
       toast.info("Info", {
@@ -68,7 +68,7 @@ export function ExperienceForm() {
       query: info,
       section: "experience",
     });
-    setValue(`experiences.${index}.description`, generatedDescription, {
+    setValue(`experience.${index}.description`, generatedDescription, {
       shouldValidate: true,
     });
   };
@@ -92,7 +92,7 @@ export function ExperienceForm() {
           </div>
         ) : (
           fields.map((field, index) => {
-            const isCurrent = watch(`experiences.${index}.current`);
+            const isCurrent = watch(`experience.${index}.current`);
 
             return (
               <div key={field.id} className="space-y-4 p-4 border rounded-lg">
@@ -110,82 +110,79 @@ export function ExperienceForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor={`experiences.${index}.company`}>
+                    <Label htmlFor={`experience.${index}.company`}>
                       Company *
                     </Label>
                     <Input
-                      {...register(`experiences.${index}.company`)}
+                      {...register(`experience.${index}.company`)}
                       placeholder="Example Corp"
                     />
-                    {errors.experiences?.[index]?.company && (
+                    {errors.experience?.[index]?.company && (
                       <p className="text-sm text-destructive">
-                        {errors.experiences[index]?.company?.message as string}
+                        {errors.experience[index]?.company?.message as string}
                       </p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor={`experiences.${index}.position`}>
+                    <Label htmlFor={`experience.${index}.position`}>
                       Position *
                     </Label>
                     <Input
-                      {...register(`experiences.${index}.position`)}
+                      {...register(`experience.${index}.position`)}
                       placeholder="Software Engineer"
                     />
-                    {errors.experiences?.[index]?.position && (
+                    {errors.experience?.[index]?.position && (
                       <p className="text-sm text-destructive">
-                        {errors.experiences[index]?.position?.message as string}
+                        {errors.experience[index]?.position?.message as string}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`experiences.${index}.location`}>
+                  <Label htmlFor={`experience.${index}.location`}>
                     Location *
                   </Label>
                   <Input
-                    {...register(`experiences.${index}.location`)}
+                    {...register(`experience.${index}.location`)}
                     placeholder="San Francisco, CA"
                   />
-                  {errors.experiences?.[index]?.location && (
+                  {errors.experience?.[index]?.location && (
                     <p className="text-sm text-destructive">
-                      {errors.experiences[index]?.location?.message as string}
+                      {errors.experience[index]?.location?.message as string}
                     </p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor={`experiences.${index}.startDate`}>
+                    <Label htmlFor={`experience.${index}.startDate`}>
                       Start Date *
                     </Label>
                     <Input
                       type="month"
-                      {...register(`experiences.${index}.startDate`)}
+                      {...register(`experience.${index}.startDate`)}
                       max={getCurrentMonth()}
                     />
-                    {errors.experiences?.[index]?.startDate && (
+                    {errors.experience?.[index]?.startDate && (
                       <p className="text-sm text-destructive">
-                        {
-                          errors.experiences[index]?.startDate
-                            ?.message as string
-                        }
+                        {errors.experience[index]?.startDate?.message as string}
                       </p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor={`experiences.${index}.endDate`}>
+                    <Label htmlFor={`experience.${index}.endDate`}>
                       End Date
                     </Label>
                     <Input
                       type="month"
-                      {...register(`experiences.${index}.endDate`)}
+                      {...register(`experience.${index}.endDate`)}
                       disabled={isCurrent}
                       max={getCurrentMonth()}
                     />
-                    {errors.experiences?.[index]?.endDate && (
+                    {errors.experience?.[index]?.endDate && (
                       <p className="text-sm text-destructive">
-                        {errors.experiences[index]?.endDate?.message as string}
+                        {errors.experience[index]?.endDate?.message as string}
                       </p>
                     )}
                   </div>
@@ -193,24 +190,24 @@ export function ExperienceForm() {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id={`experiences.${index}.current`}
+                    id={`experience.${index}.current`}
                     checked={isCurrent}
                     onCheckedChange={(checked) => {
                       const isChecked = Boolean(checked);
-                      setValue(`experiences.${index}.current`, isChecked);
+                      setValue(`experience.${index}.current`, isChecked);
                       if (checked) {
-                        setValue(`experiences.${index}.endDate`, "");
+                        setValue(`experience.${index}.endDate`, "");
                       }
                     }}
                   />
-                  <Label htmlFor={`experiences.${index}.current`}>
+                  <Label htmlFor={`experience.${index}.current`}>
                     I currently work here
                   </Label>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor={`experiences.${index}.description`}>
+                    <Label htmlFor={`experience.${index}.description`}>
                       Description *
                     </Label>
                     <Sparkle
@@ -219,16 +216,13 @@ export function ExperienceForm() {
                     />
                   </div>
                   <Textarea
-                    {...register(`experiences.${index}.description`)}
+                    {...register(`experience.${index}.description`)}
                     placeholder="Describe your responsibilities and achievements..."
                     className="min-h-[100px]"
                   />
-                  {errors.experiences?.[index]?.description && (
+                  {errors.experience?.[index]?.description && (
                     <p className="text-sm text-destructive">
-                      {
-                        errors.experiences[index]?.description
-                          ?.message as string
-                      }
+                      {errors.experience[index]?.description?.message as string}
                     </p>
                   )}
                 </div>

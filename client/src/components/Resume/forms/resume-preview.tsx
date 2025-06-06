@@ -11,15 +11,17 @@ import {
 import ModernTemplates from "../templates/modernTemplates";
 import ClassicTemplates from "../templates/ClassicTemplates";
 import MinimalTemplate from "../templates/minimalTemplate";
-import type { Resume, ResumeTemplate } from "@/types/resume";
+import type { Resume } from "@/types/resume";
 import { templates } from "@/types/resumeTemplate";
 import { JSX } from "react";
 export function ResumePreview() {
   const { watch, setValue } = useFormContext<Resume>();
   const formData = watch();
   //const [isGeneratingPDF, generatingPDF] = useState(false);
-  const handleTemplateChange = (template: ResumeTemplate) => {
+  const handleTemplateChange = (template: string) => {
+    console.log({ ...formData });
     setValue("template", template, { shouldValidate: true });
+    console.log({ ...formData });
   };
   //const handlePDFDownload = () => {};
   const renderTemplates = () =>
@@ -53,9 +55,7 @@ export function ResumePreview() {
                     ? "border-primary border-1"
                     : ""
                 }`}
-                onClick={() =>
-                  handleTemplateChange(template.id as ResumeTemplate)
-                }
+                onClick={() => handleTemplateChange(template.id)}
               >
                 <h3 className="font-semibold text-center mb-2">
                   {template.name}
