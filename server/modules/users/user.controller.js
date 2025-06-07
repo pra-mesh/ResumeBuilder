@@ -185,6 +185,7 @@ const updateProfile = async (currentUser, payload) => {
   const newPayload = {
     name: payload?.name,
     gender: payload?.gender.toLowerCase(),
+     profilePic: payload?.profilePic,
   };
   const updatedUser = await userModel
     .findOneAndUpdate({ _id: currentUser }, newPayload, { new: true })
@@ -192,6 +193,7 @@ const updateProfile = async (currentUser, payload) => {
   if (!updatedUser) throw new Error("Something went wrong");
   return updatedUser;
 };
+
 const updateUser = async (id, payload) => {
   const user = await userModel.findOne({
     _id: id,

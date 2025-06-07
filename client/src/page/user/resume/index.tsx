@@ -10,23 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Download,
   Eye,
@@ -103,7 +89,6 @@ const resumes = [
 ];
 
 export default function Resumes() {
-  const [isAddResumeOpen, setIsAddResumeOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredResumes = resumes.filter(

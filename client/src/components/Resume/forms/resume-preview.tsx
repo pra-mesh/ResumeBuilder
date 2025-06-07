@@ -19,9 +19,7 @@ export function ResumePreview() {
   const formData = watch();
   //const [isGeneratingPDF, generatingPDF] = useState(false);
   const handleTemplateChange = (template: string) => {
-    console.log({ ...formData });
     setValue("template", template, { shouldValidate: true });
-    console.log({ ...formData });
   };
   //const handlePDFDownload = () => {};
   const renderTemplates = () =>

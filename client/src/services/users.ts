@@ -42,6 +42,19 @@ export const updateUserFormData = async (payload: {
   return response.data.data;
 };
 
+export const updateUserProfile = async (payload: {
+  payload: FormData;
+}): Promise<UserInfo> => {
+  const response: AxiosResponse<{ data: UserInfo }> = await axiosAdmin.patch(
+    `${URLS.USERS}/profile-update`,
+    payload.payload,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return response.data.data;
+};
+
 export const createUserFormData = async (payload: FormData): Promise<User> => {
   const response: AxiosResponse<{ data: User }> = await axiosAdmin.post(
     `${URLS.USERS}`,

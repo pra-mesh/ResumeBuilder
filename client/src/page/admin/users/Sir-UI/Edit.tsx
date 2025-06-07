@@ -10,7 +10,6 @@ import { Loader2 } from "lucide-react";
 
 const fetchUserByID = async (id: string): Promise<User> => {
   const data = await fetchUser(id);
-  console.log(data);
   return data;
 };
 const Edit = () => {

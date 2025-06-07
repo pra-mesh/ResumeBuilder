@@ -7,12 +7,15 @@ import {
 } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useCreateUser, useUpdateUser } from "@/hooks/useUserQuery";
+import {
+  useCreateUser,
+  useUpdateUser,
+  useUpdateUserProfile,
+} from "@/hooks/useUserQuery";
 
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
 import { profileFormProps } from "@/types/UserInfoProps";
-import { toast } from "sonner";
 
 const ROLES = ["admin", "user"];
 const GENDERS = ["Male", "Female", "Other"];
@@ -33,7 +36,7 @@ const UserAddEditForm = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
-
+  const profileUpdateMutation = useUpdateUserProfile();
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -67,7 +70,7 @@ const UserAddEditForm = ({
 
     if (!formData.get("name")) newErrors.name = "Name is required";
 
-    if (showRole) {
+    if (showRole && mode !== "profileUpdate") {
       const selectedRoles = formData.getAll("roles[]"); // Get all values for 'roles[]'
       if (selectedRoles.length < 1) {
         newErrors.roles = "At least one role is required";
@@ -86,17 +89,20 @@ const UserAddEditForm = ({
       if (fileInput) {
         formData.append("picture", fileInput);
       }
-
       formData.delete("confirmPassword");
+      formData.delete("password");
       if (mode === "create") {
         await createUserMutation.mutateAsync(formData);
-        toast.success("User Added", { description: "New User Added" });
-      } else {
+      } else if (mode === "edit") {
         await updateUserMutation.mutateAsync({
           id: initialData?._id || "",
           payload: formData,
         });
-        toast.success("User Updated", { description: "User Edited" });
+      } else {
+        formData.delete("roles[]");
+        await profileUpdateMutation.mutateAsync({
+          payload: formData,
+        });
       }
       setTimeout(() => {
         handleReset();
@@ -120,10 +126,19 @@ const UserAddEditForm = ({
       return () => clearTimeout(timeout);
     }
   }, [errors]);
+
   const serverError =
-    mode === "create" ? createUserMutation.error : updateUserMutation.error;
+    mode === "profileUpdate"
+      ? profileUpdateMutation.error
+      : mode === "edit"
+      ? updateUserMutation.error
+      : mode === "create"
+      ? createUserMutation.error
+      : "";
   const isLoading =
-    createUserMutation.isPending || updateUserMutation.isPending;
+    createUserMutation.isPending ||
+    updateUserMutation.isPending ||
+    profileUpdateMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit} ref={formRef} className="space-y-5">
@@ -160,6 +175,31 @@ const UserAddEditForm = ({
           {profilePreview ? "Change photo" : "Upload photo (optional)"}
         </button>
       </div>
+      {/* Email */}
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Email
+        </label>
+        <div className="mt-1">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            defaultValue={initialData?.email || ""}
+            className={`w-full rounded-md border ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } disabled:bg-muted px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
+            disabled={mode === "edit"}
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+          )}
+        </div>
+      </div>
       {/* Name */}
       <div>
         <label
@@ -184,31 +224,7 @@ const UserAddEditForm = ({
           )}
         </div>
       </div>
-      {/* Email */}
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </label>
-        <div className="mt-1">
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            defaultValue={initialData?.email || ""}
-            className={`w-full rounded-md border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } disabled:bg-gray-200 px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-            disabled={mode === "edit"}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-          )}
-        </div>
-      </div>
+
       {/* Password */}
       {showPasswordFields && (
         <>
@@ -237,7 +253,8 @@ const UserAddEditForm = ({
           <div
             className={cn(
               "mt-2 rounded-md border  py-2  px-3 flex space-x-6",
-              errors.roles ? "border-red-500" : "border-gray-300"
+              errors.roles ? "border-red-500" : "border-gray-300",
+              mode === "profileUpdate" && "bg-muted"
             )}
           >
             {ROLES.map((role) => (
@@ -247,6 +264,7 @@ const UserAddEditForm = ({
                   id={role}
                   name="roles[]"
                   value={role}
+                  disabled={mode === "profileUpdate"}
                   defaultChecked={initialData?.roles.includes(role)}
                   className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
                 />
@@ -312,10 +330,12 @@ const UserAddEditForm = ({
         {isLoading ? (
           <span className="flex items-center justify-center">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating account...
+            {mode === "create" ? " Creating account..." : "Updating account"}
           </span>
         ) : (
-          "Submit"
+          <span>
+            {mode === "create" ? " Create account" : "Update account"}
+          </span>
         )}
       </button>
     </form>

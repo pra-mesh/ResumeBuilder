@@ -164,7 +164,6 @@ const ResumeForm = () => {
     const resume = { ...data };
     resume.status = "final";
     dispatch(saveResumeToServer(resume));
-    console.log({ errors });
     if (!error) {
       dispatch(markAsSaved(resume));
       toast.success("Resume saved successfully", {

@@ -27,17 +27,24 @@ router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   }
 });
 
-router.put(
+router.patch(
   "/profile-update",
   secureAPI(["admin", "user"]),
+  newUpload.single("picture"),
   async (req, res, next) => {
     try {
+      if (req.file) {
+        req.body.profilePic = req.file.path
+          .replace("public", "")
+          .replaceAll("\\", "/");
+      }
       const result = await userController.updateProfile(
         req.currentUser,
         req.body
       );
       res.json(result);
     } catch (e) {
+      if (req.file) fs.unlinkSync("public".concat(req.body.profilePic));
       next({ err: e.message, status: 500 });
     }
   }

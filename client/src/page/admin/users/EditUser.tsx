@@ -53,7 +53,6 @@ const EditUser = () => {
         mode="edit"
         initialData={user}
         onSuccess={handleSubmit}
-        isEditing={true}
         showPasswordFields={false}
         showRole={true}
       />

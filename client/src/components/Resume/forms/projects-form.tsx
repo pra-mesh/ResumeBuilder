@@ -39,7 +39,6 @@ export function ProjectsForm() {
 
   const handleGenerateDescription = async (index: number) => {
     const project = getValues(`projects.${index}`);
-    console.log(project);
     // Check if required fields are filled
     if (!project.title && !project.technologies && !project.description) {
       toast.info("Missing Information", {

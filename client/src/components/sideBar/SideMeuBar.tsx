@@ -21,12 +21,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
-import ChangePasswordForm from "../Users/ChangePasswordForm";
+import ChangePasswordForm from "../Users/UserProfile/ChangePasswordForm";
+import UpdateProfileForm from "../Users/UserProfile/UpdateProfileForm";
 
 export const SideBarAdmin = () => {
   const { logout, user } = useAuth();
   const { state } = useSidebar();
   const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
   return (
     <>
       <Sidebar collapsible="icon">
@@ -94,6 +96,13 @@ export const SideBarAdmin = () => {
                     </p>
                   </div>
                   <DropdownMenuItem
+                    onClick={() => setOpenProfile(!openChangePassword)}
+                  >
+                    <RotateCcwKey className="mr-2 h-4 w-4" />
+                    <span>User Profile</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
                     onClick={() => setOpenChangePassword(!openChangePassword)}
                   >
                     <RotateCcwKey className="mr-2 h-4 w-4" />
@@ -123,8 +132,12 @@ export const SideBarAdmin = () => {
         <SidebarRail />
       </Sidebar>
       <ChangePasswordForm
-        openChangePassword={openChangePassword}
-        setOpenChangePassword={setOpenChangePassword}
+        openCloseDialog={openChangePassword}
+        setOpenCloseDialog={setOpenChangePassword}
+      />
+      <UpdateProfileForm
+        openCloseDialog={openProfile}
+        setOpenCloseDialog={setOpenProfile}
       />
     </>
   );

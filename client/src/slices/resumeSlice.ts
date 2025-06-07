@@ -22,7 +22,6 @@ export const saveResumeToServer = createAsyncThunk(
       const res = await saveResume(payload);
       return res.data;
     } catch (e: any) {
-      console.log({ response: e?.response?.data?.err?.message });
       return rejectWithValue({
         data: e?.response?.data.err?.message ?? "Something went wrong",
       });

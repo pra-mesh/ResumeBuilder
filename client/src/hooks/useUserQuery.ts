@@ -5,9 +5,10 @@ import {
   fetchUserInfo,
   createUserFormData,
   updateUserFormData,
+  updateUserProfile,
 } from "@/services/users";
 import { toast } from "sonner";
-
+//TOLearn How to utilize userKeys
 export const userKeys = {
   all: ["users"] as const,
   lists: () => [...userKeys.all, "list"] as const,
@@ -19,7 +20,7 @@ export const useUsers = () => {
   return useQuery({
     queryKey: userKeys.lists(),
     queryFn: fetchUsers,
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
   });
 };
 export const useUser = (id: string) => {
@@ -30,7 +31,7 @@ export const useUser = (id: string) => {
     staleTime: 5 * 60 * 100,
   });
 };
-// NOTES: optimistic tanstack update
+// TOLearn: What is and how to do optimistic tanstack update
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -42,6 +43,19 @@ export const useUpdateUser = () => {
     },
   });
 };
+
+export const useUpdateUserProfile = () => {
+  
+  return useMutation({
+    mutationFn: updateUserProfile,
+    onSuccess: () => {
+      //queryClient.setQueryData(["users", updatedUser._id], updatedUser);
+      //queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User Updated", { description: "User Edited" });
+    },
+  });
+};
+
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({

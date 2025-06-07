@@ -24,7 +24,6 @@ import ResetPassword from "@/page/auth/RestPassword";
 import NotFound from "./Error";
 //import Edit from "@/page/admin/users/Edit";
 
-
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
   return (
@@ -73,7 +72,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Toaster richColors closeButton position="bottom-right" />
+      <Toaster richColors closeButton position="top-right" />
     </>
   );
 };

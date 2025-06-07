@@ -11,6 +11,7 @@ import {
   useState,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 import { useNavigate } from "react-router";
 
@@ -21,6 +22,7 @@ interface AuthContextProps {
   accessToken: string | null;
   refreshToken: string | null;
   user: UserInfo | null;
+  setRefetch: (refetch: boolean) => void;
 }
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
@@ -36,8 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     () => !!localStorage.getItem("access_token")
   );
   const [user, setUser] = useState<UserInfo | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
-
+  const [refetch, setRefetch] = useState<boolean>(true);
   const login = async (access: string, refresh: string) => {
     setAccessToken(access);
     setRefreshToken(refresh);
@@ -46,21 +47,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
     removeAllItems();
     setIsAuthenticated(false);
     navigate("/auth/login");
-  };
+    setRefetch(true);
+  }, [navigate]);
 
   //NOTES Validating tokens
   useEffect(() => {
     const validateToken = async () => {
       if (!accessToken) {
         setIsAuthenticated(false);
-        setIsInitializing(false);
+
         return;
       }
       try {
@@ -76,33 +78,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error("Token validation error:", error);
         logout();
-      } finally {
-        setIsInitializing(false);
       }
     };
     validateToken();
-  }, [accessToken, refreshToken]);
+  }, [accessToken, logout, refreshToken]);
   //NOTES Fetching users on accessToken change
   useEffect(() => {
     const fetchUser = async () => {
-      if (!isAuthenticated || !accessToken || isInitializing) return;
+      if (!isAuthenticated || !accessToken) return;
       try {
-        //NOTES Prevent cyclic call of axios for refresh token
-        const { axiosAdmin } = await import("@/lib/axiosAdmin");
-        const { data } = await axiosAdmin.get(`${URLS.USERS}/profile`);
-        setUser(data);
+        if (refetch) {
+          //NOTES Prevent cyclic call of axios for refresh token
+          const { axiosAdmin } = await import("@/lib/axiosAdmin");
+          const { data } = await axiosAdmin.get(`${URLS.USERS}/profile`);
+          setUser(data);
+          setRefetch(false);
+        }
       } catch (error) {
         console.error("Profile fetch error:", error);
       }
     };
     fetchUser();
-  }, [isAuthenticated, accessToken, isInitializing]);
+  }, [isAuthenticated, accessToken, refetch]);
 
   useEffect(() => {
     // if (!isInitializing && !isAuthenticated) {
     // }
-  }, [navigate, isAuthenticated, isInitializing]);
-
+  }, [navigate, isAuthenticated]);
   return (
     <AuthContext.Provider
       value={{
@@ -112,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         accessToken,
         refreshToken,
         user,
+        setRefetch,
       }}
     >
       {children}
