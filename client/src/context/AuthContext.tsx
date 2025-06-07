@@ -14,6 +14,7 @@ import {
   useCallback,
 } from "react";
 import { useNavigate } from "react-router";
+import { persistor } from "@/store";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -55,6 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(false);
     navigate("/auth/login");
     setRefetch(true);
+    persistor.purge();
   }, [navigate]);
 
   //NOTES Validating tokens

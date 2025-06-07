@@ -70,6 +70,7 @@ export default function AdminUsers() {
     });
     navigate(`?${query.toString()}`, { replace: true });
   }, [currentPage, limit, navigate, debouncedSearch, searchValue]);
+  
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);

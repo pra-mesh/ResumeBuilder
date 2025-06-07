@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Outlet } from "react-router";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
-import Header from "@/components/Header";
+// import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SideBarAdmin } from "@/components/sideBar/SideMeuBar";
 
@@ -13,7 +13,7 @@ const AdminLayout = () => {
       <div className="flex min-h-screen min-w-full">
         <SideBarAdmin />
         <main className="flex-1 overflow-y-auto  mx-5">
-          <Header />
+          {/* <Header /> */}
           <Suspense fallback={<p>Loading Page.....</p>}>
             <Outlet />
           </Suspense>

@@ -13,3 +13,14 @@ export const getInitials = (fullName: string | undefined) => {
     .map((word) => word[0].toUpperCase())
     .join("");
 };
+
+export const longValue = ({
+  text,
+  length,
+}: {
+  text: string;
+  length: number;
+}) => {
+  if (text.length < length) return text;
+  else return text.slice(0, length - 1).concat("...");
+};

@@ -55,4 +55,5 @@ export interface Resume extends ResumeCoreSections {
   updatedAt: string;
   template: string;
   isSavedToServer: boolean;
+  _id?: string;
 }

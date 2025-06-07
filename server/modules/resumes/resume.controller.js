@@ -2,6 +2,13 @@ const resumeModel = require("./resume.model");
 
 const list = async ({ page = 1, limit = 10, search, userId }) => {
   const query = [];
+  if (search?.title) {
+    query.push({
+      $match: {
+        title: new RegExp(search?.title, "gi"),
+      },
+    });
+  }
   query.push(
     {
       $lookup: {
@@ -64,14 +71,8 @@ const list = async ({ page = 1, limit = 10, search, userId }) => {
     }
   );
 
-  if (search?.title) {
-    query.push({
-      $match: {
-        title: new RegExp(search?.title, "gi"),
-      },
-    });
-  }
-  return await resumeModel.aggregate(query);
+  const result = await resumeModel.aggregate(query);
+  return result[0] || { data: [], total: 0 };
 };
 
 const create = async (payload) => await resumeModel.create(payload);

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,72 +29,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Sample resume data
-const resumes = [
-  {
-    id: "1",
-    title: "Software Engineer Resume",
-    owner: "John Doe",
-    template: "Modern",
-    createdAt: "2023-08-15",
-    updatedAt: "2023-09-02",
-    downloads: 12,
-  },
-  {
-    id: "2",
-    title: "Marketing Specialist",
-    owner: "Sarah Smith",
-    template: "Classic",
-    createdAt: "2023-07-22",
-    updatedAt: "2023-07-22",
-    downloads: 3,
-  },
-  {
-    id: "3",
-    title: "Product Manager",
-    owner: "Michael Johnson",
-    template: "Modern",
-    createdAt: "2023-06-10",
-    updatedAt: "2023-08-15",
-    downloads: 8,
-  },
-  {
-    id: "4",
-    title: "UX Designer Portfolio",
-    owner: "Emily Brown",
-    template: "Minimal",
-    createdAt: "2023-09-05",
-    updatedAt: "2023-09-05",
-    downloads: 5,
-  },
-  {
-    id: "5",
-    title: "Data Scientist Resume",
-    owner: "David Wilson",
-    template: "Classic",
-    createdAt: "2023-05-18",
-    updatedAt: "2023-07-30",
-    downloads: 7,
-  },
-  {
-    id: "6",
-    title: "Frontend Developer",
-    owner: "John Doe",
-    template: "Minimal",
-    createdAt: "2023-04-12",
-    updatedAt: "2023-08-20",
-    downloads: 15,
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { loadResumes } from "@/slices/resumeSlice";
+import { Resume } from "@/types/resume";
+import { formatDate } from "@/lib/dateFormatter";
+import { longValue } from "@/lib/utils";
 
 export default function Resumes() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { resumes, limit, currentPage, total, searchValue } = useSelector(
+    (state: RootState) => state.resumes
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  const initUserFetch = useCallback(() => {
+    dispatch(loadResumes({ limit, page: currentPage, title: "" }));
+  }, [dispatch, limit, currentPage]);
+
+  useEffect(() => {
+    initUserFetch();
+  }, [initUserFetch]);
 
   const filteredResumes = resumes.filter(
-    (resume) =>
+    (resume: Resume) =>
       resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resume.owner.toLowerCase().includes(searchQuery.toLowerCase())
+      resume.personalInfo.fullName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -102,7 +64,7 @@ export default function Resumes() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Resumes</h1>
         <Button asChild>
-          <Link to="/admin/resumes/add">
+          <Link to="/user/resume/add">
             <Plus className="mr-2 h-4 w-4" /> Add Resume
           </Link>
         </Button>
@@ -121,17 +83,18 @@ export default function Resumes() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredResumes.map((resume) => (
+        {filteredResumes.map((resume: Resume) => (
           <Card key={resume.id}>
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-0">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle>{resume.title}</CardTitle>
-                  <CardDescription>{resume.owner}</CardDescription>
+                  <CardTitle>
+                    {longValue({ text: resume.title, length: 35 })}
+                  </CardTitle>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button variant="ghost" className="h-1 w-2 p-0">
                       <span className="sr-only">Open menu</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
@@ -153,19 +116,21 @@ export default function Resumes() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between text-sm">
+              <CardDescription className="text-justify">
+                {longValue({
+                  text: resume.personalInfo.summary,
+                  length: 100,
+                })}
+              </CardDescription>
+              <div className="flex items-center justify-between text-sm mt-2">
                 <Badge variant="outline">{resume.template}</Badge>
-                <span className="text-muted-foreground">
-                  {resume.downloads} downloads
-                </span>
+                <Badge variant="outline" className="text-muted-foreground">
+                  {resume.status}
+                </Badge>
               </div>
             </CardContent>
             <CardFooter className="text-xs text-muted-foreground">
-              <div>
-                Created: {resume.createdAt}
-                {resume.updatedAt !== resume.createdAt &&
-                  ` • Updated: ${resume.updatedAt}`}
-              </div>
+              <div>Updated At: {formatDate(resume.updatedAt)}</div>
             </CardFooter>
           </Card>
         ))}
