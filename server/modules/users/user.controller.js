@@ -44,6 +44,7 @@ const blockUser = async (id) => {
       data: `User ${user?.isBlocked ? "unblocked" : "blocked"} successfully`,
     };
   }
+  return { data: "Something went wrong" };
 };
 
 const changePassword = async (currentUser, payload) => {
@@ -66,7 +67,7 @@ const changePassword = async (currentUser, payload) => {
       "sendMail",
       user?.email,
       "Password has been Reset",
-      `Your password has been changed successfully.`
+      "Your password has been changed successfully."
     );
   }
 };
@@ -185,7 +186,7 @@ const updateProfile = async (currentUser, payload) => {
   const newPayload = {
     name: payload?.name,
     gender: payload?.gender.toLowerCase(),
-     profilePic: payload?.profilePic,
+    profilePic: payload?.profilePic,
   };
   const updatedUser = await userModel
     .findOneAndUpdate({ _id: currentUser }, newPayload, { new: true })

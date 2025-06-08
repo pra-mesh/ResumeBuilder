@@ -36,9 +36,10 @@ import { Resume } from "@/types/resume";
 import { formatDate } from "@/lib/dateFormatter";
 import { longValue } from "@/lib/utils";
 
+
 export default function Resumes() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { resumes, limit, currentPage, total, searchValue } = useSelector(
+  const { resumes, limit, currentPage } = useSelector(
     (state: RootState) => state.resumes
   );
   const dispatch = useDispatch<AppDispatch>();
@@ -134,6 +135,9 @@ export default function Resumes() {
             </CardFooter>
           </Card>
         ))}
+      </div>
+      <div className="flex justify-end items-end">
+
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-const { string, required } = require("joi");
 const { Schema, model } = require("mongoose");
 const { ObjectID } = Schema.Types;
 const schema = new Schema(

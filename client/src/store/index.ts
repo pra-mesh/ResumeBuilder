@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore, Action } from "@reduxjs/toolkit";
 import {
   FLUSH,
   PAUSE,
@@ -10,17 +10,36 @@ import {
   persistStore,
 } from "redux-persist";
 
-import resumeReducer from "@/slices/resumeSlice";
-import { userReducer } from "@/slices/userSlice";
+import {
+  resumeReducer,
+  initialState as resumeInitialState,
+} from "@/slices/resumeSlice";
+import {
+  initialState as userInitialState,
+  userReducer,
+} from "@/slices/userSlice";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2"; //NOTES Mange the state tracking level to deep level. It prevents infinite loop
 import storage from "redux-persist/lib/storage";
 
-const rootReducer = combineReducers({
+const initialState: RootState = {
+  resumes: resumeInitialState,
+  users: userInitialState,
+};
+
+// Action type for resetting the state
+const RESET_STATE = "RESET_STATE";
+
+const appReducer = combineReducers({
   resumes: resumeReducer,
   users: userReducer,
   //... other reducers
 });
-
+const rootReducer = (state: any, action: Action) => {
+  if (action.type === RESET_STATE) {
+    return initialState; // Reset state to initial values
+  }
+  return appReducer(state, action);
+};
 const persistConfig = {
   key: "resume-persist",
   storage,
@@ -41,6 +60,8 @@ export const store = configureStore({
   devTools: import.meta.env.VITE_DEV ? { trace: true, traceLimit: 25 } : false,
 });
 //provides data from local storage
+export const resetState = () => ({ type: RESET_STATE });
+
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

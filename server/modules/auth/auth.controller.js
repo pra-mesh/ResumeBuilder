@@ -42,10 +42,10 @@ const register = async (payload) => {
   }
   rest.otp = generateOTP();
   rest.password = bcrypt.generatedHash(password);
-  const newuser = await userModel.create(rest);
-  if (newuser) {
+  const newUser = await userModel.create(rest);
+  if (newUser) {
     const subject = "Welcome to ProResume AI";
-    const message = `Thank you for singing up. Welcome ${rest?.name} \n Please use the code to veriify your email
+    const message = `Thank you for singing up. Welcome ${rest?.name} \n Please use the code to verify your email
     \n Code: ${rest.otp} `;
     mailEvents.emit("sendMail", rest?.email, subject, message);
   }
@@ -55,7 +55,6 @@ const verifyEmail = async (payload) => {
   const { email, otp } = payload;
   if (otp.length !== 6) throw new Error("Invalid OTP");
   const user = await userModel.findOne({ email, isEmailVerified: false });
-  if (!user) throw new Error("User not found");
   const isValidOTP = user.otp === String(otp);
   if (!isValidOTP) throw new Error("OTP mismatch");
   const updatedUser = await userModel.updateOne(
@@ -64,15 +63,13 @@ const verifyEmail = async (payload) => {
   );
   if (updatedUser) {
     const subject = "User verified";
-    const message = `Thank you for verifying. Welcome to PRORESUMEAI`;
+    const message = `Thank you ${user.name} for verifying. Welcome to PRO RESUME AI`;
     mailEvents.emit("sendMail", email, subject, message);
   }
 };
 
 const resendOTP = async (payload) => {
   const { email } = payload;
-  const user = await userModel.findOne({ email, isEmailVerified: false });
-  if (!user) throw new Error("User not found");
   const otp = generateOTP();
   const usrUpdate = await userModel.findOneAndUpdate({ email }, { otp });
   if (usrUpdate) {
@@ -84,17 +81,12 @@ const resendOTP = async (payload) => {
 
 const refreshToken = async (payload) => {
   const { email, refresh_token } = payload;
-  console.log(refresh_token);
   const user = await userModel.findOne({
     email,
     isEmailVerified: true,
     isBlocked: false,
   });
-
-  if (!user) throw Error("User Not found");
-
   const { refresh_token: rt_in_db } = user;
-
   if (rt_in_db.code !== refresh_token) throw Error("Token mismatch");
   const currentTime = new Date();
   const databaseTime = new Date(rt_in_db.duration);
@@ -122,12 +114,6 @@ const generateRefreshToken = async (email) => {
 };
 
 const forgetPassword = async ({ email }) => {
-  const user = await userModel.findOne({
-    email,
-    isEmailVerified: true,
-    isBlocked: false,
-  });
-  if (!user) throw Error("User not found");
   const fpToken = generateOTP();
   const updatedUser = await userModel.updateOne({ email }, { otp: fpToken });
   if (updatedUser) {
@@ -144,7 +130,6 @@ const fpResetPassword = async (payload) => {
     isEmailVerified: true,
     isBlocked: false,
   });
-  if (!user) throw Error("User not found");
   if (user?.otp !== otp) throw new Error("Token mismatch");
   const hashpassword = bcrypt.generatedHash(password);
   const updatedUser = await userModel.updateOne(

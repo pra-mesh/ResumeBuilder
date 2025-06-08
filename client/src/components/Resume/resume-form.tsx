@@ -37,12 +37,15 @@ import {
   addNewResume,
   markAsSaved,
   saveResumeToServer,
+  updateResume,
 } from "@/slices/resumeSlice";
 import { toast } from "sonner";
 
 const ResumeForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error } = useSelector((state: RootState) => state.resumes);
+  const { isLoading, error, resumes } = useSelector(
+    (state: RootState) => state.resumes
+  );
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const methods = useForm<Resume>({
@@ -184,18 +187,31 @@ const ResumeForm = () => {
 
   const onSaveDraft = async (data: Resume) => {
     try {
-      const resume: Resume = {
-        ...data,
-        id: uuidv4(),
-        status: "draft",
-        updatedAt: new Date().toISOString(),
-        isSavedToServer: false,
-      };
-      console.log(resume);
-      if (!error) {
-        dispatch(addNewResume(resume));
-        toast("Resume draft saved successfully");
+      const index = resumes.findIndex((r: Resume) => r.id === data.id);
+      if (index !== -1 && data.id !== "") {
+        const resume: Resume = {
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        if (!error) {
+          dispatch(updateResume(resume));
+        }
+        console.log(resume.updatedAt);
+      } else {
+        const resume: Resume = {
+          ...data,
+          id: uuidv4(),
+          status: "draft",
+          updatedAt: new Date().toISOString(),
+          isSavedToServer: false,
+        };
+        setValue("id", resume.id);
+        console.log(resume.updatedAt);
+        if (!error) {
+          dispatch(addNewResume(resume));
+        }
       }
+      toast.success("Resume draft saved successfully");
       //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
     } catch (e) {
       console.error("Error saving resume:", e);

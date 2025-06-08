@@ -7,7 +7,7 @@ const helmet = require("helmet");
 
 const indexRouter = require("./routes");
 
-const port = process.env.port || "8000";
+const port = process.env.PORT || "8000";
 
 const app = express();
 

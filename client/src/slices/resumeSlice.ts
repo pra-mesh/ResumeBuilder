@@ -15,14 +15,14 @@ interface ResumeState {
   searchValue: string;
 }
 
-const initialState: ResumeState = {
+export const initialState: ResumeState = {
   resumes: [],
   currentResumeId: null,
   error: "",
   loading: false,
   total: 0,
   currentPage: 1,
-  limit: 10,
+  limit: 1,
   searchValue: "",
 };
 export const saveResumeToServer = createAsyncThunk(
@@ -120,7 +120,7 @@ const resumeSlice = createSlice({
       state.loading = false;
       const fetchedResumes = action.payload.data;
       fetchedResumes.forEach((fetchedResume: Resume) => {
-        fetchedResume.id = fetchedResume._id;
+        fetchedResume.id = fetchedResume._id ?? "";
         const existingIndex = state.resumes.findIndex(
           (r) => r.id === fetchedResume.id
         );
@@ -160,4 +160,5 @@ export const {
   setLimit,
   setSearch,
 } = resumeSlice.actions;
-export default resumeSlice.reducer;
+//export default resumeSlice.reducer;
+export const resumeReducer = resumeSlice.reducer;

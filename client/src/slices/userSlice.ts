@@ -15,7 +15,7 @@ interface UserState {
   selectedUser: UserInfo | null;
 }
 
-const initialState: UserState = {
+export const initialState: UserState = {
   users: [],
   total: 0,
   currentPage: 1,
