@@ -1,12 +1,18 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk,
+  createSelector,
+} from "@reduxjs/toolkit";
 import { Resume } from "@/types/resume";
 import { saveResume } from "@/services/resume";
 import { axiosAdmin } from "@/lib/axiosAdmin";
 import { URLS } from "@/constants";
+import { RootState } from "@/store";
 
 interface ResumeState {
   resumes: Resume[];
-  currentResumeId: string | null;
+  filteredResume: Resume[];
   error: string;
   loading: boolean;
   total: number;
@@ -17,20 +23,43 @@ interface ResumeState {
 
 export const initialState: ResumeState = {
   resumes: [],
-  currentResumeId: null,
+  filteredResume: [],
   error: "",
   loading: false,
   total: 0,
   currentPage: 1,
-  limit: 1,
+  limit: 10,
   searchValue: "",
 };
+const selectResumeState = (state: RootState) => state.resumes;
+
+export const selectPaginatedResumes = createSelector(
+  selectResumeState,
+  (resumeState) => {
+    const { resumes, currentPage, limit, searchValue } = resumeState;
+    const filtered = resumes.filter(
+      (resume: Resume) =>
+        resume.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+        resume.personalInfo.fullName
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())
+    );
+    const start = (currentPage - 1) * limit;
+    const paginatedResume = filtered.slice(start, start + limit);
+    const totalFiltered = filtered.length;
+    return {
+      paginatedResume,
+      totalPage: Math.ceil(totalFiltered / limit),
+    };
+  }
+);
+
 export const saveResumeToServer = createAsyncThunk(
   "resume/saveResumeToServer",
   async (payload: Resume, { rejectWithValue }) => {
     try {
       const res = await saveResume(payload);
-      return res.data;
+      return res.data.data;
     } catch (e: any) {
       return rejectWithValue({
         data: e?.response?.data.err?.message ?? "Something went wrong",
@@ -40,16 +69,9 @@ export const saveResumeToServer = createAsyncThunk(
 );
 export const loadResumes = createAsyncThunk(
   "resume/LoadResume",
-  async (
-    { limit, page, title }: { limit: number; page: number; title?: string },
-    { rejectWithValue }
-  ) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosAdmin.get(
-        `${URLS.RESUMES}?limit=${limit}&page=${page}&title=${encodeURIComponent(
-          title ?? ""
-        )}`
-      );
+      const res = await axiosAdmin.get(`${URLS.RESUMES}?limit=10000&page=1`);
       return res.data;
     } catch (e: any) {
       return rejectWithValue({
@@ -64,14 +86,14 @@ const resumeSlice = createSlice({
   initialState,
   //Drafting resume to states
   reducers: {
-    setCurrentResume(state, action: PayloadAction<string | null>) {
-      state.currentResumeId = action.payload;
-    },
     addNewResume(state, action: PayloadAction<Resume>) {
       const index = state.resumes.findIndex((r) => r.id === action.payload.id);
       if (index !== -1) {
         state.resumes[index] = action.payload;
-      } else state.resumes.push(action.payload);
+      } else {
+        state.resumes.push(action.payload);
+        state.total += 1;
+      }
     },
     updateResume(state, action: PayloadAction<Resume>) {
       const index = state.resumes.findIndex((r) => r.id === action.payload.id);
@@ -81,16 +103,21 @@ const resumeSlice = createSlice({
     },
     markAsSaved(state, action: PayloadAction<Resume>) {
       const resume = state.resumes.find((r) => r.id === action.payload.id);
-      if (resume) resume.isSavedToServer = true;
+      if (resume) {
+        resume.isSavedToServer = true;
+        state.total -= 1;
+      }
     },
     deleteResume(state, action: PayloadAction<string>) {
       state.resumes = state.resumes.filter((r) => r.id !== action.payload);
+      state.total -= 1;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
     setLimit: (state, action) => {
       state.limit = action.payload;
+      state.currentPage = 1;
     },
     setSearch: (state, action) => {
       state.currentPage = 1; //BUG on search text change goes to first page before data change delay
@@ -103,6 +130,7 @@ const resumeSlice = createSlice({
       (state, action: PayloadAction<Resume>) => {
         state.loading = false;
         state.resumes.push(action.payload);
+        state.total += 1;
       }
     );
     builder.addCase(
@@ -119,7 +147,10 @@ const resumeSlice = createSlice({
     builder.addCase(loadResumes.fulfilled, (state, action: any) => {
       state.loading = false;
       const fetchedResumes = action.payload.data;
+      console.log({ fetchedResumes });
       fetchedResumes.forEach((fetchedResume: Resume) => {
+        const data = JSON.stringify(fetchedResume);
+        console.log(`Size: ${(new Blob([data]).size / 1024).toFixed(2)} KB`);
         fetchedResume.id = fetchedResume._id ?? "";
         const existingIndex = state.resumes.findIndex(
           (r) => r.id === fetchedResume.id
@@ -135,19 +166,18 @@ const resumeSlice = createSlice({
             ...fetchedResume,
             isSavedToServer: true,
           });
+          state.total += 1;
         }
       });
-
-      state.total = action.payload.total;
+      state.error = "";
     });
     builder.addCase(loadResumes.rejected, (state, action: any) => {
       state.loading = false;
       state.error = action.payload.data;
-      state.total = 0;
     });
     builder.addCase(loadResumes.pending, (state) => {
       state.loading = true;
-      state.total = 0;
+      state.error = "";
     });
   },
 });
@@ -160,5 +190,9 @@ export const {
   setLimit,
   setSearch,
 } = resumeSlice.actions;
+
 //export default resumeSlice.reducer;
 export const resumeReducer = resumeSlice.reducer;
+
+//BUG on submit remove the saved draft
+//BUG on edit finalized data saved as draft what to do

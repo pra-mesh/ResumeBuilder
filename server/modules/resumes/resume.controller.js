@@ -75,7 +75,7 @@ const list = async ({ page = 1, limit = 10, search, userId }) => {
   return result[0] || { data: [], total: 0 };
 };
 
-const create = async (payload) => await resumeModel.create(payload);
+const create = async (payload) => await resumeModel.insertOne(payload);
 
 const getById = async ({ id, currentUser }) => {
   const result = await resumeModel.findOne({ _id: id, user: currentUser });

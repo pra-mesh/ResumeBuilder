@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,34 +31,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { loadResumes } from "@/slices/resumeSlice";
+import {
+  loadResumes,
+  selectPaginatedResumes,
+  setSearch,
+} from "@/slices/resumeSlice";
 import { Resume } from "@/types/resume";
 import { formatDate } from "@/lib/dateFormatter";
 import { longValue } from "@/lib/utils";
-
+import Pagination from "@/components/ui/pagination";
 
 export default function Resumes() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const { resumes, limit, currentPage } = useSelector(
-    (state: RootState) => state.resumes
-  );
+  const { searchValue } = useSelector((state: RootState) => state.resumes);
+  const { paginatedResume, totalPage } = useSelector(selectPaginatedResumes);
   const dispatch = useDispatch<AppDispatch>();
 
   const initUserFetch = useCallback(() => {
-    dispatch(loadResumes({ limit, page: currentPage, title: "" }));
-  }, [dispatch, limit, currentPage]);
+    dispatch(loadResumes());
+  }, [dispatch]);
 
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
-
-  const filteredResumes = resumes.filter(
-    (resume: Resume) =>
-      resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resume.personalInfo.fullName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="p-6 space-y-6">
@@ -77,14 +71,14 @@ export default function Resumes() {
           <Input
             placeholder="Search resumes..."
             className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchValue}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
           />
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredResumes.map((resume: Resume) => (
+        {paginatedResume.map((resume: Resume) => (
           <Card key={resume.id}>
             <CardHeader className="pb-0">
               <div className="flex justify-between items-start">
@@ -137,7 +131,7 @@ export default function Resumes() {
         ))}
       </div>
       <div className="flex justify-end items-end">
-
+        <Pagination totalPage={totalPage} />
       </div>
     </div>
   );

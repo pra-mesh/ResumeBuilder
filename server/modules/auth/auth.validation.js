@@ -1,9 +1,14 @@
+/* eslint-disable quotes */
 //TODO validation
 const Joi = require("joi");
 const userModel = require("../users/user.model");
 
 const baseFields = {
-  email: Joi.string().email().required(),
+  email: Joi.string().email().required().messages({
+    "string.base": '"email" should be type of text',
+    "string.email": '"email" should be type of email',
+    "any.required": "email is required",
+  }),
 };
 
 const emailSchema = Joi.object(baseFields).unknown(false);

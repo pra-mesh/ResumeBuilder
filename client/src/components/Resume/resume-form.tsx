@@ -188,15 +188,13 @@ const ResumeForm = () => {
   const onSaveDraft = async (data: Resume) => {
     try {
       const index = resumes.findIndex((r: Resume) => r.id === data.id);
+      console.log(index, data.id);
       if (index !== -1 && data.id !== "") {
         const resume: Resume = {
           ...data,
           updatedAt: new Date().toISOString(),
         };
-        if (!error) {
-          dispatch(updateResume(resume));
-        }
-        console.log(resume.updatedAt);
+        dispatch(updateResume(resume));
       } else {
         const resume: Resume = {
           ...data,
@@ -205,11 +203,11 @@ const ResumeForm = () => {
           updatedAt: new Date().toISOString(),
           isSavedToServer: false,
         };
+        console.log(error);
+
+        console.log("tp");
+        dispatch(addNewResume(resume));
         setValue("id", resume.id);
-        console.log(resume.updatedAt);
-        if (!error) {
-          dispatch(addNewResume(resume));
-        }
       }
       toast.success("Resume draft saved successfully");
       //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved

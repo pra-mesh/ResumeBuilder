@@ -3,9 +3,9 @@ const { ObjectID } = Schema.Types;
 const schema = new Schema(
   {
     title: { type: String, required: true },
-    user: { type: ObjectID },
+    user: { type: ObjectID, required: true },
     personalInfo: {
-      fullName: { type: String },
+      fullName: { type: String, required: true },
       email: { type: String },
       phone: { type: String },
       address: { type: String },

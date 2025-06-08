@@ -18,8 +18,8 @@ router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
     const payload = req.body;
     payload.user = req.currentUser;
-    await resumeController.create(payload);
-    res.json({ data: "Resume Added" });
+    const result = await resumeController.create(payload);
+    res.json({ data: result });
   } catch (e) {
     next({ err: e.message, status: 500 });
   }
