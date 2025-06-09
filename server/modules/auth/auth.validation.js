@@ -1,10 +1,13 @@
 /* eslint-disable quotes */
-//TODO validation
 const Joi = require("joi");
 const userModel = require("../users/user.model");
+const {
+  hasVerifiedActiveEmail,
+  hasUnVerifiedEmail,
+} = require("../../utils/validUsers");
 
 const baseFields = {
-  email: Joi.string().email().required().messages({
+  email: Joi.string().required().messages({
     "string.base": '"email" should be type of text',
     "string.email": '"email" should be type of email',
     "any.required": "email is required",
@@ -15,7 +18,12 @@ const emailSchema = Joi.object(baseFields).unknown(false);
 
 const fpResetPasswordSchema = Joi.object({
   ...baseFields,
-  password: Joi.string().required(),
+  password: Joi.string()
+    .required()
+    .pattern(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-_])[A-Za-z\d@$!%*?&-_]{8,30}$/
+    )
+    .message("Password failed to meet the requirement"),
   otp: Joi.string().required().length(6),
 });
 
@@ -64,7 +72,7 @@ const forgetPasswordMW = async (req, _, next) => {
 const fpResetPasswordMW = async (req, _, next) => {
   try {
     await fpResetPasswordSchema.validateAsync(req.body);
-    if (!(await hasVerifiedActiveEmail(req.bod.email)))
+    if (!(await hasVerifiedActiveEmail(req.body.email)))
       throw new Error("User not found");
     next();
   } catch (e) {
@@ -91,6 +99,7 @@ const resendOtpMW = async (req, _, next) => {
     next({ err: e.message, status: 400 });
   }
 };
+
 const refresh_tokenMW = async (req, _, next) => {
   try {
     await refresh_tokenSchema.validateAsync(req.body);
@@ -124,22 +133,6 @@ const verifyEmailMw = async (req, _, next) => {
   } catch (e) {
     next({ err: e.message, status: 400 });
   }
-};
-
-const hasUnVerifiedEmail = async (email) => {
-  const user = await userModel.findOne({ email, isEmailVerified: false });
-  if (!user) return false;
-  return true;
-};
-
-const hasVerifiedActiveEmail = async (email) => {
-  const user = await userModel.findOne({
-    email,
-    isEmailVerified: true,
-    isBlocked: false,
-  });
-  if (!user) return false;
-  return true;
 };
 
 module.exports = {

@@ -3,10 +3,18 @@ const userController = require("./user.controller");
 const { secureAPI } = require("../../utils/secure");
 const { storage, upload } = require("../../utils/multer");
 const fs = require("fs");
+const {
+  changePasswordMw,
+  updateProfileMW,
+  userValidationMw,
+  userUpdateValidationMw,
+} = require("./user.validation");
 
+// [POST] Change password (admin, user)
 router.post(
   "/change-password",
   secureAPI(["admin", "user"]),
+  changePasswordMw,
   async (req, res, next) => {
     try {
       await userController.changePassword(req.currentUser, req.body);
@@ -17,7 +25,7 @@ router.post(
   }
 );
 const newUpload = upload(storage("public/uploads/users"), 1000000);
-
+//[Get] Profile (admin,user)
 router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
     const result = await userController.getProfile(req.currentUser);
@@ -26,10 +34,11 @@ router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
     next({ err: e.message, status: 500 });
   }
 });
-
+//[Patch] Update Profile (admin,user)
 router.patch(
   "/profile-update",
   secureAPI(["admin", "user"]),
+  updateProfileMW,
   newUpload.single("picture"),
   async (req, res, next) => {
     try {
@@ -49,8 +58,7 @@ router.patch(
     }
   }
 );
-
-//list users
+//[get] list users admin (admin,user)
 router.get("/", secureAPI("admin"), async (req, res, next) => {
   try {
     const { page, limit, name, gender, role, email } = req.query;
@@ -61,7 +69,9 @@ router.get("/", secureAPI("admin"), async (req, res, next) => {
     next({ err: e.message, status: 500 });
   }
 });
+//=============== User management admin panel ===============
 
+//list users all admin
 router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
   try {
     const { to, from } = req.query;
@@ -71,10 +81,11 @@ router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
     next({ err: e.message, status: 500 });
   }
 });
-//add user
+//[post] add user
 router.post(
   "/",
   secureAPI("admin"),
+  userValidationMw,
   newUpload.single("picture"),
   async (req, res, next) => {
     try {
@@ -91,7 +102,7 @@ router.post(
     }
   }
 );
-
+//[get] profile admin
 router.get("/:id", secureAPI("admin"), async (req, res, next) => {
   try {
     const result = await userController.getByID(req.params.id);
@@ -100,10 +111,11 @@ router.get("/:id", secureAPI("admin"), async (req, res, next) => {
     next({ err: e.message, status: 404 });
   }
 });
-
+//[put] update Profile
 router.put(
   "/:id",
   secureAPI("admin"),
+  userUpdateValidationMw,
   newUpload.single("picture"),
   async (req, res, next) => {
     try {
@@ -112,7 +124,6 @@ router.put(
           .replace("public", "")
           .replaceAll("\\", "/");
       }
-      console.log(req.params.id);
       const result = await userController.updateUser(req.params.id, req.body);
       res.json({ data: result });
     } catch (e) {
@@ -121,7 +132,7 @@ router.put(
     }
   }
 );
-
+//[post] reset password admin
 router.post("/reset-password", secureAPI(["admin"]), async (req, res, next) => {
   try {
     await userController.restPassword(req.body);
@@ -130,7 +141,7 @@ router.post("/reset-password", secureAPI(["admin"]), async (req, res, next) => {
     next({ err: e.message, status: 500 });
   }
 });
-
+//[patch] Block user
 router.patch("/:id/block", secureAPI(["admin"]), async (req, res, next) => {
   try {
     const result = await userController.blockUser(req.params.id);

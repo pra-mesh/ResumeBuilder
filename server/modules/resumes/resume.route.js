@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { secureAPI } = require("../../utils/secure");
 const resumeController = require("./resume.controller");
+const { resumeValidator } = require("./resume.validation");
 
 router.get("/", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
@@ -14,26 +15,36 @@ router.get("/", secureAPI(["admin", "user"]), async (req, res, next) => {
     next({ err: e.message, status: 500 });
   }
 });
-router.post("/", secureAPI(["admin", "user"]), async (req, res, next) => {
-  try {
-    const payload = req.body;
-    payload.user = req.currentUser;
-    const result = await resumeController.create(payload);
-    res.json({ data: result });
-  } catch (e) {
-    next({ err: e.message, status: 500 });
+router.post(
+  "/",
+  secureAPI(["admin", "user"]),
+  resumeValidator,
+  async (req, res, next) => {
+    try {
+      const payload = req.body;
+      payload.user = req.currentUser;
+      const result = await resumeController.create(payload);
+      res.json({ data: result });
+    } catch (e) {
+      next({ err: e.message, status: 500 });
+    }
   }
-});
-router.get("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const user = req.currentUser;
-    const result = await resumeController.getById({ id, currentUser: user });
-    res.json({ data: result });
-  } catch (e) {
-    next({ err: e.message, status: 500 });
+);
+router.get(
+  "/:id",
+  secureAPI(["admin", "user"]),
+  resumeValidator,
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const user = req.currentUser;
+      const result = await resumeController.getById({ id, currentUser: user });
+      res.json({ data: result });
+    } catch (e) {
+      next({ err: e.message, status: 500 });
+    }
   }
-});
+);
 router.put("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
     const id = req.params.id;

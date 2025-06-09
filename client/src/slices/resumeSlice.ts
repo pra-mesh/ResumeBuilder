@@ -59,10 +59,12 @@ export const saveResumeToServer = createAsyncThunk(
   async (payload: Resume, { rejectWithValue }) => {
     try {
       const res = await saveResume(payload);
-      return res.data.data;
+      const result = res.data.data;
+      result.id = payload.id;
+      return result;
     } catch (e: any) {
       return rejectWithValue({
-        data: e?.response?.data.err?.message ?? "Something went wrong",
+        data: e?.response?.data?.err ?? "Something went wrong",
       });
     }
   }
@@ -103,10 +105,7 @@ const resumeSlice = createSlice({
     },
     markAsSaved(state, action: PayloadAction<Resume>) {
       const resume = state.resumes.find((r) => r.id === action.payload.id);
-      if (resume) {
-        resume.isSavedToServer = true;
-        state.total -= 1;
-      }
+      if (resume) resume.isSavedToServer = true;
     },
     deleteResume(state, action: PayloadAction<string>) {
       state.resumes = state.resumes.filter((r) => r.id !== action.payload);
@@ -129,8 +128,8 @@ const resumeSlice = createSlice({
       saveResumeToServer.fulfilled,
       (state, action: PayloadAction<Resume>) => {
         state.loading = false;
-        state.resumes.push(action.payload);
-        state.total += 1;
+        const resume = state.resumes.find((r) => r.id === action.payload.id);
+        if (resume) resume.id = resume._id ?? "";
       }
     );
     builder.addCase(
@@ -147,10 +146,10 @@ const resumeSlice = createSlice({
     builder.addCase(loadResumes.fulfilled, (state, action: any) => {
       state.loading = false;
       const fetchedResumes = action.payload.data;
-      console.log({ fetchedResumes });
+
       fetchedResumes.forEach((fetchedResume: Resume) => {
-        const data = JSON.stringify(fetchedResume);
-        console.log(`Size: ${(new Blob([data]).size / 1024).toFixed(2)} KB`);
+        // const data = JSON.stringify(fetchedResume);
+        // console.log(`Size: ${(new Blob([data]).size / 1024).toFixed(2)} KB`);
         fetchedResume.id = fetchedResume._id ?? "";
         const existingIndex = state.resumes.findIndex(
           (r) => r.id === fetchedResume.id

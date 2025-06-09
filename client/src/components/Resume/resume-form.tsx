@@ -43,7 +43,7 @@ import { toast } from "sonner";
 
 const ResumeForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error, resumes } = useSelector(
+  const { isLoading, resumes } = useSelector(
     (state: RootState) => state.resumes
   );
   const navigate = useNavigate();
@@ -166,8 +166,8 @@ const ResumeForm = () => {
   const onSubmit = async (data: Resume) => {
     const resume = { ...data };
     resume.status = "final";
-    dispatch(saveResumeToServer(resume));
-    if (!error) {
+    try {
+      await dispatch(saveResumeToServer(resume)).unwrap();
       dispatch(markAsSaved(resume));
       toast.success("Resume saved successfully", {
         description: "Your Resume has been added to your collection",
@@ -177,9 +177,12 @@ const ResumeForm = () => {
         reset(defaultValues);
         navigate("/user/resumes");
       }, 4000);
-    } else {
+    } catch (err: any) {
       toast.error("Resume save failed.", {
-        description: "Failed to save resume to your collection",
+        description:
+          typeof err?.data === "string"
+            ? err.data
+            : "Failed to save resume to your collection",
         icon: <CheckCheck className="h-4 w-4" />,
       });
     }
@@ -188,7 +191,7 @@ const ResumeForm = () => {
   const onSaveDraft = async (data: Resume) => {
     try {
       const index = resumes.findIndex((r: Resume) => r.id === data.id);
-      console.log(index, data.id);
+
       if (index !== -1 && data.id !== "") {
         const resume: Resume = {
           ...data,
@@ -203,14 +206,10 @@ const ResumeForm = () => {
           updatedAt: new Date().toISOString(),
           isSavedToServer: false,
         };
-        console.log(error);
-
-        console.log("tp");
         dispatch(addNewResume(resume));
         setValue("id", resume.id);
       }
       toast.success("Resume draft saved successfully");
-      //TODO: Either make it continue editing or add effect before navigate currently navigating because of previous click bug when saved
     } catch (e) {
       console.error("Error saving resume:", e);
       alert("Saved failed. Please try again");

@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { ObjectID } = Schema.Types;
+//TODO change skills from object to array only
 const schema = new Schema(
   {
     title: { type: String, required: true },

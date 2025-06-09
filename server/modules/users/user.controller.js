@@ -177,12 +177,6 @@ const userReport = async ({ from, to = Date.now() }) => {
 };
 
 const updateProfile = async (currentUser, payload) => {
-  const user = await userModel.findOne({
-    _id: currentUser,
-    isEmailVerified: true,
-    isBlocked: false,
-  });
-  if (!user) throw Error("User not found");
   const newPayload = {
     name: payload?.name,
     gender: payload?.gender.toLowerCase(),
@@ -196,11 +190,6 @@ const updateProfile = async (currentUser, payload) => {
 };
 
 const updateUser = async (id, payload) => {
-  const user = await userModel.findOne({
-    _id: id,
-  });
-  if (!user) throw Error("User not found");
-
   const userRoles = payload.roles.length === 0 ? ["user"] : payload.roles;
   const newPayload = {
     name: payload?.name,
