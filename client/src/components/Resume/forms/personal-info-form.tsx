@@ -93,7 +93,7 @@ export function PersonalInfoForm() {
             <Input
               id="phone"
               {...register("personalInfo.phone")}
-              placeholder="+1 (555) 123-4567"
+              placeholder="9841362926"
             />
             {errors.personalInfo?.phone && (
               <p className="text-sm text-destructive">

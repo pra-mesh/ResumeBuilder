@@ -1,4 +1,4 @@
-const userModel = require("./user.model");
+const userModel = require("../modules/users/user.model");
 
 const hasVerifiedActiveEmail = async (email) => {
   const user = await userModel.findOne({

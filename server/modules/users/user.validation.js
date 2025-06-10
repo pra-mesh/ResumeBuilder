@@ -5,7 +5,6 @@ const { isUserVerifiedId } = require("../../utils/validUsers");
 const changePasswordSchema = Joi.object({
   oldPassword: Joi.string().required(),
   password: Joi.string()
-    .password()
     .required()
     .pattern(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/
@@ -23,7 +22,7 @@ const updateProfileSchema = Joi.object(userProfile);
 
 const userSchema = {
   ...userProfile,
-  email: Joi.string().email.required(),
+  email: Joi.string().email().required(),
   roles: Joi.array()
     .items(Joi.string().valid("admin", "user"))
     .default("admin"),

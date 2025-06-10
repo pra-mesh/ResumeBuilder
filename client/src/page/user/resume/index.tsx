@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,8 @@ import { Badge } from "@/components/ui/badge";
 
 import {
   Download,
-  Eye,
   MoreHorizontal,
+  PenBox,
   Plus,
   Search,
   Trash2,
@@ -45,7 +45,7 @@ export default function Resumes() {
   const { searchValue } = useSelector((state: RootState) => state.resumes);
   const { paginatedResume, totalPage } = useSelector(selectPaginatedResumes);
   const dispatch = useDispatch<AppDispatch>();
-
+  const navigate = useNavigate();
   const initUserFetch = useCallback(() => {
     dispatch(loadResumes());
   }, [dispatch]);
@@ -53,7 +53,9 @@ export default function Resumes() {
   useEffect(() => {
     initUserFetch();
   }, [initUserFetch]);
-
+  const handleEditResume = (id: string) => {
+    navigate(`/user/resume/${id}`);
+  };
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -96,8 +98,10 @@ export default function Resumes() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>
-                      <Eye className="mr-2 h-4 w-4" /> View
+                    <DropdownMenuItem
+                      onClick={() => handleEditResume(resume.id)}
+                    >
+                      <PenBox className="mr-2 h-4 w-4" /> Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Download className="mr-2 h-4 w-4" /> Download

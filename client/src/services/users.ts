@@ -5,7 +5,7 @@ import { UserInfo } from "@/types/UserInfoProps";
 import { AxiosResponse } from "axios";
 
 export const createUser = async (
-  payload: Omit<User, "createdAt" | "updatedAt" | "id">
+  payload: Omit<User, "createdAt" | "updatedAt" | "id"> //TOLearn: what is omit what it does why it does not remove existint data
 ): Promise<User> => {
   const response: AxiosResponse<{ data: User }> = await axiosAdmin.post(
     `${URLS.USERS}`,

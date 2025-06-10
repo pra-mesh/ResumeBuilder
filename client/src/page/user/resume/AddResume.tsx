@@ -6,7 +6,7 @@ const AddResume = () => {
       <div className="mb-4">
         <h1 className="text-3xl font-bold">Create New Resume</h1>
       </div>
-      <ResumeForm />
+      <ResumeForm mode="create" />
     </div>
   );
 };

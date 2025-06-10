@@ -22,6 +22,7 @@ import ForgotPassword from "@/page/auth/ForgetPassword";
 import EmailVerification from "@/page/auth/EmailVerification";
 import ResetPassword from "@/page/auth/RestPassword";
 import NotFound from "./Error";
+import EditResume from "./page/user/resume/EditResume";
 //import Edit from "@/page/admin/users/Edit";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
@@ -66,6 +67,7 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="resumes" element={<Resumes />} />
           <Route path="resume/add" element={<AddResume />} />
+          <Route path="resume/:id" element={<EditResume />} />
         </Route>
         <Route path="/">
           <Route index element={<Home />} />

@@ -31,7 +31,7 @@ import StepIndicator from "./forms/step-indicator";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { steps } from "./steps";
-import { defaultValues } from "./defaultValue";
+import { defaultValues as defaultResumeValues } from "./defaultValue";
 import { AppDispatch, RootState } from "@/store";
 import {
   addNewResume,
@@ -41,7 +41,13 @@ import {
 } from "@/slices/resumeSlice";
 import { toast } from "sonner";
 
-const ResumeForm = () => {
+const ResumeForm = ({
+  mode,
+  defaultValues = defaultResumeValues,
+}: {
+  mode: "edit" | "create";
+  defaultValues?: Resume;
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isLoading, resumes } = useSelector(
     (state: RootState) => state.resumes
@@ -73,7 +79,11 @@ const ResumeForm = () => {
     }
     if (currentStep < 6) {
       const sectionName = fieldsToValidate[0];
+      console.log(fieldsToValidate);
+      console.log({ sectionName, currentStep });
+
       const currentData = getValues()[sectionName];
+      console.log({ sectionName, currentStep, currentData });
 
       return Array.isArray(currentData) && currentData.length > 0
         ? await trigger(fieldsToValidate)
@@ -167,6 +177,9 @@ const ResumeForm = () => {
     const resume = { ...data };
     resume.status = "final";
     try {
+      /*TOLearn why use unwrap 
+      on this case we used unwrap to prevent the state of error and loading make if else statement no working
+      */
       await dispatch(saveResumeToServer(resume)).unwrap();
       dispatch(markAsSaved(resume));
       toast.success("Resume saved successfully", {
@@ -297,24 +310,26 @@ const ResumeForm = () => {
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      type="button"
-                      onClick={handleSubmit(onSaveDraft)}
-                      variant="default"
-                      disabled={
-                        isSubmitting || isLoading || !isFirstTwoStepsValid()
-                      }
-                    >
-                      {isSubmitting || isLoading ? (
-                        <>
-                          <div>Saving Draft... </div>
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-4 w-4 mr-2" /> Save as draft
-                        </>
-                      )}
-                    </Button>
+                    {(mode === "create" || !defaultValues.isSavedToServer) && (
+                      <Button
+                        type="button"
+                        onClick={handleSubmit(onSaveDraft)}
+                        variant="default"
+                        disabled={
+                          isSubmitting || isLoading || !isFirstTwoStepsValid()
+                        }
+                      >
+                        {isSubmitting || isLoading ? (
+                          <>
+                            <div>Saving Draft... </div>
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4 mr-2" /> Save as draft
+                          </>
+                        )}
+                      </Button>
+                    )}
                     <Button type="button" onClick={nextStep} variant="outline">
                       Next
                       <ChevronRight className="h-4 w-4 mr-2" />

@@ -25,14 +25,14 @@ export const personalInfoSchema = z.object({
   summary: z.string().min(10, "Summary must be at least 10 characters"),
   github: z.string().url("Invalid github url").optional().or(z.literal("")),
   linkedin: z.string().url("Invalid linkedin url").optional().or(z.literal("")),
-  address: z.string().min(5, "Invalid Address"),
+  address: z.string().min(1, "Invalid Address"),
   website: z.string().url("Invalid website url").optional().or(z.literal("")),
 });
 export const educationSchema = z
   .object({
-    institution: z.string().min(2, "Institution name is required"),
-    degree: z.string().min(2, "Degree is required"),
-    course: z.string().min(2, "Course/Field of study is required"),
+    institution: z.string().min(1, "Institution name is required"),
+    degree: z.string().min(1, "Degree is required"),
+    course: z.string().min(1, "Course/Field of study is required"),
     startDate: z.string().min(1, "start date is required"),
     endDate: z
       .string()
@@ -45,10 +45,35 @@ export const educationSchema = z
     message: "End date can't be smaller than start date",
     path: ["endDate"],
   });
-export const experienceSchema = z.array(z.any()).optional(); // Adjust according to your Experience type
+export const experienceSchema = z.object({
+  company: z.string().min(1, "Company name is required"),
+  position: z.string().optional(),
+  location: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  current: z.boolean().optional(),
+  description: z.string().optional(),
+}); // Adjust according to your Experience type
 export const skillSchema = z.array(z.object({ name: z.string() })).optional();
-export const projectSchema = z.array(z.any()).optional(); // Adjust according to your Projects type
-export const certificationSchema = z.array(z.any()).optional(); // Adjust according to your Certifications type
+export const projectSchema = z
+  .array(
+    z.object({
+      title: z.string().min(1, "Project title name is required"),
+      description: z.string().optional(),
+      technologies: z.array(z.string().optional()).optional(),
+      link: z.string(),
+    })
+  )
+  .optional(); // Adjust according to your Projects type
+export const certificationSchema = z
+  .array(
+    z.object({
+      name: z.string().min(1, "Certification is required"),
+      issuer: z.string().optional(),
+      date: z.string().optional(),
+    })
+  )
+  .optional(); // Adjust according to your Certifications type
 
 export const resumeFormSchema = z.object({
   // Resume metadata
@@ -67,16 +92,7 @@ export const resumeFormSchema = z.object({
   education: z
     .array(educationSchema)
     .min(1, "One education information is required"),
-  experience: experienceSchema,
-  projects: projectSchema,
-  skills: skillSchema,
-  certifications: certificationSchema,
-});
-
-export const draftResumeSchema = z.object({
-  personalInfo: personalInfoSchema,
-  education: z.array(educationSchema).optional(),
-  experience: experienceSchema,
+  experience: z.array(experienceSchema).optional(),
   projects: projectSchema,
   skills: skillSchema,
   certifications: certificationSchema,

@@ -31,12 +31,17 @@ export const initialState: ResumeState = {
   limit: 10,
   searchValue: "",
 };
-const selectResumeState = (state: RootState) => state.resumes;
 
+/* 
+Use createSelector for memoization → Prevents unnecessary recalculations.
+Avoid storing filteredResume in Redux state → Compute it dynamically.
+Use useSelector(selectFilteredResumes) in components
+Ensures efficient rendering.
+*/
+const selectResumeState = (state: RootState) => state.resumes;
 export const selectPaginatedResumes = createSelector(
   selectResumeState,
-  (resumeState) => {
-    const { resumes, currentPage, limit, searchValue } = resumeState;
+  ({ resumes, currentPage, limit, searchValue }) => {
     const filtered = resumes.filter(
       (resume: Resume) =>
         resume.title.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -53,12 +58,19 @@ export const selectPaginatedResumes = createSelector(
     };
   }
 );
+export const selectResumeByID = (id: string) =>
+  createSelector(selectResumeState, ({ resumes }) => {
+    console.log({ resumes });
+    const resume = resumes.find((resume: Resume) => resume.id === id);
+    return resume;
+  });
 
 export const saveResumeToServer = createAsyncThunk(
   "resume/saveResumeToServer",
   async (payload: Resume, { rejectWithValue }) => {
     try {
       const res = await saveResume(payload);
+      /// return { ...res.data.data, id: payload.id }; //spreading and replacing data
       const result = res.data.data;
       result.id = payload.id;
       return result;
