@@ -1,6 +1,6 @@
 import ResumeForm from "@/components/Resume/resume-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { selectResumeByID } from "@/slices/resumeSlice";
+import { selectResumeByID } from "@/slices/resumes/resumeSelectors";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
 

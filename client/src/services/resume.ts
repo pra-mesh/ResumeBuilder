@@ -11,3 +11,10 @@ export const saveResume = (resume: Resume) => {
     throw new Error(error);
   }
 };
+export const updateResumeServer = (resume: Resume) => {
+  const { id, updatedAt, isSavedToServer, _id, ...payload } = resume;
+  return axiosAdmin.put(`${URLS.RESUMES}/${id}`, payload);
+};
+export const deleteResume = (id: string) => {
+  return axiosAdmin.delete(`${URLS.RESUMES}/${id}`);
+};

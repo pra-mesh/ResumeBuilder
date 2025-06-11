@@ -1,6 +1,4 @@
 # Things to complete for Certification
 
-- Resume Edit
-- Resume Templates
-- Delete Resume
 - Download Resume
+- separate draft and server data Resume

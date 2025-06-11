@@ -31,18 +31,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import {
-  loadResumes,
-  selectPaginatedResumes,
-  setSearch,
-} from "@/slices/resumeSlice";
+import { setSearch, deleteResume } from "@/slices/resumes/resumeSlice";
 import { Resume } from "@/types/resume";
 import { formatDate } from "@/lib/dateFormatter";
 import { longValue } from "@/lib/utils";
 import Pagination from "@/components/ui/pagination";
+import { selectPaginatedResumes } from "@/slices/resumes/resumeSelectors";
+import { loadResumes, deleteResumeThunk } from "@/slices/resumes/resumeThunks";
+import { toast } from "sonner";
 
 export default function Resumes() {
-  const { searchValue } = useSelector((state: RootState) => state.resumes);
+  const { searchValue, loading, error } = useSelector(
+    (state: RootState) => state.resumes
+  );
   const { paginatedResume, totalPage } = useSelector(selectPaginatedResumes);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -55,6 +56,21 @@ export default function Resumes() {
   }, [initUserFetch]);
   const handleEditResume = (id: string) => {
     navigate(`/user/resume/${id}`);
+  };
+  const handleDeleteResume = async ({
+    id,
+    isSavedToServer,
+  }: {
+    id: string;
+    isSavedToServer: boolean;
+  }) => {
+    if (isSavedToServer) await dispatch(deleteResumeThunk(id));
+    else  dispatch(deleteResume(id));
+    if (!loading && error) {
+      toast.error("Delete failed", { description: error });
+    }
+    if (!loading)
+      toast.success("Delete resume", { description: "Resume Deleted" });
   };
   return (
     <div className="p-6 space-y-6">
@@ -107,7 +123,10 @@ export default function Resumes() {
                       <Download className="mr-2 h-4 w-4" /> Download
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDeleteResume(resume)}
+                    >
                       <Trash2 className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>

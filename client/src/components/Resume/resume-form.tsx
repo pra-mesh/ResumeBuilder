@@ -33,13 +33,13 @@ import { Label } from "../ui/label";
 import { steps } from "./steps";
 import { defaultValues as defaultResumeValues } from "./defaultValue";
 import { AppDispatch, RootState } from "@/store";
-import {
-  addNewResume,
-  markAsSaved,
-  saveResumeToServer,
-  updateResume,
-} from "@/slices/resumeSlice";
+import { addOrUpdateResume, markAsSaved } from "@/slices/resumes/resumeSlice";
 import { toast } from "sonner";
+import useDisableButton from "@/hooks/useDisableButton";
+import {
+  saveResumeToServer,
+  updateResumeOnServer,
+} from "@/slices/resumes/resumeThunks";
 
 const ResumeForm = ({
   mode,
@@ -59,7 +59,7 @@ const ResumeForm = ({
     defaultValues,
     mode: "onChange",
   });
-
+  const { isDisabled, disableButtonTemporarily } = useDisableButton();
   const {
     register,
     handleSubmit,
@@ -178,9 +178,13 @@ const ResumeForm = ({
     resume.status = "final";
     try {
       /*TOLearn why use unwrap 
-      on this case we used unwrap to prevent the state of error and loading make if else statement no working
+      on this case we used unwrap because if we use on error check if else it will be always true since update will not be awaited
+      maybe we could use combination of if with checking both error and loading. Is using unwrap is more efferent?
       */
-      await dispatch(saveResumeToServer(resume)).unwrap();
+      disableButtonTemporarily(4000);
+      if (mode === "edit")
+        await dispatch(updateResumeOnServer(resume)).unwrap();
+      else await dispatch(saveResumeToServer(resume)).unwrap();
       dispatch(markAsSaved(resume));
       toast.success("Resume saved successfully", {
         description: "Your Resume has been added to your collection",
@@ -204,13 +208,13 @@ const ResumeForm = ({
   const onSaveDraft = async (data: Resume) => {
     try {
       const index = resumes.findIndex((r: Resume) => r.id === data.id);
-
+      disableButtonTemporarily(4000);
       if (index !== -1 && data.id !== "") {
         const resume: Resume = {
           ...data,
           updatedAt: new Date().toISOString(),
         };
-        dispatch(updateResume(resume));
+        dispatch(addOrUpdateResume(resume));
       } else {
         const resume: Resume = {
           ...data,
@@ -219,7 +223,7 @@ const ResumeForm = ({
           updatedAt: new Date().toISOString(),
           isSavedToServer: false,
         };
-        dispatch(addNewResume(resume));
+        dispatch(addOrUpdateResume(resume));
         setValue("id", resume.id);
       }
       toast.success("Resume draft saved successfully");
@@ -238,7 +242,6 @@ const ResumeForm = ({
     5: ["certifications"],
     6: [],
   };
-  const renderStepContent = () => stepComponentsMap[currentStep] || null;
 
   const stepComponentsMap: Record<number, JSX.Element | null> = {
     0: <PersonalInfoForm />,
@@ -278,7 +281,7 @@ const ResumeForm = ({
           </Card>
           <StepIndicator steps={steps} currentStep={currentStep} />
           <FormProvider {...methods}>
-            <form className="mt-5">{renderStepContent()}</form>
+            <form className="mt-5">{stepComponentsMap[currentStep]}</form>
             <div className="flex justify-between mt-3">
               <Button
                 type="button"
@@ -295,7 +298,7 @@ const ResumeForm = ({
                     type="button"
                     variant="default"
                     onClick={handleSubmit(onSubmit)}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isDisabled}
                   >
                     {isSubmitting ? (
                       <>
@@ -316,7 +319,10 @@ const ResumeForm = ({
                         onClick={handleSubmit(onSaveDraft)}
                         variant="default"
                         disabled={
-                          isSubmitting || isLoading || !isFirstTwoStepsValid()
+                          isSubmitting ||
+                          isLoading ||
+                          !isFirstTwoStepsValid() ||
+                          isDisabled
                         }
                       >
                         {isSubmitting || isLoading ? (

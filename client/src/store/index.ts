@@ -9,11 +9,8 @@ import {
   REHYDRATE,
   persistStore,
 } from "redux-persist";
-
-import {
-  resumeReducer,
-  initialState as resumeInitialState,
-} from "@/slices/resumeSlice";
+import { initialState as resumeInitialState } from "@/types/resume";
+import { resumeReducer } from "@/slices/resumes/resumeSlice";
 import {
   initialState as userInitialState,
   userReducer,

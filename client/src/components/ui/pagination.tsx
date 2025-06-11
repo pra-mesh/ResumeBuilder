@@ -16,7 +16,7 @@ import { Button } from "./button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 
-import { setCurrentPage, setLimit } from "@/slices/resumeSlice";
+import { setCurrentPage, setLimit } from "@/slices/resumes/resumeSlice";
 
 const Pagination = ({ totalPage }: { totalPage: number }) => {
   const { limit, currentPage } = useSelector(

@@ -1,3 +1,25 @@
+export interface ResumeState {
+  resumes: Resume[];
+  filteredResume: Resume[];
+  error: string;
+  loading: boolean;
+  total: number;
+  currentPage: number;
+  limit: number;
+  searchValue: string;
+}
+
+export const initialState: ResumeState = {
+  resumes: [],
+  filteredResume: [],
+  error: "",
+  loading: false,
+  total: 0,
+  currentPage: 1,
+  limit: 10,
+  searchValue: "",
+};
+
 export interface PersonalInfo {
   fullName: string;
   email: string;
