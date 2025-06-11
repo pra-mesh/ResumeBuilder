@@ -14,14 +14,14 @@ const StepIndicator = ({
           <div key={idx} className="flex flex-col items-center">
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                currentStep > idx + 1
+                currentStep > idx
                   ? "border-primary bg-primary text-primary-foreground"
                   : currentStep === idx + 1
                   ? "border-primary text-primary"
                   : "border-muted-foreground text-muted-foreground"
               }`}
             >
-              {idx + 1 < currentStep ? (
+              {idx < currentStep ? (
                 <CheckIcon className="h-4 w-4" />
               ) : (
                 <span>{idx + 1}</span>

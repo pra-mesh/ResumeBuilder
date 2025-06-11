@@ -27,7 +27,7 @@ const ModernTemplates = (formData: Resume) => {
     return `${start} - ${end}`;
   };
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg border">
+    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg ">
       {/* Header Section */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">

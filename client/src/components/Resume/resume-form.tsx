@@ -181,6 +181,7 @@ const ResumeForm = ({
       on this case we used unwrap because if we use on error check if else it will be always true since update will not be awaited
       maybe we could use combination of if with checking both error and loading. Is using unwrap is more efferent?
       */
+      console.log("Saving");
       disableButtonTemporarily(4000);
       if (mode === "edit")
         await dispatch(updateResumeOnServer(resume)).unwrap();

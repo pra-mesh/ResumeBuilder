@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router";
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,13 +39,20 @@ import Pagination from "@/components/ui/pagination";
 import { selectPaginatedResumes } from "@/slices/resumes/resumeSelectors";
 import { loadResumes, deleteResumeThunk } from "@/slices/resumes/resumeThunks";
 import { toast } from "sonner";
+import ModernTemplates from "@/components/Resume/templates/modernTemplates";
+import ClassicTemplates from "@/components/Resume/templates/ClassicTemplates";
+import MinimalTemplate from "@/components/Resume/templates/minimalTemplate";
+import usePrint from "@/hooks/usePrint";
 
 export default function Resumes() {
   const { searchValue, loading, error } = useSelector(
     (state: RootState) => state.resumes
   );
+  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
   const { paginatedResume, totalPage } = useSelector(selectPaginatedResumes);
   const dispatch = useDispatch<AppDispatch>();
+  const { componentRef, handlePrint } = usePrint();
+
   const navigate = useNavigate();
   const initUserFetch = useCallback(() => {
     dispatch(loadResumes());
@@ -65,13 +72,24 @@ export default function Resumes() {
     isSavedToServer: boolean;
   }) => {
     if (isSavedToServer) await dispatch(deleteResumeThunk(id));
-    else  dispatch(deleteResume(id));
+    else dispatch(deleteResume(id));
     if (!loading && error) {
       toast.error("Delete failed", { description: error });
     }
     if (!loading)
       toast.success("Delete resume", { description: "Resume Deleted" });
   };
+
+  const Templates: Record<string, React.ElementType> = {
+    modern: ModernTemplates,
+    classic: ClassicTemplates,
+    minimal: MinimalTemplate,
+  };
+  const SetResume_handlePrint = (resume: Resume) => {
+    setSelectedResume(resume);
+    handlePrint();
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -119,7 +137,9 @@ export default function Resumes() {
                     >
                       <PenBox className="mr-2 h-4 w-4" /> Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => SetResume_handlePrint(resume)}
+                    >
                       <Download className="mr-2 h-4 w-4" /> Download
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -156,6 +176,14 @@ export default function Resumes() {
       <div className="flex justify-end items-end">
         <Pagination totalPage={totalPage} />
       </div>
+      {selectedResume && (
+        <div ref={componentRef} >
+          {React.createElement(
+            Templates[selectedResume.template] || ModernTemplates,
+            selectedResume
+          )}
+        </div>
+      )}
     </div>
   );
 }

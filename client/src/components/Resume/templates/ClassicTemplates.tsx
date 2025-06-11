@@ -23,7 +23,7 @@ const ClassicTemplates = (formData: Resume) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg border font-sans text-gray-800">
+    <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg  font-sans text-gray-800">
       {/* Header Section */}
       <div className="text-center mb-8 pb-4 border-b border-gray-200">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -86,9 +86,9 @@ const ClassicTemplates = (formData: Resume) => {
       </div>
 
       {/* Main Content - Two Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-3 gap-8">
         {/* Left Column - Summary, Skills */}
-        <div className="md:col-span-2 space-y-8">
+        <div className="col-span-2 space-y-8">
           {/* Professional Summary */}
           {formData.personalInfo.summary && (
             <section>
@@ -182,11 +182,11 @@ const ClassicTemplates = (formData: Resume) => {
         </div>
 
         {/* Right Column - Education, Certifications, Skills */}
-        <div className="md:col-span-1 space-y-8">
+        <div className="col-span-1 space-y-8">
           {/* Education */}
           {formData.education && formData.education.length > 0 && (
             <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300">
+              <h2 className="text-sm sm:text-xl font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300">
                 Education
               </h2>
               <div className="space-y-4">
@@ -209,7 +209,7 @@ const ClassicTemplates = (formData: Resume) => {
           {/* Skills */}
           {formData.skills && formData.skills.length > 0 && (
             <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300">
+              <h2 className="text-sm sm:text-xl font-bold text-gray-900 mb-4 pb-1 border-b border-gray-300">
                 Skills
               </h2>
               <ul className="list-disc list-inside text-gray-700 space-y-1">
