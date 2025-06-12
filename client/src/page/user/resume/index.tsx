@@ -39,19 +39,14 @@ import Pagination from "@/components/ui/pagination";
 import { selectPaginatedResumes } from "@/slices/resumes/resumeSelectors";
 import { loadResumes, deleteResumeThunk } from "@/slices/resumes/resumeThunks";
 import { toast } from "sonner";
-import ModernTemplates from "@/components/Resume/templates/modernTemplates";
-import ClassicTemplates from "@/components/Resume/templates/ClassicTemplates";
-import MinimalTemplate from "@/components/Resume/templates/minimalTemplate";
-import usePrint from "@/hooks/usePrint";
 
 export default function Resumes() {
   const { searchValue, loading, error } = useSelector(
     (state: RootState) => state.resumes
   );
-  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
+
   const { paginatedResume, totalPage } = useSelector(selectPaginatedResumes);
   const dispatch = useDispatch<AppDispatch>();
-  const { componentRef, handlePrint } = usePrint();
 
   const navigate = useNavigate();
   const initUserFetch = useCallback(() => {
@@ -78,16 +73,6 @@ export default function Resumes() {
     }
     if (!loading)
       toast.success("Delete resume", { description: "Resume Deleted" });
-  };
-
-  const Templates: Record<string, React.ElementType> = {
-    modern: ModernTemplates,
-    classic: ClassicTemplates,
-    minimal: MinimalTemplate,
-  };
-  const SetResume_handlePrint = (resume: Resume) => {
-    setSelectedResume(resume);
-    handlePrint();
   };
 
   return (
@@ -138,7 +123,9 @@ export default function Resumes() {
                       <PenBox className="mr-2 h-4 w-4" /> Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => SetResume_handlePrint(resume)}
+                      onClick={() => {
+                        navigate(`/user/resume/print/${resume.id}`);
+                      }}
                     >
                       <Download className="mr-2 h-4 w-4" /> Download
                     </DropdownMenuItem>
@@ -176,14 +163,6 @@ export default function Resumes() {
       <div className="flex justify-end items-end">
         <Pagination totalPage={totalPage} />
       </div>
-      {selectedResume && (
-        <div ref={componentRef} >
-          {React.createElement(
-            Templates[selectedResume.template] || ModernTemplates,
-            selectedResume
-          )}
-        </div>
-      )}
     </div>
   );
 }

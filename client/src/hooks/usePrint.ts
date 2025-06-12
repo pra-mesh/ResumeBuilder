@@ -1,11 +1,14 @@
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
+import { toast } from "sonner";
 
 const usePrint = () => {
   const size = "210mm";
-  const componentRef = useRef<HTMLDivElement>(null);
+  const componentRef = useRef<HTMLDivElement | null>(null);
+
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
+    documentTitle: "Resume Print",
     pageStyle: `
       @media print {
         @page {
@@ -15,6 +18,9 @@ const usePrint = () => {
         }
       }
     `,
+    onAfterPrint: () => {
+      toast.success("Printing");
+    },
   });
 
   return { componentRef, handlePrint };

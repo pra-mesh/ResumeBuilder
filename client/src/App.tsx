@@ -23,6 +23,7 @@ import EmailVerification from "@/page/auth/EmailVerification";
 import ResetPassword from "@/page/auth/RestPassword";
 import NotFound from "./Error";
 import EditResume from "./page/user/resume/EditResume";
+import PrintResume from "./page/user/resume/PrintResume";
 //import Edit from "@/page/admin/users/Edit";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
@@ -68,6 +69,7 @@ const App = () => {
           <Route path="resumes" element={<Resumes />} />
           <Route path="resume/add" element={<AddResume />} />
           <Route path="resume/:id" element={<EditResume />} />
+          <Route path="resume/print/:id" element={<PrintResume/>} />
         </Route>
         <Route path="/">
           <Route index element={<Home />} />

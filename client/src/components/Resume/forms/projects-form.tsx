@@ -209,7 +209,7 @@ function ProjectItem({
           <Input
             value={techInput}
             onChange={(e) => setTechInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Enter technology and press Enter"
           />
           <Button type="button" onClick={addTechnology} size="sm">

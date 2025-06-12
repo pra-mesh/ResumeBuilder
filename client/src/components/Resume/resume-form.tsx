@@ -1,4 +1,4 @@
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, FieldErrors } from "react-hook-form";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -70,21 +70,34 @@ const ResumeForm = ({
     reset,
     formState: { isSubmitting, errors },
   } = methods;
+  //TOLearn Learn about records
+  const stepFieldsMap: Record<number, (keyof Resume)[]> = {
+    0: ["title", "personalInfo"],
+    1: ["education"],
+    2: ["experience"],
+    3: ["skills"],
+    4: ["projects"],
+    5: ["certifications"],
+    6: [],
+  };
+
+  const stepComponentsMap: Record<number, JSX.Element | null> = {
+    0: <PersonalInfoForm />,
+    1: <EducationForm />,
+    2: <ExperienceForm />,
+    3: <SkillsForm />,
+    4: <ProjectsForm />,
+    5: <CertificationsForm />,
+    6: <ResumePreview />,
+  };
 
   const validateStep = async () => {
-    if (currentStep >= steps.length - 1) return true;
     const fieldsToValidate = stepFieldsMap[currentStep] || [];
-    if (currentStep === 0 || currentStep === 1) {
+    if (currentStep === 0 || currentStep === 1)
       return await trigger(fieldsToValidate);
-    }
     if (currentStep < 6) {
       const sectionName = fieldsToValidate[0];
-      console.log(fieldsToValidate);
-      console.log({ sectionName, currentStep });
-
       const currentData = getValues()[sectionName];
-      console.log({ sectionName, currentStep, currentData });
-
       return Array.isArray(currentData) && currentData.length > 0
         ? await trigger(fieldsToValidate)
         : true;
@@ -181,7 +194,6 @@ const ResumeForm = ({
       on this case we used unwrap because if we use on error check if else it will be always true since update will not be awaited
       maybe we could use combination of if with checking both error and loading. Is using unwrap is more efferent?
       */
-      console.log("Saving");
       disableButtonTemporarily(4000);
       if (mode === "edit")
         await dispatch(updateResumeOnServer(resume)).unwrap();
@@ -206,6 +218,12 @@ const ResumeForm = ({
     }
   };
 
+  const onerror = (errors: FieldErrors<Resume>) => {
+    console.error("Validation failed:", errors);
+    toast.error("Validation failed. Please fill all required fields.", {
+      description: "Check red error messages in the form.",
+    });
+  };
   const onSaveDraft = async (data: Resume) => {
     try {
       const index = resumes.findIndex((r: Resume) => r.id === data.id);
@@ -232,26 +250,6 @@ const ResumeForm = ({
       console.error("Error saving resume:", e);
       alert("Saved failed. Please try again");
     }
-  };
-  //NOTES Learn about records
-  const stepFieldsMap: Record<number, (keyof Resume)[]> = {
-    0: ["title", "personalInfo"],
-    1: ["education"],
-    2: ["experience"],
-    3: ["skills"],
-    4: ["projects"],
-    5: ["certifications"],
-    6: [],
-  };
-
-  const stepComponentsMap: Record<number, JSX.Element | null> = {
-    0: <PersonalInfoForm />,
-    1: <EducationForm />,
-    2: <ExperienceForm />,
-    3: <SkillsForm />,
-    4: <ProjectsForm />,
-    5: <CertificationsForm />,
-    6: <ResumePreview />,
   };
 
   return (
@@ -298,7 +296,7 @@ const ResumeForm = ({
                   <Button
                     type="button"
                     variant="default"
-                    onClick={handleSubmit(onSubmit)}
+                    onClick={handleSubmit(onSubmit, onerror)}
                     disabled={isSubmitting || isDisabled}
                   >
                     {isSubmitting ? (

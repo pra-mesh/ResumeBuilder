@@ -7,24 +7,59 @@ import {
 } from "@/components/ui/card";
 
 //import { useState } from "react";
-import ModernTemplates from "../templates/modernTemplates";
-import ClassicTemplates from "../templates/ClassicTemplates";
-import MinimalTemplate from "../templates/minimalTemplate";
+import ModernTemplates from "./modernTemplates";
+import ClassicTemplates from "./ClassicTemplates";
+import MinimalTemplate from "./minimalTemplate";
 import type { Resume } from "@/types/resume";
 import { templates } from "@/types/resumeTemplate";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Printer } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
-
+import html2canvas from "html2canvas-pro";
 import usePrint from "@/hooks/usePrint";
+import jsPDF from "jspdf";
 
 interface previewProps {
   resume: Resume;
+  desc: string;
   handleTemplateChange?: (template: "modern" | "classic" | "minimal") => void;
 }
-const ResumeView = ({ resume, handleTemplateChange }: previewProps) => {
-  const handlePDFDownload = () => {};
+
+const ResumeView = ({ resume, desc, handleTemplateChange }: previewProps) => {
+  const [newTemplate, setNewTemplate] = useState<
+    "modern" | "classic" | "minimal"
+  >(resume.template as "modern" | "classic" | "minimal");
+
+  const handlePDFDownload = async () => {
+    if (componentRef.current) {
+      try {
+        const canvas = await html2canvas(componentRef.current, {
+          scale: 3, // Improves resolution
+          useCORS: true, // Ensures external styles are applied
+        });
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        console.log({ pdfWidth });
+        const pdfHeight = pdf.internal.pageSize.getHeight() - 20;
+        let currentHeight = 0;
+
+        while (currentHeight < canvas.height) {
+          pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+          currentHeight += pdfHeight;
+
+          if (currentHeight < canvas.height) {
+            pdf.addPage();
+          }
+        }
+        pdf.save("document.pdf");
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      }
+    }
+  };
+
   const { componentRef, handlePrint } = usePrint();
   const Templates: Record<string, JSX.Element | null> = {
     modern: <ModernTemplates {...resume} />,
@@ -32,13 +67,13 @@ const ResumeView = ({ resume, handleTemplateChange }: previewProps) => {
     minimal: <MinimalTemplate {...resume} />,
   };
   const TemplateChange = (template: "modern" | "classic" | "minimal") => {
-    resume.template = template;
+    setNewTemplate(template);
     if (handleTemplateChange) {
       handleTemplateChange(template);
     }
   };
   const renderTemplates = () =>
-    Templates[resume.template] || <ModernTemplates {...resume} />;
+    Templates[newTemplate] || <ModernTemplates {...resume} />;
 
   return (
     <Card>
@@ -46,10 +81,7 @@ const ResumeView = ({ resume, handleTemplateChange }: previewProps) => {
         <CardTitle>Resume Preview</CardTitle>
         <CardDescription>
           <div className="flex flex-row justify-between">
-            <p>
-              Review your resume before saving. This is how your resume will
-              look when exported.
-            </p>
+            <p>{desc}</p>
 
             <ButtonGroup>
               <Button
@@ -82,9 +114,7 @@ const ResumeView = ({ resume, handleTemplateChange }: previewProps) => {
               <div
                 key={template.id}
                 className={`text-center p-2 ${
-                  template.id === resume.template
-                    ? "border-primary border-1"
-                    : ""
+                  template.id === newTemplate ? "border-primary border-1" : ""
                 }`}
                 onClick={() =>
                   TemplateChange(

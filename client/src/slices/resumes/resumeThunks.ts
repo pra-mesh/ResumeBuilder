@@ -43,7 +43,7 @@ export const loadResumes = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosAdmin.get(`${URLS.RESUMES}?limit=10000&page=1`);
-      console.log({ res });
+
       return res.data.data;
     } catch (e: any) {
       return rejectWithValue({

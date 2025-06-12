@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 
 import type { Resume } from "@/types/resume";
-import ResumeView from "./ResumeView";
+import ResumeView from "../templates/ResumeView";
 
 export function ResumePreview() {
   const { watch, setValue } = useFormContext<Resume>();
@@ -15,6 +15,7 @@ export function ResumePreview() {
   return (
     <>
       <ResumeView
+        desc=" Review your resume before saving. This is how your resume will look when exported."
         resume={formData}
         handleTemplateChange={handleTemplateChange}
       />
