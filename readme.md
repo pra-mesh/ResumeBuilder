@@ -4,7 +4,6 @@ Things to complete for Certification:
 
 - User Add (done)
 - User Profile (Change Password, Update User Information)
-  
 - complete zod schema for resume
 - Resume List with Search
 - Resume Edit
@@ -57,6 +56,8 @@ The project is built using a modern full-stack architecture, leveraging the foll
 - **Axios**: A promise-based HTTP client for making API requests.
 - **Luxon**: For advanced date and time manipulation.
 - **jspdf & jspdf-autotable**: For client-side PDF generation.
+- **html2canvas-pro**: For capturing HTML elements as images for PDF generation.
+- **react-to-print**: For easy printing of React components.
 
 ### Backend (Server)
 
@@ -71,6 +72,9 @@ The project is built using a modern full-stack architecture, leveraging the foll
 - **OpenAI API**: Integrated for AI-powered text generation.
 - **dotenv**: For managing environment variables.
 - **joi**: For server-side schema validation.
+- **cors**: Middleware for enabling Cross-Origin Resource Sharing.
+- **morgan**: HTTP request logger middleware.
+- **helmet**: Helps secure Express apps by setting various HTTP headers.
 
 ## Modules and Features
 
@@ -88,10 +92,12 @@ The project is built using a modern full-stack architecture, leveraging the foll
   - Dashboard to view and manage created resumes.
   - Option to save resumes as drafts.
   - PDF export of finalized resumes.
+  - Print functionality for resumes.
 - **Admin Panel**:
   - Dashboard overview for administrators.
   - User management (add, edit, view, block/unblock users).
   - User data export to PDF.
+  - User profile management (change password, update profile information).
 
 ### Server-side Modules
 
@@ -195,3 +201,11 @@ Follow these steps to set up and run the project locally.
 The client application should open in your browser, the port specified in `client/vite.config.ts`.
 
 You should now have both the frontend and backend running, and you can start using the Pro Resume Builder application.
+
+## Potential Features and Future Updates
+
+- More Resume Templates: Expand the library of professional and modern resume templates to offer more design choices.
+- Customizable Sections: Allow users to add, remove, or reorder sections in their resume (e.g., awards, publications, volunteer work).
+- Drag-and-Drop Interface: Implement a more intuitive drag-and-drop interface for arranging resume sections and content.
+- Version History: Allow users to save different versions of their resumes and revert to previous states.
+- 
