@@ -30,7 +30,12 @@ export const selectPaginatedResumes = createSelector(
 );
 export const selectResumeByID = (id: string) =>
   createSelector(selectResumeState, ({ resumes }) => {
-    console.log({ resumes });
     const resume = resumes.find((resume: Resume) => resume.id === id);
+    return resume;
+  });
+
+export const selectDraftResumeByID = (id: string) =>
+  createSelector(selectResumeState, ({ resumesDrafts }) => {
+    const resume = resumesDrafts.find((resume: Resume) => resume.id === id);
     return resume;
   });

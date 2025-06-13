@@ -28,7 +28,7 @@ const UpdateProfile = () => {
         <h1 className="text-2xl font-bold">Edit User</h1>
       </div>
       <UserAddEditForm
-        mode="edit"
+        mode="profileUpdate"
         initialData={user}
         onSuccess={handleSubmit}
         showPasswordFields={false}

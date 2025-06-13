@@ -41,7 +41,7 @@ const ResumeView = ({ resume, desc, handleTemplateChange }: previewProps) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        console.log({ pdfWidth });
+    
         const pdfHeight = pdf.internal.pageSize.getHeight() - 20;
         let currentHeight = 0;
 

@@ -18,12 +18,11 @@ import { AppDispatch, RootState } from "@/store";
 
 import { setCurrentPage, setLimit } from "@/slices/resumes/resumeSlice";
 
-const Pagination = ({ totalPage }: { totalPage: number }) => {
-  const { limit, currentPage } = useSelector(
+const Pagination = () => {
+  const { limit, currentPage, totalPages } = useSelector(
     (state: RootState) => state.resumes
   );
   const dispatch = useDispatch<AppDispatch>();
-
   return (
     <div className="flex items-center space-x-6">
       <div className="flex items-center space-x-2">
@@ -47,7 +46,7 @@ const Pagination = ({ totalPage }: { totalPage: number }) => {
         </Select>
       </div>
       <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-        {currentPage} Page of {totalPage}
+        {currentPage} Page of {totalPages}
       </div>
       <div className="flex items-center space-x-2">
         <Button
@@ -76,7 +75,7 @@ const Pagination = ({ totalPage }: { totalPage: number }) => {
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => {
-            if (currentPage !== totalPage)
+            if (currentPage !== totalPages)
               dispatch(setCurrentPage(currentPage + 1));
           }}
           disabled={false}
@@ -88,7 +87,7 @@ const Pagination = ({ totalPage }: { totalPage: number }) => {
           variant="outline"
           className="hidden h-8 w-8 p-0 lg:flex"
           onClick={() => {
-            dispatch(setCurrentPage(totalPage));
+            dispatch(setCurrentPage(totalPages));
           }}
           disabled={false}
         >

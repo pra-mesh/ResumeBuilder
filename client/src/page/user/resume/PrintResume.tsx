@@ -1,12 +1,14 @@
-import { selectResumeByID } from "@/slices/resumes/resumeSelectors";
 import { Card, CardContent } from "@/components/ui/card";
-import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router";
+import { Link, useLocation, useParams } from "react-router";
 import ResumeView from "@/components/Resume/templates/ResumeView";
+import { useFetchResume } from "@/hooks/useResume";
 
 const PrintResume = () => {
+  const location = useLocation();
   const { id } = useParams();
-  const resume = useSelector(selectResumeByID(id ?? ""));
+  const { type } = location.state;
+  const resume = useFetchResume(id ?? "", type);
+
   if (!resume)
     return (
       <div className="max-w-2xl mx-auto p-6">
@@ -15,10 +17,10 @@ const PrintResume = () => {
             <p className="text-destructive">Failed to load resume.</p>
             <Link
               className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-              to="/user"
+              to="/user/resumes"
               replace
             >
-              Back to user List
+              Back to Resume List
             </Link>
           </CardContent>
         </Card>

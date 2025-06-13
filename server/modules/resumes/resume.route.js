@@ -33,7 +33,6 @@ router.post(
 router.get(
   "/:id",
   secureAPI(["admin", "user"]),
-  resumeValidator,
   async (req, res, next) => {
     try {
       const id = req.params.id;
@@ -45,20 +44,25 @@ router.get(
     }
   }
 );
-router.put("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const user = req.currentUser;
-    const result = await resumeController.updateById({
-      id,
-      currentUser: user,
-      payload: req.body,
-    });
-    res.json({ data: result });
-  } catch (e) {
-    next({ err: e.message, status: 500 });
+router.put(
+  "/:id",
+  secureAPI(["admin", "user"]),
+  resumeValidator,
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const user = req.currentUser;
+      const result = await resumeController.updateById({
+        id,
+        currentUser: user,
+        payload: req.body,
+      });
+      res.json({ data: result });
+    } catch (e) {
+      next({ err: e.message, status: 500 });
+    }
   }
-});
+);
 router.delete("/:id", secureAPI(["admin", "user"]), async (req, res, next) => {
   try {
     const result = await resumeController.remove({

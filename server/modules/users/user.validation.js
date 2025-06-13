@@ -20,13 +20,12 @@ const userProfile = {
 
 const updateProfileSchema = Joi.object(userProfile);
 
-const userSchema = {
-  ...userProfile,
+const userSchema = updateProfileSchema.keys({
   email: Joi.string().email().required(),
   roles: Joi.array()
     .items(Joi.string().valid("admin", "user"))
     .default("admin"),
-};
+});
 const userValidationMw = async (req, res, next) => {
   try {
     await userSchema.validateAsync(req.body);
@@ -47,6 +46,7 @@ const userUpdateValidationMw = async (req, _, next) => {
     if (!user) throw Error("User not found");
     next();
   } catch (e) {
+    console.log(req.body);
     next({ err: e.message, status: 400 });
   }
 };
@@ -65,6 +65,7 @@ const updateProfileMW = async (req, _, next) => {
     await updateProfileSchema.validateAsync(req.body);
     next();
   } catch (e) {
+    console.log(req.body);
     next({ err: e.message, status: 400 });
   }
 };

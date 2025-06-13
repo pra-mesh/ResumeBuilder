@@ -16,6 +16,7 @@ import {
 import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
 import { profileFormProps } from "@/types/UserInfoProps";
+import useDisableButton from "@/hooks/useDisableButton";
 
 const ROLES = ["admin", "user"];
 const GENDERS = ["Male", "Female", "Other"];
@@ -31,7 +32,7 @@ const UserAddEditForm = ({
     initialData?.profilePic ? `/assets${initialData.profilePic}` : null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  const { isDisabled, disableButtonTemporarily } = useDisableButton();
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createUserMutation = useCreateUser();
@@ -81,6 +82,7 @@ const UserAddEditForm = ({
   };
 
   const handleSubmit = async (e: FormEvent) => {
+    disableButtonTemporarily(4000);
     e.preventDefault();
     if (formRef.current) {
       const formData = new FormData(formRef.current);
@@ -91,15 +93,16 @@ const UserAddEditForm = ({
       }
       formData.delete("confirmPassword");
       formData.delete("password");
+
       if (mode === "create") {
         await createUserMutation.mutateAsync(formData);
       } else if (mode === "edit") {
+        formData.append("email", initialData?.email ?? "");
         await updateUserMutation.mutateAsync({
           id: initialData?._id || "",
           payload: formData,
         });
       } else {
-        formData.delete("roles[]");
         await profileUpdateMutation.mutateAsync({
           payload: formData,
         });
@@ -122,7 +125,7 @@ const UserAddEditForm = ({
     if (Object.keys(errors).length !== 0) {
       const timeout = setTimeout(() => {
         setErrors({});
-      }, 6000);
+      }, 4000);
       return () => clearTimeout(timeout);
     }
   }, [errors]);
@@ -193,7 +196,7 @@ const UserAddEditForm = ({
             className={`w-full rounded-md border ${
               errors.email ? "border-red-500" : "border-gray-300"
             } disabled:bg-muted px-3 py-2 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500`}
-            disabled={mode === "edit"}
+            disabled={mode !== "create"}
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-500">{errors.email}</p>
@@ -326,6 +329,7 @@ const UserAddEditForm = ({
       <button
         type="submit"
         className="w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
+        disabled={isDisabled}
       >
         {isLoading ? (
           <span className="flex items-center justify-center">

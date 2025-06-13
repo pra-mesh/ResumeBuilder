@@ -2,7 +2,6 @@ import { useForm, FormProvider, FieldErrors } from "react-hook-form";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-
 import {
   certification,
   Education,
@@ -10,36 +9,27 @@ import {
   Projects,
   Resume,
 } from "@/types/resume";
-
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resumeFormSchema } from "@/lib/validation/resume";
-
-import { CertificationsForm } from "@/components/Resume/forms/certifications-form";
-import { EducationForm } from "@/components/Resume/forms/education-form";
-import { ExperienceForm } from "@/components/Resume/forms/experience-form";
-import { PersonalInfoForm } from "@/components/Resume/forms/personal-info-form";
-import { ProjectsForm } from "@/components/Resume/forms/projects-form";
-import { SkillsForm } from "@/components/Resume/forms/skills-form";
-import { ResumePreview } from "@/components/Resume/forms/resume-preview";
 import { CheckCheck, ChevronLeft, ChevronRight, Save } from "lucide-react";
-import { JSX } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import StepIndicator from "./forms/step-indicator";
-
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { steps } from "./steps";
 import { defaultValues as defaultResumeValues } from "./defaultValue";
 import { AppDispatch, RootState } from "@/store";
-import { addOrUpdateResume, markAsSaved } from "@/slices/resumes/resumeSlice";
+import { addOrUpdateDraft, markAsSaved } from "@/slices/resumes/resumeSlice";
 import { toast } from "sonner";
 import useDisableButton from "@/hooks/useDisableButton";
 import {
   saveResumeToServer,
   updateResumeOnServer,
 } from "@/slices/resumes/resumeThunks";
+import { useAuth } from "@/context/AuthContext";
+import { stepComponentsMap, stepFieldsMap } from "./Reume-steps";
 
 const ResumeForm = ({
   mode,
@@ -49,9 +39,10 @@ const ResumeForm = ({
   defaultValues?: Resume;
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, resumes } = useSelector(
+  const { isLoading, resumesDrafts } = useSelector(
     (state: RootState) => state.resumes
   );
+  const auth = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const methods = useForm<Resume>({
@@ -71,25 +62,6 @@ const ResumeForm = ({
     formState: { isSubmitting, errors },
   } = methods;
   //TOLearn Learn about records
-  const stepFieldsMap: Record<number, (keyof Resume)[]> = {
-    0: ["title", "personalInfo"],
-    1: ["education"],
-    2: ["experience"],
-    3: ["skills"],
-    4: ["projects"],
-    5: ["certifications"],
-    6: [],
-  };
-
-  const stepComponentsMap: Record<number, JSX.Element | null> = {
-    0: <PersonalInfoForm />,
-    1: <EducationForm />,
-    2: <ExperienceForm />,
-    3: <SkillsForm />,
-    4: <ProjectsForm />,
-    5: <CertificationsForm />,
-    6: <ResumePreview />,
-  };
 
   const validateStep = async () => {
     const fieldsToValidate = stepFieldsMap[currentStep] || [];
@@ -195,16 +167,16 @@ const ResumeForm = ({
       maybe we could use combination of if with checking both error and loading. Is using unwrap is more efferent?
       */
       disableButtonTemporarily(4000);
-      if (mode === "edit")
+      if (mode === "edit" && resume.isSavedToServer)
         await dispatch(updateResumeOnServer(resume)).unwrap();
       else await dispatch(saveResumeToServer(resume)).unwrap();
-      dispatch(markAsSaved(resume));
       toast.success("Resume saved successfully", {
         description: "Your Resume has been added to your collection",
         icon: <CheckCheck className="h-4 w-4" />,
       });
       setTimeout(() => {
         reset(defaultValues);
+        dispatch(markAsSaved(resume));
         navigate("/user/resumes");
       }, 4000);
     } catch (err: any) {
@@ -224,25 +196,27 @@ const ResumeForm = ({
       description: "Check red error messages in the form.",
     });
   };
+
   const onSaveDraft = async (data: Resume) => {
     try {
-      const index = resumes.findIndex((r: Resume) => r.id === data.id);
+      const index = resumesDrafts.findIndex((r: Resume) => r.id === data.id);
       disableButtonTemporarily(4000);
       if (index !== -1 && data.id !== "") {
         const resume: Resume = {
           ...data,
           updatedAt: new Date().toISOString(),
         };
-        dispatch(addOrUpdateResume(resume));
+        dispatch(addOrUpdateDraft(resume));
       } else {
         const resume: Resume = {
           ...data,
           id: uuidv4(),
           status: "draft",
           updatedAt: new Date().toISOString(),
+          userId: auth.user?._id,
           isSavedToServer: false,
         };
-        dispatch(addOrUpdateResume(resume));
+        dispatch(addOrUpdateDraft(resume));
         setValue("id", resume.id);
       }
       toast.success("Resume draft saved successfully");

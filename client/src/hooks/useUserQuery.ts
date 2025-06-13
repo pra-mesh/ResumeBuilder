@@ -45,7 +45,6 @@ export const useUpdateUser = () => {
 };
 
 export const useUpdateUserProfile = () => {
-  
   return useMutation({
     mutationFn: updateUserProfile,
     onSuccess: () => {
@@ -62,6 +61,9 @@ export const useCreateUser = () => {
     mutationFn: createUserFormData,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User Added", {
+        description: "New user has been successfully added",
+      });
     },
   });
 };

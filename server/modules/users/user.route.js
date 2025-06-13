@@ -38,8 +38,8 @@ router.get("/profile", secureAPI(["admin", "user"]), async (req, res, next) => {
 router.patch(
   "/profile-update",
   secureAPI(["admin", "user"]),
-  updateProfileMW,
   newUpload.single("picture"),
+  updateProfileMW,
   async (req, res, next) => {
     try {
       if (req.file) {
@@ -85,8 +85,8 @@ router.get("/userReport", secureAPI("admin"), async (req, res, next) => {
 router.post(
   "/",
   secureAPI("admin"),
-  userValidationMw,
   newUpload.single("picture"),
+  userValidationMw,
   async (req, res, next) => {
     try {
       if (req.file) {
@@ -115,8 +115,8 @@ router.get("/:id", secureAPI("admin"), async (req, res, next) => {
 router.put(
   "/:id",
   secureAPI("admin"),
-  userUpdateValidationMw,
   newUpload.single("picture"),
+  userUpdateValidationMw,
   async (req, res, next) => {
     try {
       if (req.file) {
@@ -124,6 +124,7 @@ router.put(
           .replace("public", "")
           .replaceAll("\\", "/");
       }
+
       const result = await userController.updateUser(req.params.id, req.body);
       res.json({ data: result });
     } catch (e) {

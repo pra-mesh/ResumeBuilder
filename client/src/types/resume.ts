@@ -1,23 +1,29 @@
 export interface ResumeState {
   resumes: Resume[];
   filteredResume: Resume[];
+  resumesDrafts: Resume[];
   error: string;
   loading: boolean;
   total: number;
+  totalPages: number;
   currentPage: number;
   limit: number;
   searchValue: string;
+  currentResume: Resume | null;
 }
 
 export const initialState: ResumeState = {
   resumes: [],
   filteredResume: [],
+  resumesDrafts: [],
   error: "",
   loading: false,
   total: 0,
   currentPage: 1,
+  totalPages: 1,
   limit: 10,
   searchValue: "",
+  currentResume: null,
 };
 
 export interface PersonalInfo {
@@ -78,4 +84,5 @@ export interface Resume extends ResumeCoreSections {
   template: string;
   isSavedToServer: boolean;
   _id?: string;
+  userId?: string;
 }

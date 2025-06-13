@@ -5,6 +5,7 @@ import {
   saveResumeToServer,
   updateResumeOnServer,
   deleteResumeThunk,
+  getResumeByIDThunk,
 } from "./resumeThunks";
 
 const resumeSlice = createSlice({
@@ -12,22 +13,32 @@ const resumeSlice = createSlice({
   initialState,
   //Drafting resume to states
   reducers: {
-    addOrUpdateResume(state, action: PayloadAction<Resume>) {
-      const index = state.resumes.findIndex((r) => r.id === action.payload.id);
+    addOrUpdateDraft(state, action: PayloadAction<Resume>) {
+      const index = state.resumesDrafts.findIndex(
+        (r) => r.id === action.payload.id
+      );
       if (index !== -1) {
-        state.resumes[index] = action.payload;
+        state.resumesDrafts[index] = action.payload;
       } else {
-        state.resumes.push(action.payload);
-        state.total += 1;
+        console.log({ drafts: action.payload });
+        state.resumesDrafts.push(action.payload);
       }
+      console.log({ drafts: state.resumesDrafts });
     },
+
     markAsSaved(state, action: PayloadAction<Resume>) {
-      const resume = state.resumes.find((r) => r.id === action.payload.id);
+      const resume = state.resumesDrafts.find(
+        (r) => r.id === action.payload.id
+      );
       if (resume) resume.isSavedToServer = true;
+      state.resumesDrafts = state.resumesDrafts.filter(
+        (r) => r.id !== resume?.id
+      );
     },
     deleteResume(state, action: PayloadAction<string>) {
-      state.resumes = state.resumes.filter((r) => r.id !== action.payload);
-      state.total -= 1;
+      state.resumesDrafts = state.resumesDrafts.filter(
+        (r) => r.id !== action.payload
+      );
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -35,6 +46,7 @@ const resumeSlice = createSlice({
     setLimit: (state, action) => {
       state.limit = action.payload;
       state.currentPage = 1;
+      state.totalPages = Math.ceil(state.total / state.limit);
     },
     setSearch: (state, action) => {
       state.currentPage = 1;
@@ -63,19 +75,15 @@ const resumeSlice = createSlice({
     });
     builder.addCase(
       loadResumes.fulfilled,
-      (state, action: PayloadAction<Resume[]>) => {
-        const fetchedResumes = action.payload.map((resume: Resume) => ({
+      (state, action: PayloadAction<any>) => {
+        const fetchedResumes = action.payload.data.map((resume: Resume) => ({
           ...resume,
           id: resume._id ?? "",
           isSavedToServer: true,
         }));
-        //Instead of mergedResumes and uniqueResumes we could use foreach loop but this way more time and space effiecnt
-        const mergedResumes = [...state.resumes, ...fetchedResumes];
-        const uniqueResumes = Array.from(
-          new Map(mergedResumes.map((resume) => [resume.id, resume])).values()
-        );
-        state.total = uniqueResumes.length;
-        state.resumes = uniqueResumes;
+        state.total = action.payload.total;
+        state.totalPages = Math.ceil(state.total / state.limit);
+        state.resumes = fetchedResumes;
         state.loading = false;
         state.error = "";
       }
@@ -117,7 +125,6 @@ const resumeSlice = createSlice({
         state.loading = false;
         state.error = "";
         state.resumes = state.resumes.filter((r) => r.id !== action.payload);
-        state.total -= 1;
       }
     );
     builder.addCase(
@@ -131,10 +138,32 @@ const resumeSlice = createSlice({
       state.loading = true;
       state.error = "";
     });
+    builder.addCase(
+      getResumeByIDThunk.fulfilled,
+      (state, action: PayloadAction<Resume>) => {
+        state.loading = false;
+        state.currentResume = action.payload;
+        state.error = "";
+      }
+    );
+    builder.addCase(
+      getResumeByIDThunk.rejected,
+      (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload.data;
+      }
+    );
+    builder.addCase(
+      getResumeByIDThunk.pending,
+      (state, _: PayloadAction<any>) => {
+        state.loading = true;
+        state.error = "";
+      }
+    );
   },
 });
 export const {
-  addOrUpdateResume,
+  addOrUpdateDraft,
   markAsSaved,
   deleteResume,
   setCurrentPage,
@@ -145,5 +174,5 @@ export const {
 //export default resumeSlice.reducer;
 export const resumeReducer = resumeSlice.reducer;
 
-//BUG on submit remove the saved draft
+//BUG on sv remove the saved draft
 //BUG on edit finalized data saved as draft what to do
