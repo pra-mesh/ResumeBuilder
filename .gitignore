@@ -141,3 +141,6 @@ server/public/uploads/users/*
 !server/public/uploads/resume
 server/public/uploads/resume/*
 todo.md
+client.env
+apps.json
+prameshpradhan1.com.np

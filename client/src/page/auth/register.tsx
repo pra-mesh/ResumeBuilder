@@ -204,7 +204,7 @@ const Register = () => {
                     id="male"
                     name="gender"
                     type="radio"
-                    value="male"
+                    value="m"
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
                   <label
@@ -219,7 +219,7 @@ const Register = () => {
                     id="female"
                     name="gender"
                     type="radio"
-                    value="female"
+                    value="f"
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
                   <label
@@ -234,7 +234,7 @@ const Register = () => {
                     id="other"
                     name="gender"
                     type="radio"
-                    value="other"
+                    value="o"
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
                   <label

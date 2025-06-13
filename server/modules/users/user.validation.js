@@ -46,7 +46,6 @@ const userUpdateValidationMw = async (req, _, next) => {
     if (!user) throw Error("User not found");
     next();
   } catch (e) {
-    console.log(req.body);
     next({ err: e.message, status: 400 });
   }
 };
@@ -65,7 +64,6 @@ const updateProfileMW = async (req, _, next) => {
     await updateProfileSchema.validateAsync(req.body);
     next();
   } catch (e) {
-    console.log(req.body);
     next({ err: e.message, status: 400 });
   }
 };

@@ -4,17 +4,17 @@ const events = require("events");
 const mailEvents = new events.EventEmitter();
 
 const transporter = nodemailer.createTransport({
-  // service: process.env.SMTP_SERVICE,
-  // auth: {
-  //   user: process.env.SMTP_EMAIL,
-  //   pass: process.env.SMTP_PASS,
-  // },
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  service: process.env.SMTP_SERVICE,
   auth: {
-    user: "dee0bc99a4e446",
-    pass: "a2fcff8c8e3857",
+    user: process.env.SMTP_EMAIL,
+    pass: process.env.SMTP_PASS,
   },
+  // host: "sandbox.smtp.mailtrap.io",
+  // port: 2525,
+  // auth: {
+  //   user: "dee0bc99a4e446",
+  //   pass: "a2fcff8c8e3857",
+  // },
 });
 transporter.verify((error, success) => {
   if (error) {
@@ -26,14 +26,15 @@ transporter.verify((error, success) => {
 
 const sendEmail = async ({ to, subject, message }) => {
   try {
-    // await transporter.sendMail({
-    //   from: `"Resume Builder" <no-reply.proresume.ai>`,
-    //   to: to,
-    //   subject,
-    //   html: message,
-    // });
+    await transporter.sendMail({
+      // eslint-disable-next-line quotes
+      from: '"Resume Builder" <no-reply.proresume.ai>',
+      to: to,
+      subject,
+      html: message,
+    });
   } catch (e) {
-    console.log({ err: e.message, status: 500 });
+    console.error({ err: e.message, status: 500 });
   }
 };
 
