@@ -157,6 +157,7 @@ const UserAddEditForm = ({
               src={profilePreview || "/placeholder.svg"}
               alt="Profile preview"
               className="h-full w-full object-cover"
+              crossOrigin="anonymous"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">

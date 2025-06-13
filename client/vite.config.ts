@@ -13,5 +13,8 @@ export default defineConfig({
   },
   server: {
     port: 9002,
+    cors: {
+      origin: "*",
+    },
   },
 });
