@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import ChangePasswordForm from "../Users/UserProfile/ChangePasswordForm";
 import UpdateProfileForm from "../Users/UserProfile/UpdateProfileForm";
+import { URLS } from "@/constants";
 
 export const SideBarAdmin = () => {
   const { logout, user } = useAuth();
@@ -79,7 +80,7 @@ export const SideBarAdmin = () => {
                       )}
                     >
                       <AvatarImage
-                        src={`/assets${user?.profilePic}`}
+                        src={`${URLS.public}${user?.profilePic}`}
                         alt="User avatar"
                       />
                       <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>

@@ -13,8 +13,5 @@ export default defineConfig({
   },
   server: {
     port: 9002,
-    proxy: {
-      "/assets": "http://localhost:9001",
-    },
   },
 });

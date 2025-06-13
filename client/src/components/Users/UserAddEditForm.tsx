@@ -17,6 +17,7 @@ import PasswordField from "./PasswordField";
 import { cn } from "@/lib/utils";
 import { profileFormProps } from "@/types/UserInfoProps";
 import useDisableButton from "@/hooks/useDisableButton";
+import { URLS } from "@/constants";
 
 const ROLES = ["admin", "user"];
 const GENDERS = ["Male", "Female", "Other"];
@@ -29,7 +30,7 @@ const UserAddEditForm = ({
   showRole = false,
 }: profileFormProps) => {
   const [profilePreview, setProfilePreview] = useState<string | null>(
-    initialData?.profilePic ? `/assets${initialData.profilePic}` : null
+    initialData?.profilePic ? `${URLS.public}${initialData.profilePic}` : null
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { isDisabled, disableButtonTemporarily } = useDisableButton();
