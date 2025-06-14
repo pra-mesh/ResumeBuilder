@@ -142,7 +142,13 @@ const resumeSlice = createSlice({
       getResumeByIDThunk.fulfilled,
       (state, action: PayloadAction<Resume>) => {
         state.loading = false;
-        state.currentResume = action.payload;
+        const fetchedResumes = action.payload;
+        const loadedData = {
+          ...fetchedResumes,
+          id: fetchedResumes?._id ?? "",
+          isSavedToServer: true,
+        };
+        state.currentResume = loadedData;
         state.error = "";
       }
     );

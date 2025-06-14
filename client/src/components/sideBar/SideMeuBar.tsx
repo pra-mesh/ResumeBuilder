@@ -30,7 +30,6 @@ export const SideBarAdmin = () => {
   const { state } = useSidebar();
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
-  console.log({ user, img: `${URLS.public}${user?.profilePic}` });
   return (
     <>
       <Sidebar collapsible="icon">

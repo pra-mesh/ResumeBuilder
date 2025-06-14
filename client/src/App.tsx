@@ -24,12 +24,29 @@ import ResetPassword from "@/page/auth/RestPassword";
 import NotFound from "./Error";
 import EditResume from "./page/user/resume/EditResume";
 import PrintResume from "./page/user/resume/PrintResume";
+import { Helmet } from "react-helmet-async";
 //import Edit from "@/page/admin/users/Edit";
 
 const Dashboard = lazy(() => import("@/page/admin/Dashboard"));
 const App = () => {
   return (
     <>
+      <Helmet>
+        <meta property="og:title" content="Build your Resume" />
+        <meta
+          property="og:description"
+          content="If you want to build simple and "
+        />
+        <meta
+          property="og:url"
+          content="https://resumebuilder.pradhanpramesh.com.np/"
+        />
+        <meta
+          property="og:image"
+          content="https://resumebuilder.pradhanpramesh.com.np/hero-section.png"
+        />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <RouteWatcher />
       <Routes>
         <Route
@@ -69,7 +86,7 @@ const App = () => {
           <Route path="resumes" element={<Resumes />} />
           <Route path="resume/add" element={<AddResume />} />
           <Route path="resume/:id" element={<EditResume />} />
-          <Route path="resume/print/:id" element={<PrintResume/>} />
+          <Route path="resume/print/:id" element={<PrintResume />} />
         </Route>
         <Route path="/">
           <Route index element={<Home />} />

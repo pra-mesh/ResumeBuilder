@@ -30,7 +30,7 @@ export default function Resumes() {
   }, [currentPage, debouncedSearch, dispatch, limit]);
 
   useEffect(() => {
-    initUserFetch();
+    initUserFetch();;
   }, [initUserFetch]);
 
   return (

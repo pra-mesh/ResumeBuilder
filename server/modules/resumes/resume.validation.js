@@ -10,39 +10,39 @@ const personalInfo = {
   phone: Joi.string(),
   address: Joi.string(),
   summary: Joi.string(),
-  github: Joi.string(),
-  linkedin: Joi.string(),
-  website: Joi.string(),
+  github: Joi.string().optional().allow(""),
+  linkedin: Joi.string().optional().allow(""),
+  website: Joi.string().optional().allow(""),
 };
 const educationInfo = {
-  institution: Joi.string(),
-  degree: Joi.string(),
-  startDate: Joi.string(),
-  endDate: Joi.string(),
+  institution: Joi.string().allow(""),
+  degree: Joi.string().allow(""),
+  startDate: Joi.string().allow(""),
+  endDate: Joi.string().allow(""),
   course: Joi.string(),
 };
 const experienceInfo = {
-  company: Joi.string(),
-  position: Joi.string(),
-  location: Joi.string(),
-  startDate: Joi.string(),
-  endDate: Joi.string(),
-  current: { type: Boolean, default: false },
-  description: Joi.string(),
+  company: Joi.string().allow(""),
+  position: Joi.string().allow(""),
+  location: Joi.string().allow(""),
+  startDate: Joi.string().allow(""),
+  endDate: Joi.string().allow(""),
+  current: Joi.boolean().default(false),
+  description: Joi.string().allow(""),
 };
 const skillsInfo = {
-  name: Joi.string(),
+  name: Joi.string().allow(""),
 };
 const projectInfo = {
-  title: Joi.string(),
-  description: Joi.string(),
-  technologies: Joi.array().items(Joi.string()),
-  link: Joi.string(),
+  title: Joi.string().allow(""),
+  description: Joi.string().allow(""),
+  technologies: Joi.array().items(Joi.string()).allow(""),
+  link: Joi.string().allow(""),
 };
 const certificationInfo = {
-  name: Joi.string(),
-  issuer: Joi.string(),
-  date: Joi.date(),
+  name: Joi.string().allow(""),
+  issuer: Joi.string().allow(""),
+  date: Joi.date().allow(""),
 };
 
 const ResumeSchema = Joi.object({

@@ -17,4 +17,17 @@ export default defineConfig({
       origin: "*",
     },
   },
+  build: {
+    outDir: "dist", // Ensures output goes to `dist/`
+    rollupOptions: {
+      output: {
+        assetFileNames: ({ name }) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? "")) {
+            return "images/[name]-[hash][extname]"; // Places images in `dist/images/`
+          }
+          return "assets/[name]-[hash][extname]"; // Default for other assets
+        },
+      },
+    },
+  },
 });

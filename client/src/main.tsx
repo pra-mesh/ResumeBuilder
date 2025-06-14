@@ -13,6 +13,7 @@ import "./index.css";
 import App from "./App.tsx";
 
 import { AuthProvider } from "@/context/AuthContext";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +32,9 @@ createRoot(document.getElementById("root")!).render(
           <PersistGate loading={null} persistor={persistor}>
             <Suspense fallback={<div>App is loading...</div>}>
               <AuthProvider>
-                <App />
+                <HelmetProvider>
+                  <App />
+                </HelmetProvider>
               </AuthProvider>
             </Suspense>
           </PersistGate>
