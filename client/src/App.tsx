@@ -41,6 +41,7 @@ const App = () => {
           property="og:url"
           content="https://resumebuilder.pradhanpramesh.com.np/"
         />
+        <meta property="og:type" content="Productivity" />
         <meta
           property="og:image"
           content="https://resumebuilder.pradhanpramesh.com.np/hero-section.png"
